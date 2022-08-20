@@ -1,9 +1,7 @@
 import { Point } from '../geom/point';
 import { Component } from '../graphics/component';
 
-import {
-	mathMax, mathMin, mathSqrt,
-} from '../utils/math';
+import { max, min, sqrt } from '../utils/math';
 import { ground } from './ground';
 import { playerController } from './player';
 import { unit } from './unit';
@@ -57,8 +55,8 @@ export function game(): Game {
 		},
 		calculateVolume(point: Point): number {
 			const maxDistance = SIZE / 2;
-			const distance = mathSqrt(Point.distanceSquared(camera, point));
-			return 1 - mathMin(1, mathMax(0, distance / maxDistance));
+			const distance = sqrt(Point.distanceSquared(camera, point));
+			return 1 - min(1, max(0, distance / maxDistance));
 		}
 	};
 

@@ -1,11 +1,11 @@
 import { Point } from "../geom/point";
 import { Component } from "../graphics/component";
-import { mathAtan2 } from "../utils/math";
+import { atan2 } from "../utils/math";
 import { Unit } from "./unit";
 
 export function playerController(player: Unit, world: Component) {
 	world.onTouchMove = (p: Point) => {
-		player.rotation = mathAtan2(p.y - player.y!, p.x - player.x!);
+		player.rotation = atan2(p.y - player.y!, p.x - player.x!);
 	},
 
 	player.onKeyDown = (e: KeyboardEvent) => {

@@ -1,4 +1,5 @@
 import { Pattern } from "../graphics/pattern";
+import { random } from "./math";
 
 export const enum CommandType {
 	SIZE,
@@ -84,9 +85,9 @@ methods.set(CommandType.NOISE, (command, canvas, context) => {
 		const r = data[i];
 		const g = data[i + 1];
 		const b = data[i + 2];
-		data[i] = r - offset2 + offset * Math.random();
-		data[i + 1] = g - offset2 + offset * Math.random();
-		data[i + 2] = b - offset2 + offset * Math.random();
+		data[i] = r - offset2 + offset * random();
+		data[i + 1] = g - offset2 + offset * random();
+		data[i + 2] = b - offset2 + offset * random();
 		i += 4;
 	}
 	context.putImageData(imageData, 0, 0);

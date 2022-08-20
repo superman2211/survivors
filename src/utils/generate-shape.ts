@@ -1,6 +1,6 @@
 import { FILL, PATH } from '../graphics/shape';
 import {
-	mathCos, mathRandom, mathSin, randomInt,
+	cos, random, sin, randomInt,
 } from './math';
 
 export function generateShape(
@@ -17,13 +17,13 @@ export function generateShape(
 
 	const angleStep = Math.PI * 2 / count;
 	if (angle === undefined) {
-		angle = Math.PI * mathRandom();
+		angle = Math.PI * random();
 	}
 
 	while (count--) {
 		array.push(
-			x + mathSin(angle) * randomInt(radiusMin, radiusMax),
-			y + mathCos(angle) * randomInt(radiusMin, radiusMax),
+			x + sin(angle) * randomInt(radiusMin, radiusMax),
+			y + cos(angle) * randomInt(radiusMin, radiusMax),
 		);
 		angle += angleStep;
 	}

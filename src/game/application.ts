@@ -1,6 +1,6 @@
 import { Component } from '../graphics/component';
 import { game as createGame } from './game';
-import { mathMin } from '../utils/math';
+import { min } from '../utils/math';
 
 const SIZE: number = 1024;
 
@@ -21,7 +21,7 @@ export function application(options: ApplicationOptions): Application {
 			const w = options.getWidth();
 			const h = options.getHeight();
 
-			const scale = mathMin(w / SIZE, h / SIZE);
+			const scale = min(w / SIZE, h / SIZE);
 
 			game.scale = scale;
 			game.x = w / 2;
