@@ -93,6 +93,7 @@ methods.set(CommandType.NOISE, (command, canvas, context) => {
 });
 
 export function generateImage(commands: Command[]) {
+	console.log('generateImage');
 	const canvas = document.createElement('canvas');
 	const context = canvas.getContext('2d')!;
 	let last: Command;
