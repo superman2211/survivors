@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+		"moduleResolution": "node",
+		"module": "esnext",
+		"target": "es6",
+		"esModuleInterop": true,
+		"noImplicitAny": true,
+		"removeComments": true,
+		"preserveConstEnums": true,
+		"declaration": true,
+		"sourceMap": true,
+		"declarationDir": "dist/esm",
+		"outDir": "dist/esm",
+		"strict": true,
+		"lib": [
+			"dom",
+			"esnext"
+		]
+	},
+	"include": [
+		"src/**/*"
+, "libs/w.js"	],
+	"exclude": [
+		"dist",
+		"node_modules"
+	]
+}

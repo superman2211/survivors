@@ -1,0 +1,41 @@
+{
+	"name": "survivors",
+	"version": "0.1.0",
+	"description": "Survivors game for js13kgames",
+	"private": true,
+	"repository": "https://github.com/superman2211/survivors.git",
+	"author": "Sergey Antonov <superflasher22@gmail.com>",
+	"license": "MIT",
+	"scripts": {
+		"clean": "rimraf ./dist",
+		"watch:ts": "tsc -w",
+		"watch:rollup": "rollup -c rollup.config.dev.js -w",
+		"build": "yarn clean && tsc && rollup -c rollup.config.prod.js && yarn build-libs && yarn compress",
+		"serve": "http-server ./dist/build",
+		"lint": "eslint --fix",
+		"compress": "bestzip dist/survivors.zip dist/build/*",
+		"build-jsfxr": "yarn google-closure-compiler --js=libs/jsfxr.js --js_output_file=dist/build/jsfxr.js",
+		"build-libs": "yarn build-jsfxr"
+	},
+	"dependencies": {
+		"svg-path": "^0.2.1",
+		"xml2js": "^0.4.23"
+	},
+	"devDependencies": {
+		"@rollup/plugin-html": "^0.2.3",
+		"@typescript-eslint/eslint-plugin": "^4.29.3",
+		"@typescript-eslint/parser": "^4.29.3",
+		"bestzip": "^2.2.0",
+		"eslint": "^7.32.0",
+		"eslint-config-airbnb-base": "^14.2.1",
+		"eslint-plugin-import": "^2.24.1",
+		"google-closure-compiler": "^20210808.0.0",
+		"http-server": "^13.0.1",
+		"rimraf": "^3.0.2",
+		"rollup": "^2.56.3",
+		"rollup-plugin-filesize": "^9.1.1",
+		"rollup-plugin-sourcemaps": "^0.6.3",
+		"rollup-plugin-terser": "^7.0.2",
+		"typescript": "^4.3.5"
+	}
+}
