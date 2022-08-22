@@ -1,5 +1,5 @@
 import { Pattern } from "../graphics/pattern";
-import { random } from "./math";
+import { mathRandom } from "./math";
 
 export const enum CommandType {
 	SIZE,
@@ -63,7 +63,7 @@ methods.set(CommandType.REPEAT, (command, canvas, context, last) => {
 	let count = command.count!;
 	let c = 1;
 	last.x! += stepX;
-	while(count--) {
+	while (count--) {
 		method(last, canvas, context, last);
 		last.x! += stepX;
 		c++;
@@ -85,9 +85,9 @@ methods.set(CommandType.NOISE, (command, canvas, context) => {
 		const r = data[i];
 		const g = data[i + 1];
 		const b = data[i + 2];
-		data[i] = r - offset2 + offset * random();
-		data[i + 1] = g - offset2 + offset * random();
-		data[i + 2] = b - offset2 + offset * random();
+		data[i] = r - offset2 + offset * mathRandom();
+		data[i + 1] = g - offset2 + offset * mathRandom();
+		data[i + 2] = b - offset2 + offset * mathRandom();
 		i += 4;
 	}
 	context.putImageData(imageData, 0, 0);

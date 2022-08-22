@@ -1,5 +1,5 @@
 import { Point } from "../geom/point";
-import { atan2, chance, cos, PI2, random, randomFloat, sin, sqrt } from "../utils/math";
+import { mathAtan2, chance, mathCos, math2PI, mathRandom, randomFloat, mathSin, mathSqrt } from "../utils/math";
 import { createUnit, isFriend, Unit, UnitType } from "./unit";
 
 const enum EnemyState {
@@ -12,7 +12,7 @@ const enum EnemyState {
 export function createEnemy(units: Unit[]) {
 	const enemy = createUnit(UnitType.ENEMY, 30, 60, 0xff990000, 100);
 
-	enemy.rotation = PI2 * random();
+	enemy.rotation = math2PI * mathRandom();
 
 	const { fsm } = enemy;
 
@@ -41,8 +41,8 @@ export function createEnemy(units: Unit[]) {
 		},
 		start() {
 			const speed = randomFloat(50, 100);
-			this.data.speedX = cos(enemy.rotation) * speed;
-			this.data.speedY = sin(enemy.rotation) * speed;
+			this.data.speedX = mathCos(enemy.rotation) * speed;
+			this.data.speedY = mathSin(enemy.rotation) * speed;
 			this.time = randomFloat(1, 3);
 		}
 	});
@@ -51,9 +51,9 @@ export function createEnemy(units: Unit[]) {
 		data: {},
 		time: 0,
 		update(time: number) {
-			enemy.rotation = atan2(this.data.target.y - enemy.y, this.data.target.x - enemy.x);
-			const speedX = cos(enemy.rotation) * this.data.speed;
-			const speedY = sin(enemy.rotation) * this.data.speed;
+			enemy.rotation = mathAtan2(this.data.target.y - enemy.y, this.data.target.x - enemy.x);
+			const speedX = mathCos(enemy.rotation) * this.data.speed;
+			const speedY = mathSin(enemy.rotation) * this.data.speed;
 			enemy.x += speedX * time;
 			enemy.y += speedY * time;
 		},

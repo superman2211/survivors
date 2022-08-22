@@ -1,7 +1,7 @@
 import { Point } from '../geom/point';
 import { Component } from '../graphics/component';
 
-import { max, min, random, sqrt } from '../utils/math';
+import { mathMax, mathMin, mathRandom, mathSqrt } from '../utils/math';
 import { createEnemy } from './enemy';
 import { createGround } from './ground';
 import { IBody, updatePhysics } from './physics';
@@ -24,7 +24,7 @@ export function game(): Game {
 	const bodies: IBody[] = [];
 	const units: Unit[] = [];
 
-	function addUnit(unit:Unit) {
+	function addUnit(unit: Unit) {
 		units.push(unit);
 		bodies.push(unit);
 	}
@@ -36,10 +36,10 @@ export function game(): Game {
 	const player = createPlayer(world, units);
 	addUnit(player);
 
-	for(let i = 0; i < 10; i++) {
+	for (let i = 0; i < 10; i++) {
 		const enemy = createEnemy(units);
-		enemy.x = -500 + random() * 1000;
-		enemy.y = -500 + random() * 1000;
+		enemy.x = -500 + mathRandom() * 1000;
+		enemy.y = -500 + mathRandom() * 1000;
 		addUnit(enemy);
 	}
 
@@ -64,8 +64,8 @@ export function game(): Game {
 		},
 		calculateVolume(point: Point): number {
 			const maxDistance = SIZE / 2;
-			const distance = sqrt(Point.distanceSquared(camera, point));
-			return 1 - min(1, max(0, distance / maxDistance));
+			const distance = mathSqrt(Point.distanceSquared(camera, point));
+			return 1 - mathMin(1, mathMax(0, distance / maxDistance));
 		}
 	};
 

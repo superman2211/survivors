@@ -1,6 +1,6 @@
 import { Point } from "../geom/point";
 import { Component } from "../graphics/component";
-import { sqrt } from "../utils/math";
+import { mathSqrt } from "../utils/math";
 
 export interface IBody {
 	x: number;
@@ -17,7 +17,7 @@ export interface Body {
 const vector = Point.create();
 
 export function updatePhysics(objects: IBody[], time: number) {
-	for(let i = 0; i < objects.length; i++) {
+	for (let i = 0; i < objects.length; i++) {
 		const object0 = objects[i];
 		for (let j = i + 1; j < objects.length; j++) {
 			const object1 = objects[j];
@@ -27,7 +27,7 @@ export function updatePhysics(objects: IBody[], time: number) {
 			vector.y = object0.y - object1.y;
 			const distanceSquared = Point.lengthSquared(vector);
 			if (distanceSquared < radiusesSquared) {
-				const distance = sqrt(distanceSquared);
+				const distance = mathSqrt(distanceSquared);
 				const delta = radiuses - distance;
 				const scale = delta / distance;
 				vector.x *= scale;

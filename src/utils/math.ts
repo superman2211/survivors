@@ -1,29 +1,29 @@
-export const round = Math.round;
-export const random = Math.random;
-export const sin = Math.sin;
-export const cos = Math.cos;
-export const atan2 = Math.atan2;
-export const abs = Math.abs;
-export const max = Math.max;
-export const min = Math.min;
-export const sqrt = Math.sqrt;
-export const PI = Math.PI;
-export const PI2 = PI * 2;
+export const mathRound = Math.round;
+export const mathRandom = Math.random;
+export const mathSin = Math.sin;
+export const mathCos = Math.cos;
+export const mathAtan2 = Math.atan2;
+export const mathAbs = Math.abs;
+export const mathMax = Math.max;
+export const mathMin = Math.min;
+export const mathSqrt = Math.sqrt;
+export const mathPI = Math.PI;
+export const math2PI = mathPI * 2;
 
 export function chance(): boolean {
-	return random() > 0.5;
+	return mathRandom() > 0.5;
 }
 
 export function randomInt(min: number, max: number): number {
-	return round(min + random() * (max - min));
+	return mathRound(min + mathRandom() * (max - min));
 }
 
 export function randomFloat(min: number, max: number): number {
-	return min + random() * (max - min);
+	return min + mathRandom() * (max - min);
 }
 
 export function deltaAngle(angle0: number, angle1: number): number {
-	const half = PI;
+	const half = mathPI;
 	const full = half * 2;
 
 	let delta = (angle0 - angle1) % full;

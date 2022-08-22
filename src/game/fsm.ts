@@ -1,4 +1,4 @@
-import { random } from "../utils/math";
+import { mathRandom } from "../utils/math";
 
 export type FSMAction = {
 	update: (time: number) => void;
@@ -48,7 +48,7 @@ export class FSM {
 
 		this._time -= time;
 		if (this._time <= 0) {
-			this._time = this._updateTime + this._updateTime * random();
+			this._time = this._updateTime + this._updateTime * mathRandom();
 			for (const transition of this.transitions) {
 				if (transition.from.includes(this._state)) {
 					if (transition.condition()) {

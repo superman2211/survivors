@@ -1,4 +1,4 @@
-import { abs, max } from '../utils/math';
+import { mathAbs, mathMax } from '../utils/math';
 import { Point } from './point';
 
 export interface Matrix {
@@ -39,11 +39,11 @@ export namespace Matrix {
 	}
 
 	export function getScale(matrix: Matrix): number {
-		return max(
-			abs(matrix.a),
-			abs(matrix.b),
-			abs(matrix.c),
-			abs(matrix.d),
+		return mathMax(
+			mathAbs(matrix.a),
+			mathAbs(matrix.b),
+			mathAbs(matrix.c),
+			mathAbs(matrix.d),
 		);
 	}
 
