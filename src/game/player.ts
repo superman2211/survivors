@@ -1,12 +1,27 @@
 import { Point } from "../geom/point";
 import { Component } from "../graphics/component";
 import { atan2 } from "../utils/math";
-import { Unit } from "./unit";
+import { createUnit, Unit, UnitType } from "./unit";
 
-export function playerController(player: Unit, world: Component) {
+export function createPlayer(world: Component, units: Unit[]): Unit {
+	const player = createUnit(UnitType.PLAYER, 30, 90, 0xff009999, 200);
+
+	const { fsm } = player;
+	fsm.actions.set(0, {
+		data: {},
+		time: 0,
+		update(time) {
+
+		},
+		start() {
+
+		}
+	});
+	fsm.setState(0);
+
 	world.onTouchMove = (p: Point) => {
-		player.rotation = atan2(p.y - player.y!, p.x - player.x!);
-	},
+		player.rotation = atan2(p.y - player.y, p.x - player.x);
+	};
 
 	player.onKeyDown = (e: KeyboardEvent) => {
 		switch (e.code) {
@@ -49,4 +64,6 @@ export function playerController(player: Unit, world: Component) {
 				break;
 		};
 	}
+
+	return player;
 }

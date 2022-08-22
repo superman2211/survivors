@@ -14,7 +14,7 @@ const texture: Command[] = [
 	// { type: CommandType.NOISE, colorOffset: 30 }, // 2
 ];
 
-export function ground(): Component {
+export function createGround(): Component {
 	const size = 512;
 	const image = generateImage(texture);
 	const item = { image, x: -size / 2, y: -size / 2 };
