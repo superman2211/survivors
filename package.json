@@ -10,7 +10,7 @@
 		"clean": "rimraf ./dist",
 		"watch:ts": "tsc -w",
 		"watch:rollup": "rollup -c rollup.config.dev.js -w",
-		"build": "yarn clean && tsc && rollup -c rollup.config.prod.js && yarn build-libs && yarn compress",
+		"build": "yarn clean && tsc && rollup -c rollup.config.prod.js && yarn build-libs",
 		"serve": "http-server ./dist/build",
 		"lint": "eslint --fix",
 		"compress": "bestzip dist/survivors.zip dist/build/*",
