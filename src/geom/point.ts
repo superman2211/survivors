@@ -3,6 +3,10 @@ export interface Point {
 	y: number,
 }
 
+export function pointLengthSquared(p: Point): number {
+	return p.x * p.x + p.y * p.y;
+}
+
 export namespace Point {
 	export function create(x: number = 0, y: number = 0): Point {
 		return { x, y };
@@ -14,9 +18,7 @@ export namespace Point {
 		return dx * dx + dy * dy;
 	}
 
-	export function lengthSquared(p: Point): number {
-		return p.x * p.x + p.y * p.y;
-	}
+	export const lengthSquared = pointLengthSquared;
 
 	export function length(point: Point): number {
 		const { x, y } = point;

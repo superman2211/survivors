@@ -4,7 +4,7 @@ import { mathAtan2 } from "../utils/math";
 import { createUnit, Unit, UnitType } from "./unit";
 
 export function createPlayer(world: Component, units: Unit[]): Unit {
-	const player = createUnit(UnitType.PLAYER, 30, 90, 0xff009999, 200);
+	const player = createUnit(UnitType.PLAYER, 30, 90, 100, 0xff009999, 200);
 
 	const { fsm } = player;
 

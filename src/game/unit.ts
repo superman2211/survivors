@@ -25,6 +25,7 @@ export interface Unit extends Component, IBody {
 	fsm: FSM;
 	type: UnitType;
 	body: Body;
+	health: number;
 }
 
 export interface Direction {
@@ -41,7 +42,7 @@ export function isFriend(unit1: Unit, unit2: Unit): boolean {
 	return friends.get(unit1.type) === friends.get(unit2.type);
 }
 
-export function createUnit(type: UnitType, radius: number, weight: number, color: number, walkSpeed: number): Unit {
+export function createUnit(type: UnitType, radius: number, weight: number, health: number,  color: number, walkSpeed: number): Unit {
 	const shape: number[] = [];
 	const pallete = [color, 0xff000000];
 	const speed = Point.create();
@@ -63,6 +64,7 @@ export function createUnit(type: UnitType, radius: number, weight: number, color
 		walkSpeed,
 		fsm,
 		body,
+		health,
 
 		onUpdate(time) {
 			this.fsm.update(time);
