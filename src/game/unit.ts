@@ -10,30 +10,22 @@ export const enum UnitType {
 	ENEMY
 }
 
-export const friends = new Map<UnitType, UnitType>();
+export interface UnitSettings {
+	type: UnitType,
+	radius: number,
+	weight: number,
+	health: number,
+	reaction: number,
+	walkSpeed: number,
+	enemyDistance?: number,
+
+	// view
+	color: number,
+}
+
+const friends = new Map<UnitType, UnitType>();
 friends.set(UnitType.NPC, UnitType.PLAYER);
 friends.set(UnitType.PLAYER, UnitType.NPC);
-
-export interface Unit extends Component, IBody {
-	x: number;
-	y: number;
-	rotation: number;
-	direction: Direction;
-	speed: Point;
-	targetSpeed: Point;
-	walkSpeed: number;
-	fsm: FSM;
-	type: UnitType;
-	body: Body;
-	health: number;
-}
-
-export interface Direction {
-	up: boolean;
-	down: boolean;
-	left: boolean;
-	right: boolean;
-}
 
 export function isFriend(unit1: Unit, unit2: Unit): boolean {
 	if (unit1.type === unit2.type) {
@@ -42,56 +34,40 @@ export function isFriend(unit1: Unit, unit2: Unit): boolean {
 	return friends.get(unit1.type) === friends.get(unit2.type);
 }
 
-export function createUnit(type: UnitType, radius: number, weight: number, health: number,  color: number, walkSpeed: number): Unit {
-	const shape: number[] = [];
+export interface Unit extends Component, IBody {
+	x: number;
+	y: number;
+	rotation: number;
+	fsm: FSM;
+	type: UnitType;
+	body: Body;
+	settings: UnitSettings;
+	health: number;
+}
+
+export function createUnit(settings: UnitSettings): Unit {
+	const { radius, weight, color, type, health } = settings;
 	const pallete = [color, 0xff000000];
-	const speed = Point.create();
-	const targetSpeed = Point.create();
-	const fsm = new FSM();
+	const fsm = new FSM(settings.reaction);
 	const body: Body = { radius, weight };
-	const direction: Direction = { up: false, down: false, left: false, right: false }
+	
+	const shape: number[] = [];
 	generateShape(shape, 0, 0, 0, 5, 5, radius, radius, Math.PI / 10);
 	generateShape(shape, 1, radius / 2, 0, 3, 3, radius / 3, radius / 3, Math.PI / 2);
+
 	return {
 		type,
 		shape,
 		pallete,
 		rotation: 0,
 		x: 0, y: 0,
-		speed,
-		targetSpeed,
-		direction,
-		walkSpeed,
 		fsm,
 		body,
 		health,
+		settings,
 
 		onUpdate(time) {
 			this.fsm.update(time);
-
-			this.targetSpeed.x = 0;
-			this.targetSpeed.y = 0;
-
-			if (this.direction.up) {
-				this.targetSpeed.y -= 1;
-			}
-			if (this.direction.down) {
-				this.targetSpeed.y += 1;
-			}
-			if (this.direction.left) {
-				this.targetSpeed.x -= 1;
-			}
-			if (this.direction.right) {
-				this.targetSpeed.x += 1;
-			}
-
-			Point.normalize(this.targetSpeed, this.walkSpeed);
-
-			this.speed.x += (this.targetSpeed.x - this.speed.x) / 3;
-			this.speed.y += (this.targetSpeed.y - this.speed.y) / 3;
-
-			this.x! += this.speed.x * time;
-			this.y! += this.speed.y * time;
 		}
 	}
 }

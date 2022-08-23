@@ -1,71 +1,70 @@
 import { Point } from "../geom/point";
 import { Component } from "../graphics/component";
 import { mathAtan2 } from "../utils/math";
-import { createUnit, Unit, UnitType } from "./unit";
+import { getPlayerControl } from "./player-control";
+import { createUnit, Unit, UnitSettings, UnitType } from "./unit";
+
+const enum PlayerState {
+	ALIVE = 0,
+	DEAD = 1,
+}
 
 export function createPlayer(world: Component, units: Unit[]): Unit {
-	const player = createUnit(UnitType.PLAYER, 30, 90, 100, 0xff009999, 200);
+	const settings: UnitSettings = {
+		type: UnitType.PLAYER,
+		radius: 30,
+		weight: 90,
+		health: 100,
+		color: 0xff009999,
+		walkSpeed: 200,
+		reaction: 0.2,
+	}
+
+	const player = createUnit(settings);
+	const control = getPlayerControl(player, world);
 
 	const { fsm } = player;
+	const { actions, transitions } = fsm;
+	const { walkSpeed } = settings;
 
-	fsm.actions.set(0, {
+	actions.set(PlayerState.ALIVE, {
 		data: {},
 		time: 0,
 		update(time) {
+			const currentWalkSpeed = walkSpeed * time;
+			player.x += control.direction.x * currentWalkSpeed;
+			player.y += control.direction.y * currentWalkSpeed;
 
+			player.rotation = control.rotation;
+
+			if (control.attack) {
+				console.log('attack');
+			}
 		},
 		start() {
-
 		}
 	});
 
-	fsm.setState(0);
-
-	world.onTouchMove = (p: Point) => {
-		player.rotation = mathAtan2(p.y - player.y, p.x - player.x);
-	};
-
-	player.onKeyDown = (e: KeyboardEvent) => {
-		switch (e.code) {
-			case 'KeyW':
-			case 'ArrowUp':
-				player.direction.up = true;
-				break;
-			case 'KeyS':
-			case 'ArrowDown':
-				player.direction.down = true;
-				break;
-			case 'KeyA':
-			case 'ArrowLeft':
-				player.direction.left = true;
-				break;
-			case 'KeyD':
-			case 'ArrowRight':
-				player.direction.right = true;
-				break;
+	actions.set(PlayerState.DEAD, {
+		data: {},
+		time: 0,
+		update(time) {
+		},
+		start() {
+			player.alpha = 0.5;
+			player.body.enabled = false;
 		}
-	};
+	});
 
-	player.onKeyUp = (e: KeyboardEvent) => {
-		switch (e.code) {
-			case 'KeyW':
-			case 'ArrowUp':
-				player.direction.up = false;
-				break;
-			case 'KeyS':
-			case 'ArrowDown':
-				player.direction.down = false;
-				break;
-			case 'KeyA':
-			case 'ArrowLeft':
-				player.direction.left = false;
-				break;
-			case 'KeyD':
-			case 'ArrowRight':
-				player.direction.right = false;
-				break;
-		};
-	}
+	transitions.push({
+		from: [],
+		to: PlayerState.DEAD,
+		condition() {
+			return player.health <= 0;
+		}
+	});
+
+	fsm.setState(PlayerState.ALIVE);
 
 	return player;
 }

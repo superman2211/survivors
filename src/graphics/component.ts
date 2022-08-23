@@ -148,18 +148,21 @@ export namespace Component {
 					Matrix.transformInversePoint(matrix, global, local);
 					component.onTouchDown(local, global);
 				}
+				break;
 
 			case TouchEventType.UP:
 				if (component.onTouchUp) {
 					Matrix.transformInversePoint(matrix, global, local);
 					component.onTouchUp(local, global);
 				}
+				break;
 
 			case TouchEventType.MOVE:
 				if (component.onTouchMove) {
 					Matrix.transformInversePoint(matrix, global, local);
 					component.onTouchMove(local, global);
 				}
+				break;
 		}
 
 		const { children } = component;

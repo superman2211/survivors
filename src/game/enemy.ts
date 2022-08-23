@@ -1,33 +1,40 @@
 import { Point } from "../geom/point";
 import { mathAtan2, chance, mathCos, math2PI, mathRandom, randomFloat, mathSin, mathSqrt } from "../utils/math";
-import { createUnit, isFriend, Unit, UnitType } from "./unit";
+import { createUnit, isFriend, Unit, UnitSettings, UnitType } from "./unit";
 
 const enum EnemyState {
 	ROTATE = 0,
 	WALK = 1,
 	GOTO_TARGET = 2,
-	ATTACK = 3
+	ATTACK = 3,
+	DEAD = 4,
 }
 
 export function createEnemy(units: Unit[]) {
-	const enemy = createUnit(UnitType.ENEMY, 30, 60, 100, 0xff990000, 100);
+	const settings: UnitSettings = {
+		type: UnitType.ENEMY,
+		radius: 30,
+		weight: 60,
+		health: 100,
+		color: 0xff990000,
+		walkSpeed: 100,
+		reaction: 0.5,
+		enemyDistance: 300,
+	}
 
-	// enemy.onCollision = (o, p) => {
-	// 	if ('type' in o) {
-	// 		const unit: Unit = o as Unit;
-	// 		if (!isFriend(unit, enemy)) {
-	// 			fsm.setState(EnemyState.ATTACK, unit);
-	// 		}
-	// 	}
-	// };
+	const enemy = createUnit(settings);
+
+	const { walkSpeed } = settings;
+
+	const enemyDistance = settings.enemyDistance!;
+	const enemyDistanceSquared = enemyDistance * enemyDistance;
 
 	enemy.rotation = math2PI * mathRandom();
 
 	const { fsm } = enemy;
+	const { actions, transitions } = fsm;
 
-	fsm.setUpdateTime(0.5);
-
-	fsm.actions.set(EnemyState.ROTATE, {
+	actions.set(EnemyState.ROTATE, {
 		data: {},
 		time: 0,
 		update(time: number) {
@@ -40,7 +47,7 @@ export function createEnemy(units: Unit[]) {
 		},
 	});
 
-	fsm.actions.set(EnemyState.WALK, {
+	actions.set(EnemyState.WALK, {
 		data: {},
 		time: 0,
 		update(time: number) {
@@ -49,30 +56,28 @@ export function createEnemy(units: Unit[]) {
 			this.time -= time;
 		},
 		start() {
-			const speed = randomFloat(50, 100);
-			this.data.speedX = mathCos(enemy.rotation) * speed;
-			this.data.speedY = mathSin(enemy.rotation) * speed;
+			this.data.speedX = mathCos(enemy.rotation) * walkSpeed;
+			this.data.speedY = mathSin(enemy.rotation) * walkSpeed;
 			this.time = randomFloat(1, 3);
 		}
 	});
 
-	fsm.actions.set(EnemyState.GOTO_TARGET, {
+	actions.set(EnemyState.GOTO_TARGET, {
 		data: {},
 		time: 0,
 		update(time: number) {
 			enemy.rotation = mathAtan2(this.data.target.y - enemy.y, this.data.target.x - enemy.x);
-			const speedX = mathCos(enemy.rotation) * this.data.speed;
-			const speedY = mathSin(enemy.rotation) * this.data.speed;
+			const speedX = mathCos(enemy.rotation) * walkSpeed;
+			const speedY = mathSin(enemy.rotation) * walkSpeed;
 			enemy.x += speedX * time;
 			enemy.y += speedY * time;
 		},
 		start(target: Unit) {
-			this.data.speed = randomFloat(50, 100);
 			this.data.target = target;
 		}
 	});
 
-	fsm.actions.set(EnemyState.ATTACK, {
+	actions.set(EnemyState.ATTACK, {
 		data: {},
 		time: 0,
 		update(time: number) {
@@ -86,7 +91,18 @@ export function createEnemy(units: Unit[]) {
 		}
 	});
 
-	fsm.transitions.push({
+	actions.set(EnemyState.DEAD, {
+		data: {},
+		time: 0,
+		update(time: number) {
+		},
+		start() {
+			enemy.alpha = 0.5;
+			enemy.body.enabled = false;
+		}
+	});
+
+	transitions.push({
 		from: [EnemyState.WALK],
 		to: EnemyState.ROTATE,
 		condition() {
@@ -94,7 +110,7 @@ export function createEnemy(units: Unit[]) {
 		}
 	});
 
-	fsm.transitions.push({
+	transitions.push({
 		from: [EnemyState.ROTATE],
 		to: EnemyState.WALK,
 		condition() {
@@ -102,10 +118,7 @@ export function createEnemy(units: Unit[]) {
 		}
 	});
 
-	const enemyDistance = 300;
-	const enemyDistanceSquared = enemyDistance * enemyDistance;
-
-	fsm.transitions.push({
+	transitions.push({
 		from: [EnemyState.ROTATE, EnemyState.WALK],
 		to: EnemyState.GOTO_TARGET,
 		condition() {
@@ -122,7 +135,7 @@ export function createEnemy(units: Unit[]) {
 		}
 	});
 
-	fsm.transitions.push({
+	transitions.push({
 		from: [EnemyState.GOTO_TARGET],
 		to: EnemyState.ROTATE,
 		condition() {
@@ -135,7 +148,7 @@ export function createEnemy(units: Unit[]) {
 		}
 	});
 
-	fsm.transitions.push({
+	transitions.push({
 		from: [EnemyState.GOTO_TARGET],
 		to: EnemyState.ATTACK,
 		condition() {
@@ -151,11 +164,11 @@ export function createEnemy(units: Unit[]) {
 		}
 	});
 
-	fsm.transitions.push({
+	transitions.push({
 		from: [EnemyState.ATTACK],
 		to: EnemyState.GOTO_TARGET,
 		condition() {
-			if(fsm.getAction().time < 0) {
+			if (fsm.getAction().time < 0) {
 				this.data = fsm.getAction().data.target;
 				return true;
 			}
@@ -163,7 +176,15 @@ export function createEnemy(units: Unit[]) {
 		}
 	});
 
-	fsm.setState(0);
+	transitions.push({
+		from: [],
+		to: EnemyState.DEAD,
+		condition() {
+			return enemy.health <= 0;
+		}
+	});
+
+	fsm.setState(EnemyState.ROTATE);
 
 	return enemy;
 }
