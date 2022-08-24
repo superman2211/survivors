@@ -1,6 +1,7 @@
 import { Point } from "../geom/point";
 import { Component } from "../graphics/component";
 import { mathAtan2 } from "../utils/math";
+import { Unit } from "./unit";
 
 export interface IPlayerControl {
 	direction: Point;
@@ -15,13 +16,16 @@ export class DesktopPlayerControl implements IPlayerControl {
 	rotation = 0;
 	weapon = 0;
 
+	player: Unit;
+
 	up = false;
 	down = false;
 	right = false;
 	left = false;
 
-	constructor(player: Component, world: Component) {
-		this.updateDirection = this.updateDirection.bind(this);
+	constructor(player: Unit, world: Component) {
+		this.player = player;
+		this.keyProcess = this.keyProcess.bind(this);
 
 		world.onTouchMove = (p: Point) => {
 			this.rotation = mathAtan2(p.y - player.y!, p.x - player.x!);
@@ -35,11 +39,11 @@ export class DesktopPlayerControl implements IPlayerControl {
 			this.attack = false;
 		};
 
-		world.onKeyDown = this.updateDirection;
-		world.onKeyUp = this.updateDirection;
+		world.onKeyDown = this.keyProcess;
+		world.onKeyUp = this.keyProcess;
 	}
 
-	updateDirection(e: KeyboardEvent) {
+	keyProcess(e: KeyboardEvent) {
 		const value = e.type === 'keydown';
 
 		switch (e.code) {
@@ -58,6 +62,14 @@ export class DesktopPlayerControl implements IPlayerControl {
 			case 'KeyD':
 			case 'ArrowRight':
 				this.right = value;
+				break;
+			case 'Space':
+				if (value && this.player.settings.weapons) {
+					this.weapon++;
+					if (this.weapon >= this.player.settings.weapons.length) {
+						this.weapon = 0;
+					}
+				}
 				break;
 		};
 
@@ -88,7 +100,7 @@ export class MobilePlayerControl implements IPlayerControl {
 	weapon = 0;
 }
 
-export function getPlayerControl(player: Component, world: Component): IPlayerControl {
+export function getPlayerControl(player: Unit, world: Component): IPlayerControl {
 	if ('ontouchstart' in window) {
 		return new MobilePlayerControl();
 	} else {

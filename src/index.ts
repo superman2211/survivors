@@ -44,16 +44,19 @@ function start() {
 	canvas.addEventListener('mousedown', (e) => {
 		const global: Point = { x: e.clientX * dpr, y: e.clientY * dpr };
 		Component.touchProcess(app, global, globalMatrix, TouchEventType.DOWN);
+		e.preventDefault();
 	});
 
 	canvas.addEventListener('mouseup', (e) => {
 		const global: Point = { x: e.clientX * dpr, y: e.clientY * dpr };
 		Component.touchProcess(app, global, globalMatrix, TouchEventType.UP);
+		e.preventDefault();
 	});
 
 	canvas.addEventListener('mousemove', (e) => {
 		const global: Point = { x: e.clientX * dpr, y: e.clientY * dpr };
 		Component.touchProcess(app, global, globalMatrix, TouchEventType.MOVE);
+		e.preventDefault();
 	});
 }
 

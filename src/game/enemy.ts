@@ -1,6 +1,7 @@
 import { Point } from "../geom/point";
 import { mathAtan2, chance, mathCos, math2PI, mathRandom, randomFloat, mathSin, mathSqrt } from "../utils/math";
 import { createUnit, isFriend, Unit, UnitSettings, UnitType } from "./unit";
+import { World } from "./world";
 
 const enum EnemyState {
 	ROTATE = 0,
@@ -10,7 +11,7 @@ const enum EnemyState {
 	DEAD = 4,
 }
 
-export function createEnemy(units: Unit[]) {
+export function createEnemy(world: World) {
 	const settings: UnitSettings = {
 		type: UnitType.ENEMY,
 		radius: 30,
@@ -20,7 +21,21 @@ export function createEnemy(units: Unit[]) {
 		walkSpeed: 100,
 		reaction: 0.5,
 		enemyDistance: 300,
+		weapons: [
+			{
+				damage: 3,
+				speed: 100,
+				points: [Point.create(30, 0)],
+				frequency: 1,
+				distance: 10,
+				color: 0xffff0000,
+				length: 10,
+				width: 10,
+			}
+		]
 	}
+
+	const { units } = world;
 
 	const enemy = createUnit(settings);
 
@@ -82,12 +97,15 @@ export function createEnemy(units: Unit[]) {
 		time: 0,
 		update(time: number) {
 			this.time -= time;
+			if (this.time <= 0) {
+				this.start(this.data.target);
+			}
 		},
 		start(target: Unit) {
-			this.time = 1;
 			this.data.target = target;
-			target.health -= 10;
-			console.log(target.health);
+			const wheapon = settings.weapons![enemy.weapon]!;
+			target.health -= wheapon.damage;
+			this.time = 1 / wheapon.frequency;
 		}
 	});
 
@@ -123,7 +141,7 @@ export function createEnemy(units: Unit[]) {
 		to: EnemyState.GOTO_TARGET,
 		condition() {
 			for (const unit of units) {
-				if (!isFriend(unit, enemy) && unit.health > 0) {
+				if (!isFriend(unit.type, enemy.type) && unit.health > 0) {
 					const distanceSquared = Point.distanceSquared(unit, enemy);
 					if (distanceSquared < enemyDistanceSquared) {
 						this.data = unit;
@@ -136,7 +154,7 @@ export function createEnemy(units: Unit[]) {
 	});
 
 	transitions.push({
-		from: [EnemyState.GOTO_TARGET],
+		from: [EnemyState.GOTO_TARGET, EnemyState.ATTACK],
 		to: EnemyState.ROTATE,
 		condition() {
 			const target: Unit = fsm.getAction().data.target;
@@ -148,15 +166,19 @@ export function createEnemy(units: Unit[]) {
 		}
 	});
 
+	function isTargetNearby(target: Unit): boolean {
+		const distanceSquared = Point.distanceSquared(target, enemy);
+		const radiuses = enemy.body.radius + target.body.radius;
+		const radiusesSquared = radiuses * radiuses;
+		return distanceSquared < radiusesSquared * 1.1;
+	}
+
 	transitions.push({
 		from: [EnemyState.GOTO_TARGET],
 		to: EnemyState.ATTACK,
 		condition() {
 			const target: Unit = fsm.getAction().data.target;
-			const distanceSquared = Point.distanceSquared(target, enemy);
-			const radiuses = enemy.body.radius + target.body.radius;
-			const radiusesSquared = radiuses * radiuses;
-			if (distanceSquared < radiusesSquared * 1.1) {
+			if (isTargetNearby(target)) {
 				this.data = target;
 				return true;
 			}
@@ -168,8 +190,9 @@ export function createEnemy(units: Unit[]) {
 		from: [EnemyState.ATTACK],
 		to: EnemyState.GOTO_TARGET,
 		condition() {
-			if (fsm.getAction().time < 0) {
-				this.data = fsm.getAction().data.target;
+			const target: Unit = fsm.getAction().data.target
+			if (!isTargetNearby(target)) {
+				this.data = target;
 				return true;
 			}
 			return false;

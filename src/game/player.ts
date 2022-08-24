@@ -1,15 +1,17 @@
 import { Point } from "../geom/point";
-import { Component } from "../graphics/component";
-import { mathAtan2 } from "../utils/math";
 import { getPlayerControl } from "./player-control";
 import { createUnit, Unit, UnitSettings, UnitType } from "./unit";
+import { controlWheapon as controlWeapon } from "./weapon";
+import { World } from "./world";
 
 const enum PlayerState {
 	ALIVE = 0,
 	DEAD = 1,
 }
 
-export function createPlayer(world: Component, units: Unit[]): Unit {
+export function createPlayer(world: World): Unit {
+	const wp = Point.create(30, 0);
+
 	const settings: UnitSettings = {
 		type: UnitType.PLAYER,
 		radius: 30,
@@ -18,6 +20,39 @@ export function createPlayer(world: Component, units: Unit[]): Unit {
 		color: 0xff009999,
 		walkSpeed: 200,
 		reaction: 0.2,
+		weapons: [
+			{
+				damage: 20,
+				points: [wp],
+				frequency: 3,
+				speed: 1000,
+				distance: 1000,
+				color: 0xffffffff,
+				length: 30,
+				width: 4,
+			},
+			{
+				damage: 40,
+				points: [Point.create(30, -5), Point.create(30, 5)],
+				frequency: 10,
+				speed: 1500,
+				distance: 1000,
+				color: 0xffffff00,
+				length: 50,
+				width: 3,
+			},
+			{
+				damage: 150,
+				points: new Array(10).fill(wp),
+				frequency: 1,
+				speed: 1000,
+				distance: 300,
+				color: 0xff00ffff,
+				length: 10,
+				width: 3,
+				angle: 0.7,
+			}
+		]
 	}
 
 	const player = createUnit(settings);
@@ -26,6 +61,8 @@ export function createPlayer(world: Component, units: Unit[]): Unit {
 	const { fsm } = player;
 	const { actions, transitions } = fsm;
 	const { walkSpeed } = settings;
+
+	const weaponController = controlWeapon(player, world);
 
 	actions.set(PlayerState.ALIVE, {
 		data: {},
@@ -36,10 +73,9 @@ export function createPlayer(world: Component, units: Unit[]): Unit {
 			player.y += control.direction.y * currentWalkSpeed;
 
 			player.rotation = control.rotation;
+			player.weapon = control.weapon;
 
-			if (control.attack) {
-				console.log('attack');
-			}
+			weaponController(time, control.attack);
 		},
 		start() {
 		}

@@ -3,17 +3,14 @@ import { Component } from '../graphics/component';
 
 import { mathMax, mathMin, mathRandom, mathSqrt } from '../utils/math';
 import { createEnemy } from './enemy';
-import { createGround } from './ground';
-import { IBody, updatePhysics } from './physics';
 import { createPlayer } from './player';
-import { Unit } from './unit';
+import { createWorld } from './world';
 
 const SIZE = 2500;
 
 export interface Game extends Component {
 	camera: Point;
 	size: number;
-	shakingTime: number;
 	calculateVolume(point: Point): number;
 	updateCamera(time: number): void;
 }
@@ -21,38 +18,24 @@ export interface Game extends Component {
 export function game(): Game {
 	const camera = Point.create();
 
-	const bodies: IBody[] = [];
-	const units: Unit[] = [];
+	const world = createWorld();
 
-	function addUnit(unit: Unit) {
-		units.push(unit);
-		bodies.push(unit);
-	}
-
-	const world: Component = {
-		children: [createGround(), { children: units }],
-	}
-
-	const player = createPlayer(world, units);
-	addUnit(player);
+	const player = createPlayer(world);
+	world.addUnit(player);
 
 	for (let i = 0; i < 10; i++) {
-		const enemy = createEnemy(units);
+		const enemy = createEnemy(world);
 		enemy.x = -500 + mathRandom() * 1000;
 		enemy.y = -500 + mathRandom() * 1000;
-		addUnit(enemy);
+		world.addUnit(enemy);
 	}
 
 	const component: Game = {
 		camera,
-		shakingTime: 0,
 		children: [
 			world,
 		],
 		size: SIZE,
-		onUpdate(time) {
-			updatePhysics(bodies, time);
-		},
 		updateCamera() {
 			this.camera.x = player.x!;
 			this.camera.y = player.y!;
