@@ -65,8 +65,6 @@ export function createPlayer(world: World): Unit {
 	const weaponController = controlWeapon(player, world);
 
 	actions.set(PlayerState.ALIVE, {
-		data: {},
-		time: 0,
 		update(time) {
 			const currentWalkSpeed = walkSpeed * time;
 			player.x += control.direction.x * currentWalkSpeed;
@@ -82,9 +80,7 @@ export function createPlayer(world: World): Unit {
 	});
 
 	actions.set(PlayerState.DEAD, {
-		data: {},
-		time: 0,
-		update(time) {
+		update() {
 		},
 		start() {
 			player.alpha = 0.5;

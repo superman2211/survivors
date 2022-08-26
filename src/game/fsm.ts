@@ -1,22 +1,21 @@
 import { mathRandom } from "../utils/math";
 
-export type FSMAction = {
+export type FSMAction<T> = {
 	update: (time: number) => void;
 	start: (data?: any) => void;
-	time: number;
-	data: any;
+	data?: T;
 }
 
-export type FSMTransition = {
+export type FSMTransition<T> = {
 	from: number[];
 	to: number;
-	data?: any;
+	data?: T;
 	condition: () => boolean;
 }
 
 export class FSM {
-	readonly actions = new Map<number, FSMAction>();
-	readonly transitions: FSMTransition[] = [];
+	readonly actions = new Map<number, FSMAction<any>>();
+	readonly transitions: FSMTransition<any>[] = [];
 
 	private _state = -1;
 	private _reactionTime = 0;
@@ -34,7 +33,7 @@ export class FSM {
 		}
 	}
 
-	getAction(): FSMAction {
+	getAction<T>(): FSMAction<T> {
 		const action = this.actions.get(this._state);
 		if (!action) throw 'Action not found: ' + this._state;
 		return action;
