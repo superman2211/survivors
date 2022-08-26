@@ -13,7 +13,7 @@ export interface Weapon {
 	points: Point[],
 	frequency: number,
 	distance: number,
-	impulse: number,
+	impulse?: number,
 	angle?: number,
 }
 

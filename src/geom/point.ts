@@ -4,7 +4,8 @@ export interface Point {
 }
 
 export function pointLengthSquared(p: Point): number {
-	return p.x * p.x + p.y * p.y;
+	const { x, y } = p;
+	return x * x + y * y;
 }
 
 export namespace Point {
@@ -18,11 +19,14 @@ export namespace Point {
 		return dx * dx + dy * dy;
 	}
 
+	export function distance(p0: Point, p1: Point): number {
+		return Math.hypot(p0.x - p1.x, p0.y - p1.y);
+	}
+
 	export const lengthSquared = pointLengthSquared;
 
 	export function length(point: Point): number {
-		const { x, y } = point;
-		return Math.sqrt(x * x + y * y);
+		return Math.hypot(point.x, point.y);
 	}
 
 	export function normalize(point: Point, thickness: number) {

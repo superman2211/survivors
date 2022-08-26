@@ -3,6 +3,7 @@ import { getPlayerControl } from "../utils/player-control";
 import { createUnit, Unit, UnitSettings, UnitType } from "./unit";
 import { getWeaponControl } from "../weapons/weapon";
 import { World } from "../world";
+import { gun, rifle, shotgun } from "../weapons/weapons";
 
 const enum PlayerState {
 	ALIVE = 0,
@@ -10,71 +11,40 @@ const enum PlayerState {
 }
 
 export function createPlayer(world: World): Unit {
-	const wp = Point.create(30, 0);
+	const radius = 30;
 
 	const settings: UnitSettings = {
 		type: UnitType.PLAYER,
-		radius: 30,
+		radius,
 		weight: 90,
 		health: 100,
 		color: 0xff009999,
 		walkSpeed: 200,
 		reaction: 0.2,
 		weapons: [
-			{
-				damage: 20,
-				points: [wp],
-				frequency: 3,
-				speed: 1000,
-				distance: 1000,
-				color: 0xffffffff,
-				length: 30,
-				width: 4,
-				impulse: 5,
-			},
-			{
-				damage: 40,
-				points: [Point.create(30, -5), Point.create(30, 5)],
-				frequency: 10,
-				speed: 1500,
-				distance: 1000,
-				color: 0xffffff00,
-				length: 50,
-				width: 3,
-				impulse: 3,
-			},
-			{
-				damage: 150,
-				points: new Array(10).fill(wp),
-				frequency: 1,
-				speed: 1000,
-				distance: 300,
-				color: 0xff00ffff,
-				length: 10,
-				width: 3,
-				angle: 0.7,
-				impulse: 5
-			}
+			gun(radius),
+			rifle(radius),
+			shotgun(radius),
 		]
 	}
 
-	const player = createUnit(settings);
-	const control = getPlayerControl(player, world);
+	const unit = createUnit(settings);
+	const control = getPlayerControl(unit, world);
 
-	const { fsm } = player;
+	const { fsm } = unit;
 	const { actions, transitions } = fsm;
 	const { walkSpeed } = settings;
 
-	const weaponControl = getWeaponControl(player, world);
+	const weaponControl = getWeaponControl(unit, world);
 
 	actions.set(PlayerState.ALIVE, {
 		update(time) {
 			const currentWalkSpeed = walkSpeed * time;
-			player.x += control.direction.x * currentWalkSpeed;
-			player.y += control.direction.y * currentWalkSpeed;
+			unit.x += control.direction.x * currentWalkSpeed;
+			unit.y += control.direction.y * currentWalkSpeed;
 
-			player.rotation = control.rotation;
-			player.weapon = control.weapon;
+			unit.rotation = control.rotation;
+			unit.weapon = control.weapon;
 
 			weaponControl(time, control.attack);
 		},
@@ -86,8 +56,8 @@ export function createPlayer(world: World): Unit {
 		update() {
 		},
 		start() {
-			player.alpha = 0.5;
-			player.body.enabled = false;
+			unit.alpha = 0.5;
+			unit.body.enabled = false;
 		}
 	});
 
@@ -95,11 +65,11 @@ export function createPlayer(world: World): Unit {
 		from: [],
 		to: PlayerState.DEAD,
 		condition() {
-			return player.health <= 0;
+			return unit.health <= 0;
 		}
 	});
 
 	fsm.setState(PlayerState.ALIVE);
 
-	return player;
+	return unit;
 }

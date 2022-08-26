@@ -1,98 +1,65 @@
 import { Point } from "../../geom/point";
-import { mathAtan2, chance, mathCos, math2PI, mathRandom, randomFloat, mathSin } from "../../utils/math";
+import { mathAtan2, mathCos, math2PI, mathRandom, mathSin, randomFloat } from "../../utils/math";
 import { FSMAction } from "../utils/fsm";
-import { createUnit, isFriend, Unit, UnitSettings, UnitType } from "./unit";
+import { isFriend, Unit, UnitSettings, UnitType } from "./unit";
 import { getWeaponControl } from "../weapons/weapon";
 import { World } from "../world";
+import { BaseState, createBase } from "./base";
+import { hand } from "../weapons/weapons";
 
 const enum EnemyState {
-	ROTATE = 0,
-	WALK = 1,
-	GOTO_TARGET = 2,
-	ATTACK = 3,
-	DEAD = 4,
+	GOTO_TARGET = 10,
+	ATTACK = 11,
 }
 
-type RotationData = { time: number, speed: number };
-type WalkData = { time: number, speedX: number, speedY: number };
 type TargetData = { target: Unit };
 
+function isTargetNearby(target: Unit, enemy: Unit): boolean {
+	const distanceSquared = Point.distanceSquared(target, enemy);
+	const radiuses = enemy.body.radius + target.body.radius;
+	const radiusesSquared = radiuses * radiuses;
+	return distanceSquared < radiusesSquared * 1.1;
+}
+
 export function createEnemy(world: World) {
+	const radius = randomFloat(25, 45);
+
 	const settings: UnitSettings = {
 		type: UnitType.ENEMY,
-		radius: 30,
-		weight: 60,
-		health: 100,
+		radius,
+		weight: radius * 3,
+		health: radius * 4,
 		color: 0xff990000,
 		walkSpeed: 100,
 		reaction: 0.5,
-		enemyDistance: 300,
 		weapons: [
-			{
-				damage: 3,
-				speed: 100,
-				points: [Point.create(30, 0)],
-				frequency: 1,
-				distance: 10,
-				color: 0xffff0000,
-				length: 20,
-				width: 20,
-				impulse: 0,
-			}
+			hand(radius, radius)
 		]
 	}
 
 	const { units } = world;
 
-	const enemy = createUnit(settings);
+	const unit = createBase(settings, world);
 
 	const { walkSpeed } = settings;
 
-	const enemyDistance = settings.enemyDistance!;
+	const enemyDistance = 400;
 	const enemyDistanceSquared = enemyDistance * enemyDistance;
 
-	enemy.rotation = math2PI * mathRandom();
+	unit.rotation = math2PI * mathRandom();
 
-	const { fsm } = enemy;
+	const { fsm } = unit;
 	const { actions, transitions } = fsm;
 
-	const weaponControl = getWeaponControl(enemy, world);
-
-	actions.set(EnemyState.ROTATE, {
-		update(time: number) {
-			enemy.rotation += this.data!.speed * time;
-			this.data!.time -= time;
-		},
-		start() {
-			this.data = {
-				speed: chance() ? -1 : 1,
-				time: randomFloat(0.5, 2)
-			};
-		},
-	} as FSMAction<RotationData>);
-
-	actions.set(EnemyState.WALK, {
-		update(time: number) {
-			enemy.x += this.data!.speedX * time;
-			enemy.y += this.data!.speedY * time;
-			this.data!.time -= time;
-		},
-		start() {
-			this.data = {
-				speedX: mathCos(enemy.rotation) * walkSpeed,
-				speedY: mathSin(enemy.rotation) * walkSpeed,
-				time: randomFloat(1, 3),
-			}
-		}
-	} as FSMAction<WalkData>);
+	const weaponControl = getWeaponControl(unit, world);
 
 	actions.set(EnemyState.GOTO_TARGET, {
 		update(time: number) {
-			enemy.rotation = mathAtan2(this.data!.target.y - enemy.y, this.data!.target.x - enemy.x);
-			const speedX = mathCos(enemy.rotation) * walkSpeed;
-			const speedY = mathSin(enemy.rotation) * walkSpeed;
-			enemy.x += speedX * time;
-			enemy.y += speedY * time;
+			unit.rotation = mathAtan2(this.data!.target.y - unit.y, this.data!.target.x - unit.x);
+			const speedX = mathCos(unit.rotation) * walkSpeed;
+			const speedY = mathSin(unit.rotation) * walkSpeed;
+			unit.x += speedX * time;
+			unit.y += speedY * time;
 		},
 		start(target: Unit) {
 			this.data = { target };
@@ -108,40 +75,15 @@ export function createEnemy(world: World) {
 		}
 	} as FSMAction<TargetData>);
 
-	actions.set(EnemyState.DEAD, {
-		update() {
-		},
-		start() {
-			enemy.alpha = 0.5;
-			enemy.body.enabled = false;
-		}
-	});
-
 	transitions.push({
-		from: [EnemyState.WALK],
-		to: EnemyState.ROTATE,
-		condition() {
-			return (fsm.getAction().data as WalkData).time < 0;
-		}
-	});
-
-	transitions.push({
-		from: [EnemyState.ROTATE],
-		to: EnemyState.WALK,
-		condition() {
-			return (fsm.getAction().data as RotationData).time < 0;
-		}
-	});
-
-	transitions.push({
-		from: [EnemyState.ROTATE, EnemyState.WALK],
+		from: [BaseState.ROTATE, BaseState.WALK],
 		to: EnemyState.GOTO_TARGET,
 		condition() {
-			for (const unit of units) {
-				if (!isFriend(unit.type, enemy.type) && unit.health > 0) {
-					const distanceSquared = Point.distanceSquared(unit, enemy);
+			for (const u of units) {
+				if (!isFriend(u.type, unit.type) && u.health > 0) {
+					const distanceSquared = Point.distanceSquared(u, unit);
 					if (distanceSquared < enemyDistanceSquared) {
-						this.data = unit;
+						this.data = u;
 						return true;
 					}
 				}
@@ -152,30 +94,23 @@ export function createEnemy(world: World) {
 
 	transitions.push({
 		from: [EnemyState.GOTO_TARGET, EnemyState.ATTACK],
-		to: EnemyState.ROTATE,
+		to: BaseState.ROTATE,
 		condition() {
 			const target: Unit = (fsm.getAction().data as TargetData).target;
 			if (target.health <= 0) {
 				return true;
 			}
-			const distanceSquared = Point.distanceSquared(target, enemy);
+			const distanceSquared = Point.distanceSquared(target, unit);
 			return distanceSquared > enemyDistanceSquared * 1.5;
 		}
 	});
-
-	function isTargetNearby(target: Unit): boolean {
-		const distanceSquared = Point.distanceSquared(target, enemy);
-		const radiuses = enemy.body.radius + target.body.radius;
-		const radiusesSquared = radiuses * radiuses;
-		return distanceSquared < radiusesSquared * 1.1;
-	}
 
 	transitions.push({
 		from: [EnemyState.GOTO_TARGET],
 		to: EnemyState.ATTACK,
 		condition() {
 			const target: Unit = (fsm.getAction().data as TargetData).target;
-			if (isTargetNearby(target)) {
+			if (isTargetNearby(target, unit)) {
 				this.data = target;
 				return true;
 			}
@@ -188,7 +123,7 @@ export function createEnemy(world: World) {
 		to: EnemyState.GOTO_TARGET,
 		condition() {
 			const target: Unit = (fsm.getAction().data as TargetData).target
-			if (!isTargetNearby(target)) {
+			if (!isTargetNearby(target, unit)) {
 				this.data = target;
 				return true;
 			}
@@ -196,15 +131,5 @@ export function createEnemy(world: World) {
 		}
 	});
 
-	transitions.push({
-		from: [],
-		to: EnemyState.DEAD,
-		condition() {
-			return enemy.health <= 0;
-		}
-	});
-
-	fsm.setState(EnemyState.ROTATE);
-
-	return enemy;
+	return unit;
 }

@@ -17,7 +17,6 @@ export interface UnitSettings {
 	health: number,
 	reaction: number,
 	walkSpeed: number,
-	enemyDistance?: number,
 	weapons?: Weapon[],
 
 	// view
@@ -32,7 +31,7 @@ export function isFriend(type1: UnitType, type2: UnitType): boolean {
 	if (type1 === type2) {
 		return true;
 	}
-	return friends.get(type1) === friends.get(type2);
+	return friends.get(type1) === type2;
 }
 
 export interface Unit extends Component, IBody {

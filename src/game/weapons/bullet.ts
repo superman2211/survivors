@@ -63,9 +63,11 @@ export function createBullet(x: number, y: number, rotation: number, weapon: Wea
 					target.health -= weapon.damage / weapon.points.length;
 					world.removeBullet(bullet);
 
-					const value = Point.create(speed.x, speed.y);
-					Point.normalize(value, weapon.impulse);
-					world.addImpulse({ target, value });
+					if (weapon.impulse) {
+						const value = Point.create(speed.x, speed.y);
+						Point.normalize(value, weapon.impulse);
+						world.addImpulse({ target, value });
+					}
 				}
 			}
 		}

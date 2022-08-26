@@ -2,7 +2,7 @@ import { Component } from "../graphics/component";
 import { Bullet } from "./weapons/bullet";
 import { createGround } from "./objects/ground";
 import { IBody, updatePhysics } from "./utils/physics";
-import { Unit } from "./units/unit";
+import { Unit, UnitType } from "./units/unit";
 import { Impulse, updateImpulses } from "./weapons/impulse";
 
 export interface World extends Component {
@@ -10,6 +10,7 @@ export interface World extends Component {
 
 	addUnit(unit: Unit): void;
 	removeUnit(unit: Unit): void;
+	getUnitCount(type: UnitType): number;
 
 	addBullet(bullet: Bullet): void;
 	removeBullet(bullet: Bullet): void;
@@ -45,6 +46,16 @@ export function createWorld(): World {
 		removeUnit(unit: Unit) {
 			units.splice(units.indexOf(unit), 1);
 			bodies.splice(bodies.indexOf(unit), 1);
+		},
+
+		getUnitCount(type: UnitType): number {
+			let count = 0;
+			for(const unit of this.units) {
+				if (unit.type === type) {
+					count++;
+				}
+			}
+			return count;
 		},
 
 		addBullet(bullet: Bullet) {

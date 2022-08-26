@@ -22,6 +22,11 @@ export function randomFloat(min: number, max: number): number {
 	return min + mathRandom() * (max - min);
 }
 
+export function randomSelect<T>(array: Array<T>): T {
+	const index = randomInt(0, array.length - 1);
+	return array[index];
+}
+
 export function deltaAngle(angle0: number, angle1: number): number {
 	const half = mathPI;
 	const full = half * 2;
