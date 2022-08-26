@@ -37,6 +37,7 @@ export function createEnemy(world: World) {
 				color: 0xffff0000,
 				length: 20,
 				width: 20,
+				impulse: 0,
 			}
 		]
 	}

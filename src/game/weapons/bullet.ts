@@ -58,10 +58,14 @@ export function createBullet(x: number, y: number, rotation: number, weapon: Wea
 
 		onCollision(o: IBody, p: Point) {
 			if ('health' in o) {
-				const unit = o as Unit;
-				if (!isFriend(unit.type, type)) {
-					unit.health -= weapon.damage / weapon.points.length;
+				const target = o as Unit;
+				if (!isFriend(target.type, type)) {
+					target.health -= weapon.damage / weapon.points.length;
 					world.removeBullet(bullet);
+
+					const value = Point.create(speed.x, speed.y);
+					Point.normalize(value, weapon.impulse);
+					world.addImpulse({ target, value });
 				}
 			}
 		}

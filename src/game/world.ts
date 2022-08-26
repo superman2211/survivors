@@ -3,6 +3,7 @@ import { Bullet } from "./weapons/bullet";
 import { createGround } from "./objects/ground";
 import { IBody, updatePhysics } from "./utils/physics";
 import { Unit } from "./units/unit";
+import { Impulse, updateImpulses } from "./weapons/impulse";
 
 export interface World extends Component {
 	readonly units: Unit[];
@@ -12,12 +13,15 @@ export interface World extends Component {
 
 	addBullet(bullet: Bullet): void;
 	removeBullet(bullet: Bullet): void;
+
+	addImpulse(impulse: Impulse): void;
 }
 
 export function createWorld(): World {
 	const bodies: IBody[] = [];
 	const units: Unit[] = [];
 	const bullets: Bullet[] = [];
+	const impulses: Impulse[] = [];
 
 	return {
 		units,
@@ -30,6 +34,7 @@ export function createWorld(): World {
 
 		onUpdate(time) {
 			updatePhysics(bodies, time);
+			updateImpulses(impulses, time);
 		},
 
 		addUnit(unit: Unit) {
@@ -51,5 +56,9 @@ export function createWorld(): World {
 			bullets.splice(bullets.indexOf(bullet), 1);
 			bodies.splice(bodies.indexOf(bullet), 1);
 		},
+
+		addImpulse(impulse: Impulse) {
+			impulses.push(impulse);
+		}
 	}
 }

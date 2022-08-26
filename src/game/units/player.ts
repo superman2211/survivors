@@ -30,6 +30,7 @@ export function createPlayer(world: World): Unit {
 				color: 0xffffffff,
 				length: 30,
 				width: 4,
+				impulse: 5,
 			},
 			{
 				damage: 40,
@@ -40,6 +41,7 @@ export function createPlayer(world: World): Unit {
 				color: 0xffffff00,
 				length: 50,
 				width: 3,
+				impulse: 10,
 			},
 			{
 				damage: 150,
@@ -51,6 +53,7 @@ export function createPlayer(world: World): Unit {
 				length: 10,
 				width: 3,
 				angle: 0.7,
+				impulse: 30
 			}
 		]
 	}
