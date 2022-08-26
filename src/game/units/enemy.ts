@@ -1,8 +1,8 @@
 import { Point } from "../../geom/point";
-import { mathAtan2, chance, mathCos, math2PI, mathRandom, randomFloat, mathSin, mathSqrt } from "../../utils/math";
+import { mathAtan2, chance, mathCos, math2PI, mathRandom, randomFloat, mathSin } from "../../utils/math";
 import { FSMAction } from "../utils/fsm";
 import { createUnit, isFriend, Unit, UnitSettings, UnitType } from "./unit";
-import { controlWheapon } from "../weapons/weapon";
+import { getWeaponControl } from "../weapons/weapon";
 import { World } from "../world";
 
 const enum EnemyState {
@@ -56,7 +56,7 @@ export function createEnemy(world: World) {
 	const { fsm } = enemy;
 	const { actions, transitions } = fsm;
 
-	const weaponController = controlWheapon(enemy, world);
+	const weaponControl = getWeaponControl(enemy, world);
 
 	actions.set(EnemyState.ROTATE, {
 		update(time: number) {
@@ -101,7 +101,7 @@ export function createEnemy(world: World) {
 
 	actions.set(EnemyState.ATTACK, {
 		update(time: number) {
-			weaponController(time, true);
+			weaponControl(time, true);
 		},
 		start(target: Unit) {
 			this.data = { target };

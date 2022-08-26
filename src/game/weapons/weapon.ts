@@ -1,4 +1,3 @@
-import { Matrix } from "../../geom/matrix";
 import { Point } from "../../geom/point";
 import { mathCos, mathSin } from "../../utils/math";
 import { createBullet } from "./bullet";
@@ -18,7 +17,7 @@ export interface Weapon {
 	angle?: number,
 }
 
-export function controlWheapon(unit: Unit, world: World) {
+export function getWeaponControl(unit: Unit, world: World) {
 	let weaponTime = 0;
 	let pointIndex = 0;
 	return (time: number, active: boolean) => {

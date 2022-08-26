@@ -1,7 +1,7 @@
 import { Point } from "../../geom/point";
-import { getPlayerControl } from "./player-control";
+import { getPlayerControl } from "../utils/player-control";
 import { createUnit, Unit, UnitSettings, UnitType } from "./unit";
-import { controlWheapon as controlWeapon } from "../weapons/weapon";
+import { getWeaponControl } from "../weapons/weapon";
 import { World } from "../world";
 
 const enum PlayerState {
@@ -41,7 +41,7 @@ export function createPlayer(world: World): Unit {
 				color: 0xffffff00,
 				length: 50,
 				width: 3,
-				impulse: 10,
+				impulse: 3,
 			},
 			{
 				damage: 150,
@@ -53,7 +53,7 @@ export function createPlayer(world: World): Unit {
 				length: 10,
 				width: 3,
 				angle: 0.7,
-				impulse: 30
+				impulse: 5
 			}
 		]
 	}
@@ -65,7 +65,7 @@ export function createPlayer(world: World): Unit {
 	const { actions, transitions } = fsm;
 	const { walkSpeed } = settings;
 
-	const weaponController = controlWeapon(player, world);
+	const weaponControl = getWeaponControl(player, world);
 
 	actions.set(PlayerState.ALIVE, {
 		update(time) {
@@ -76,7 +76,7 @@ export function createPlayer(world: World): Unit {
 			player.rotation = control.rotation;
 			player.weapon = control.weapon;
 
-			weaponController(time, control.attack);
+			weaponControl(time, control.attack);
 		},
 		start() {
 		}

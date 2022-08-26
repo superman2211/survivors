@@ -8,14 +8,15 @@ export interface Impulse {
 export function updateImpulses(impulses: Impulse[], time: number) {
 	for (const impulse of impulses) {
 		const { target, value } = impulse;
-		const dx = value.x / 2;
-		const dy = value.y / 2;
-		target.x += dx;
-		target.y += dy;
-		value.x -= dx;
-		value.y -= dy;
-		if (Point.lengthSquared(value) < 1) {
+		target.x += value.x;
+		target.y += value.y;
+
+		let length = Point.length(value);
+		length -= length * 20 * time;
+		if (length < 0.5) {
 			impulses.splice(impulses.indexOf(impulse));
+		} else {
+			Point.normalize(value, length);
 		}
 	}
 }

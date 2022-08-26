@@ -1,7 +1,7 @@
 import { Point } from "../../geom/point";
 import { Component } from "../../graphics/component";
 import { mathAtan2 } from "../../utils/math";
-import { Unit } from "./unit";
+import { Unit } from "../units/unit";
 
 export interface IPlayerControl {
 	direction: Point;
