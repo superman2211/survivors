@@ -51,18 +51,20 @@ export function game(): Game {
 	const player = createPlayer(world);
 	world.addUnit(player);
 
-	const enemyCount = 50;
+	const enemyCount = 40;
+	const enemyDistance = 600;
 
 	for (let i = 0; i < enemyCount; i++) {
 		const enemy = createEnemy(world);
-		randomPosition(enemy, world.units, -500, 1000);
+		randomPosition(enemy, world.units, -enemyDistance, enemyDistance);
 		world.addUnit(enemy);
 	}
 
+	const allyDistance = 300;
 	for (let i = 0; i < 10; i++) {
 		const ally = createAlly(world);
-		ally.x = -500 + mathRandom() * 1000;
-		ally.y = -500 + mathRandom() * 1000;
+		ally.x = randomFloat(-allyDistance, allyDistance);
+		ally.y = randomFloat(-allyDistance, allyDistance);
 		world.addUnit(ally);
 	}
 
@@ -75,7 +77,7 @@ export function game(): Game {
 		onUpdate() {
 			if (world.getUnitCount(UnitType.ENEMY) < enemyCount) {
 				const enemy = createEnemy(world);
-				randomPosition(enemy, world.units, -500, 1000);
+				randomPosition(enemy, world.units, -enemyDistance, enemyDistance);
 				world.addUnit(enemy);
 			}
 		},
