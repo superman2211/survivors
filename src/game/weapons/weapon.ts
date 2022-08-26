@@ -1,9 +1,9 @@
-import { Matrix } from "../geom/matrix";
-import { Point } from "../geom/point";
-import { mathCos, mathSin } from "../utils/math";
+import { Matrix } from "../../geom/matrix";
+import { Point } from "../../geom/point";
+import { mathCos, mathSin } from "../../utils/math";
 import { createBullet } from "./bullet";
-import { Unit } from "./unit";
-import { World } from "./world";
+import { Unit } from "../units/unit";
+import { World } from "../world";
 
 export interface Weapon {
 	speed: number,

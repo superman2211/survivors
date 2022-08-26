@@ -1,9 +1,9 @@
-import { Point } from "../geom/point";
-import { mathAtan2, chance, mathCos, math2PI, mathRandom, randomFloat, mathSin, mathSqrt } from "../utils/math";
-import { FSMAction } from "./fsm";
+import { Point } from "../../geom/point";
+import { mathAtan2, chance, mathCos, math2PI, mathRandom, randomFloat, mathSin, mathSqrt } from "../../utils/math";
+import { FSMAction } from "../utils/fsm";
 import { createUnit, isFriend, Unit, UnitSettings, UnitType } from "./unit";
-import { controlWheapon } from "./weapon";
-import { World } from "./world";
+import { controlWheapon } from "../weapons/weapon";
+import { World } from "../world";
 
 const enum EnemyState {
 	ROTATE = 0,

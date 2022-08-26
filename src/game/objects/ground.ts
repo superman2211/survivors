@@ -1,5 +1,5 @@
-import { Component } from "../graphics/component";
-import { Command, CommandType, generateImage } from "../utils/generate-image";
+import { Component } from "../../graphics/component";
+import { Command, CommandType, generateImage } from "../../utils/generate-image";
 
 const texture: Command[] = [
 	{ type: CommandType.FILL, color: 0xff666666 },// 5

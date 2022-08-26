@@ -1,8 +1,8 @@
 import { Component } from "../graphics/component";
-import { Bullet } from "./bullet";
-import { createGround } from "./ground";
-import { IBody, updatePhysics } from "./physics";
-import { Unit } from "./unit";
+import { Bullet } from "./weapons/bullet";
+import { createGround } from "./objects/ground";
+import { IBody, updatePhysics } from "./utils/physics";
+import { Unit } from "./units/unit";
 
 export interface World extends Component {
 	readonly units: Unit[];

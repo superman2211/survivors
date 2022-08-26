@@ -1,5 +1,5 @@
-import { Point, pointLengthSquared } from "../geom/point";
-import { mathSqrt } from "../utils/math";
+import { Point, pointLengthSquared } from "../../geom/point";
+import { mathSqrt } from "../../utils/math";
 
 export interface IBody {
 	x: number;

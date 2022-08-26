@@ -1,8 +1,8 @@
-import { Point } from "../geom/point";
+import { Point } from "../../geom/point";
 import { getPlayerControl } from "./player-control";
 import { createUnit, Unit, UnitSettings, UnitType } from "./unit";
-import { controlWheapon as controlWeapon } from "./weapon";
-import { World } from "./world";
+import { controlWheapon as controlWeapon } from "../weapons/weapon";
+import { World } from "../world";
 
 const enum PlayerState {
 	ALIVE = 0,

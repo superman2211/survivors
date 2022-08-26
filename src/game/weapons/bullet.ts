@@ -1,11 +1,11 @@
-import { Point } from "../geom/point";
-import { Component } from "../graphics/component";
-import { FILL, PATH, Shape } from "../graphics/shape";
-import { mathCos, mathSin, mathSqrt } from "../utils/math";
-import { IBody, Body } from "./physics";
-import { isFriend, Unit, UnitType } from "./unit";
+import { Point } from "../../geom/point";
+import { Component } from "../../graphics/component";
+import { FILL, PATH, Shape } from "../../graphics/shape";
+import { mathCos, mathSin, mathSqrt } from "../../utils/math";
+import { IBody, Body } from "../utils/physics";
+import { isFriend, Unit, UnitType } from "../units/unit";
 import { Weapon } from "./weapon";
-import { World } from "./world";
+import { World } from "../world";
 
 export interface Bullet extends Component, IBody {
 	x: number,

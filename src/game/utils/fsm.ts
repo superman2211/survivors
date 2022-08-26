@@ -1,4 +1,4 @@
-import { mathRandom } from "../utils/math";
+import { mathRandom } from "../../utils/math";
 
 export type FSMAction<T> = {
 	update: (time: number) => void;

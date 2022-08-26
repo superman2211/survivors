@@ -2,8 +2,8 @@ import { Point } from '../geom/point';
 import { Component } from '../graphics/component';
 
 import { mathMax, mathMin, mathRandom, mathSqrt } from '../utils/math';
-import { createEnemy } from './enemy';
-import { createPlayer } from './player';
+import { createEnemy } from './units/enemy';
+import { createPlayer } from './units/player';
 import { createWorld } from './world';
 
 const SIZE = 2500;

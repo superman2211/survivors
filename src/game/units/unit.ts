@@ -1,8 +1,8 @@
-import { Component } from "../graphics/component";
-import { generateShape } from "../utils/generate-shape";
-import { FSM } from "./fsm";
-import { Body, IBody } from "./physics";
-import { Weapon } from "./weapon";
+import { Component } from "../../graphics/component";
+import { generateShape } from "../../utils/generate-shape";
+import { FSM } from "../utils/fsm";
+import { Body, IBody } from "../utils/physics";
+import { Weapon } from "../weapons/weapon";
 
 export const enum UnitType {
 	PLAYER,
