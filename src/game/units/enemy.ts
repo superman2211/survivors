@@ -30,14 +30,12 @@ export function createEnemy(world: World) {
 		weight: radius * 3,
 		health: radius * 4,
 		color: 0xff990000,
-		walkSpeed: 100,
+		walkSpeed: randomFloat(80, 150),
 		reaction: 0.5,
 		weapons: [
 			hand(radius, radius)
 		]
 	}
-
-	const { units } = world;
 
 	const unit = createBase(settings, world);
 
@@ -79,14 +77,10 @@ export function createEnemy(world: World) {
 		from: [BaseState.ROTATE, BaseState.WALK],
 		to: EnemyState.GOTO_TARGET,
 		condition() {
-			for (const u of units) {
-				if (!isFriend(u.type, unit.type) && u.health > 0) {
-					const distanceSquared = Point.distanceSquared(u, unit);
-					if (distanceSquared < enemyDistanceSquared) {
-						this.data = u;
-						return true;
-					}
-				}
+			const target:Unit | null = world.getNearOpponent(unit, enemyDistance);
+			if (target) {
+				this.data = target;
+				return true;
 			}
 			return false;
 		}
@@ -100,8 +94,18 @@ export function createEnemy(world: World) {
 			if (target.health <= 0) {
 				return true;
 			}
+
 			const distanceSquared = Point.distanceSquared(target, unit);
-			return distanceSquared > enemyDistanceSquared * 1.5;
+			if (distanceSquared > enemyDistanceSquared * 1.5) {
+				return true;
+			}
+
+			const opponent = world.getNearOpponent(unit, enemyDistance);
+			if (opponent != target) {
+				return true;
+			}
+
+			return false;
 		}
 	});
 

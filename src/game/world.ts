@@ -2,8 +2,9 @@ import { Component } from "../graphics/component";
 import { Bullet } from "./weapons/bullet";
 import { createGround } from "./objects/ground";
 import { IBody, updatePhysics } from "./utils/physics";
-import { Unit, UnitType } from "./units/unit";
+import { isFriend, Unit, UnitType } from "./units/unit";
 import { Impulse, updateImpulses } from "./weapons/impulse";
+import { Point } from "../geom/point";
 
 export interface World extends Component {
 	readonly units: Unit[];
@@ -11,6 +12,7 @@ export interface World extends Component {
 	addUnit(unit: Unit): void;
 	removeUnit(unit: Unit): void;
 	getUnitCount(type: UnitType): number;
+	getNearOpponent(unit: Unit, distance: number): Unit | null;
 
 	addBullet(bullet: Bullet): void;
 	removeBullet(bullet: Bullet): void;
@@ -50,12 +52,27 @@ export function createWorld(): World {
 
 		getUnitCount(type: UnitType): number {
 			let count = 0;
-			for(const unit of this.units) {
+			for (const unit of this.units) {
 				if (unit.type === type) {
 					count++;
 				}
 			}
 			return count;
+		},
+
+		getNearOpponent(unit: Unit, distance: number): Unit | null {
+			let target: Unit | null = null;
+			let minDistance = distance * distance;
+			for (const u of units) {
+				if (!isFriend(u.type, unit.type) && u.health > 0) {
+					const distanceSquared = Point.distanceSquared(u, unit);
+					if (distanceSquared < minDistance) {
+						minDistance = distanceSquared;
+						target = u;
+					}
+				}
+			}
+			return target;
 		},
 
 		addBullet(bullet: Bullet) {

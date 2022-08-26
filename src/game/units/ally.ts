@@ -33,8 +33,6 @@ export function createAlly(world: World) {
 
 	const { fsm } = unit;
 	const { actions, transitions } = fsm;
-	const { walkSpeed } = settings;
-	const { units } = world;
 
 	const enemyDistance = 200;
 	const enemyDistanceSquared = enemyDistance * enemyDistance;
@@ -56,17 +54,7 @@ export function createAlly(world: World) {
 		from: [BaseState.ROTATE, BaseState.WALK],
 		to: AllyState.ATTACK,
 		condition() {
-			let target: Unit | null = null;
-			let minDistance = enemyDistanceSquared;
-			for (const u of units) {
-				if (!isFriend(u.type, unit.type) && u.health > 0) {
-					const distanceSquared = Point.distanceSquared(u, unit);
-					if (distanceSquared < minDistance) {
-						minDistance = distanceSquared;
-						target = u;
-					}
-				}
-			}
+			let target: Unit | null = world.getNearOpponent(unit, enemyDistance);
 			if (target) {
 				this.data = target;
 				return true;
