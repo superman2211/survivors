@@ -7,7 +7,8 @@ import { Weapon } from "../weapons/weapon";
 export const enum UnitType {
 	PLAYER,
 	NPC,
-	ENEMY
+	ENEMY,
+	NEUTRAL
 }
 
 export interface UnitSettings {

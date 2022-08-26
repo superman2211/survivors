@@ -1,7 +1,7 @@
 import { Point } from '../geom/point';
 import { Component } from '../graphics/component';
 
-import { mathMax, mathMin, mathRandom, mathSqrt, randomFloat } from '../utils/math';
+import { mathMax, mathMin, randomFloat } from '../utils/math';
 import { createEnemy } from './units/enemy';
 import { createAlly } from './units/ally';
 import { createPlayer } from './units/player';
@@ -51,7 +51,7 @@ export function game(): Game {
 	const player = createPlayer(world);
 	world.addUnit(player);
 
-	const enemyCount = 40;
+	const enemyCount = 30;
 	const enemyDistance = 600;
 
 	for (let i = 0; i < enemyCount; i++) {

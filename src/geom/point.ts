@@ -13,6 +13,10 @@ export namespace Point {
 		return { x, y };
 	}
 
+	export function vector(begin: Point, end: Point): Point {
+		return { x: end.x - end.x, y: end.y - begin.y };
+	}
+
 	export function distanceSquared(p0: Point, p1: Point): number {
 		const dx = p0.x - p1.x;
 		const dy = p0.y - p1.y;

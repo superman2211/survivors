@@ -13,6 +13,28 @@ const enum AllyState {
 
 type TargetData = { target: Unit };
 
+function getSafePosition(unit: Unit, units: Unit[], enemyDistance: number, enemyDistanceSquared: number): Point | null {
+	let { x, y } = unit;
+	let count = 1;
+	for (const u of units) {
+		if (!isFriend(u.type, unit.type)) {
+			const vector = Point.vector(u, unit);
+			if (Point.lengthSquared(vector) < enemyDistanceSquared) {
+				Point.normalize(vector, enemyDistance);
+				x += vector.x;
+				y += vector.y;
+				count++;
+			}
+		}
+	}
+	if (count > 1) {
+		x /= count;
+		y /= count;
+		return { x, y };
+	}
+	return null;
+}
+
 export function createAlly(world: World) {
 	const radius = 30;
 
@@ -33,6 +55,8 @@ export function createAlly(world: World) {
 
 	const { fsm } = unit;
 	const { actions, transitions } = fsm;
+	const { units } = world;
+	const { walkSpeed } = settings;
 
 	const enemyDistance = 200;
 	const enemyDistanceSquared = enemyDistance * enemyDistance;
@@ -43,6 +67,17 @@ export function createAlly(world: World) {
 		update(time) {
 			const traget = this.data!.target;
 			unit.rotation = mathAtan2(traget.y - unit.y, traget.x - unit.x);
+
+			const safePosition = getSafePosition(unit, units, enemyDistance, enemyDistanceSquared);
+			if (safePosition) {
+				const vector = Point.vector(unit, safePosition);
+				if (Point.lengthSquared(vector) > walkSpeed) {
+					Point.normalize(vector, walkSpeed);
+					unit.x += vector.x * time;
+					unit.y += vector.y * time;
+				}
+			}
+
 			weaponControl(time, true);
 		},
 		start(target: Unit) {
