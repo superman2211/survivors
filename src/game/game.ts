@@ -73,7 +73,7 @@ export function game(): Game {
 	const shape: number[] = [];
 	generateShape(shape, 0, 0, 0, 10, 10, 100, 100);
 	const colon: Component & IBody = {
-		x: 100, y: 300,
+		x: 512, y: 0,
 		rotation: 0,
 		pallete: [0xff660066],
 		shape,
