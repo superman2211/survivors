@@ -14,6 +14,9 @@ export interface World extends Component {
 	getUnitCount(type: UnitType): number;
 	getNearOpponent(unit: Unit, distance: number): Unit | null;
 
+	addObject(obj: Component & IBody): void;
+	removeObject(obj: Component & IBody): void;
+
 	addBullet(bullet: Bullet): void;
 	removeBullet(bullet: Bullet): void;
 
@@ -25,19 +28,31 @@ export function createWorld(): World {
 	const units: Unit[] = [];
 	const bullets: Bullet[] = [];
 	const impulses: Impulse[] = [];
+	const objects: Component[] = [];
 
 	return {
 		units,
 
 		children: [
 			createGround(),
+			{ children: objects },
 			{ children: units },
-			{ children: bullets }
+			{ children: bullets },
 		],
 
 		onUpdate(time) {
 			updatePhysics(bodies, time);
 			updateImpulses(impulses, time);
+		},
+
+		addObject(obj: Component & IBody) {
+			objects.push(obj);
+			bodies.push(obj);
+		},
+
+		removeObject(obj: Component & IBody) {
+			objects.splice(objects.indexOf(obj), 1);
+			bodies.splice(bodies.indexOf(obj), 1);
 		},
 
 		addUnit(unit: Unit) {

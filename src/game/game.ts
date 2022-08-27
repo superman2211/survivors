@@ -7,6 +7,8 @@ import { createAlly } from './units/ally';
 import { createPlayer } from './units/player';
 import { createWorld } from './world';
 import { isFriend, Unit, UnitType } from './units/unit';
+import { IBody } from './utils/physics';
+import { generateShape } from '../utils/generate-shape';
 
 const SIZE = 2500;
 
@@ -67,6 +69,18 @@ export function game(): Game {
 		ally.y = randomFloat(-allyDistance, allyDistance);
 		world.addUnit(ally);
 	}
+
+	const shape: number[] = [];
+	generateShape(shape, 0, 0, 0, 10, 10, 100, 100);
+	const colon: Component & IBody = {
+		x: 100, y: 300,
+		rotation: 0,
+		pallete: [0xff660066],
+		shape,
+		body: { weight: 0, static: true, radius: 100, },
+	}
+
+	world.addObject(colon);
 
 	const component: Game = {
 		camera,
