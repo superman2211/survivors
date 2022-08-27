@@ -71,7 +71,7 @@ const properties = [
 	// 'mainFire',
 ];
 
-const regex = new RegExp(`${properties.join('|')}`);
+const regex = new RegExp(properties.join('|'));
 
 export default {
 	...base,

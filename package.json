@@ -13,7 +13,8 @@
 		"build": "yarn clean && tsc && rollup -c rollup.config.prod.js && yarn build-libs",
 		"serve": "http-server ./dist/build",
 		"lint": "eslint --fix",
-		"compress": "bestzip dist/survivors.zip dist/build/*",
+		"apply-roadroller": "roadroller dist/build/bundle.js -o dist/build/bundle-roadroller.js",
+		"create-zip": "bestzip dist/survivors.zip dist/build/*",
 		"build-jsfxr": "yarn google-closure-compiler --js=libs/jsfxr.js --js_output_file=dist/build/jsfxr.js",
 		"build-libs": "yarn build-jsfxr"
 	},
@@ -22,6 +23,7 @@
 		"xml2js": "^0.4.23"
 	},
 	"devDependencies": {
+		"roadroller": "^2.1.0",
 		"@rollup/plugin-html": "^0.2.3",
 		"@typescript-eslint/eslint-plugin": "^4.29.3",
 		"@typescript-eslint/parser": "^4.29.3",
