@@ -6,8 +6,8 @@ function template() {
 <html lang="en">
   <head>
     <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Survivors</title>
-
   </head>
   <body style="margin: 0; overflow: hidden;">
     <canvas id="c" style="width: 100%; height: 100%;"></canvas>
