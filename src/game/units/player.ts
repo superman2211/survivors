@@ -1,5 +1,4 @@
-import { Point } from "../../geom/point";
-import { getPlayerControl } from "../utils/player-control";
+import { IPlayerControl } from "../utils/player-control";
 import { createUnit, Unit, UnitSettings, UnitType } from "./unit";
 import { getWeaponControl } from "../weapons/weapon";
 import { World } from "../world";
@@ -10,7 +9,7 @@ const enum PlayerState {
 	DEAD = 1,
 }
 
-export function createPlayer(world: World): Unit {
+export function createPlayer(world: World, control: IPlayerControl): Unit {
 	const radius = 30;
 
 	const settings: UnitSettings = {
@@ -29,7 +28,6 @@ export function createPlayer(world: World): Unit {
 	}
 
 	const unit = createUnit(settings);
-	const control = getPlayerControl(unit, world);
 
 	const { fsm } = unit;
 	const { actions, transitions } = fsm;

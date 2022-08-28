@@ -133,7 +133,7 @@ export namespace Component {
 		children.forEach((child) => keyProcess(child, e, type));
 	}
 
-	export function touchProcess(component: Component, global: Point, parentMatrix: Matrix, type: TouchEventType) {
+	export function touchProcess(component: Component, global: Point, parentMatrix: Matrix, type: TouchEventType, id: number) {
 		if (component.touchable === false) {
 			return;
 		}
@@ -146,21 +146,21 @@ export namespace Component {
 			case TouchEventType.DOWN:
 				if (component.onTouchDown) {
 					Matrix.transformInversePoint(matrix, global, local);
-					component.onTouchDown(local, global);
+					component.onTouchDown(local, global, id);
 				}
 				break;
 
 			case TouchEventType.UP:
 				if (component.onTouchUp) {
 					Matrix.transformInversePoint(matrix, global, local);
-					component.onTouchUp(local, global);
+					component.onTouchUp(local, global, id);
 				}
 				break;
 
 			case TouchEventType.MOVE:
 				if (component.onTouchMove) {
 					Matrix.transformInversePoint(matrix, global, local);
-					component.onTouchMove(local, global);
+					component.onTouchMove(local, global, id);
 				}
 				break;
 		}
@@ -171,6 +171,6 @@ export namespace Component {
 			return;
 		}
 
-		children.forEach((child) => touchProcess(child, global, matrix, type));
+		children.forEach((child) => touchProcess(child, global, matrix, type, id));
 	}
 }

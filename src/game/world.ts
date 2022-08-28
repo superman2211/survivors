@@ -35,9 +35,9 @@ export function createWorld(): World {
 
 		children: [
 			createGround(),
-			{ children: objects },
-			{ children: units },
-			{ children: bullets },
+			{ children: objects, touchable: false },
+			{ children: units, touchable: false },
+			{ children: bullets, touchable: false },
 		],
 
 		onUpdate(time) {

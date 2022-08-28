@@ -9,6 +9,8 @@ import { createWorld } from './world';
 import { isFriend, Unit, UnitType } from './units/unit';
 import { IBody } from './utils/physics';
 import { generateShape } from '../utils/generate-shape';
+import { createUI, UI } from './ui';
+import { getPlayerControl, IPlayerControl } from './utils/player-control';
 
 const SIZE = 2500;
 
@@ -45,12 +47,15 @@ function randomPosition(unit: Unit, units: Unit[], min: number, max: number) {
 	}
 }
 
-export function game(): Game {
+export function game(ui: UI): Game {
 	const camera = Point.create();
 
 	const world = createWorld();
 
-	const player = createPlayer(world);
+	const playerControl = getPlayerControl(world, ui);
+
+	const player = createPlayer(world, playerControl);
+	playerControl.player = player;
 	world.addUnit(player);
 
 	const enemyCount = 30;
@@ -100,8 +105,8 @@ export function game(): Game {
 			this.camera.y = player.y!;
 
 			this.children?.forEach(child => {
-				child.x = -this.camera.x;
-				child.y = -this.camera.y;
+				world.x = -this.camera.x;
+				world.y = -this.camera.y;
 			});
 		},
 		calculateVolume(point: Point): number {

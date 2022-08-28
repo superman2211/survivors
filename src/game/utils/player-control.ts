@@ -1,6 +1,8 @@
 import { Point } from "../../geom/point";
 import { Component } from "../../graphics/component";
+import { hasTouch } from "../../utils/browser";
 import { mathAtan2 } from "../../utils/math";
+import { UI } from "../ui";
 import { Unit } from "../units/unit";
 
 export interface IPlayerControl {
@@ -8,27 +10,43 @@ export interface IPlayerControl {
 	attack: boolean;
 	rotation: number;
 	weapon: number;
+	player?: Unit;
 }
 
-export class DesktopPlayerControl implements IPlayerControl {
+export abstract class BasePlayerControl implements IPlayerControl {
 	direction = Point.create();
 	attack = false;
 	rotation = 0;
 	weapon = 0;
 
-	player: Unit;
+	constructor(ui: UI) {
+		ui.setActiveWeapon(this.weapon);
 
-	up = false;
-	down = false;
-	right = false;
-	left = false;
+		ui.gunButton.onClick = () => {
+			this.weapon = 0;
+			ui.setActiveWeapon(ui.gunButton);
+		};
 
-	constructor(player: Unit, world: Component) {
-		this.player = player;
-		this.keyProcess = this.keyProcess.bind(this);
+		ui.rifleButton.onClick = () => {
+			this.weapon = 1;
+			ui.setActiveWeapon(ui.rifleButton);
+		};
+
+		ui.shotgunButton.onClick = () => {
+			this.weapon = 2;
+			ui.setActiveWeapon(ui.shotgunButton);
+		};
+	}
+}
+
+export class DesktopPlayerControl extends BasePlayerControl {
+	player?: Unit;
+
+	constructor(ui: UI, world: Component) {
+		super(ui);
 
 		world.onTouchMove = (p: Point) => {
-			this.rotation = mathAtan2(p.y - player.y!, p.x - player.x!);
+			this.rotation = mathAtan2(p.y - this.player!.y!, p.x - this.player!.x!);
 		};
 
 		world.onTouchDown = (p: Point) => {
@@ -39,71 +57,89 @@ export class DesktopPlayerControl implements IPlayerControl {
 			this.attack = false;
 		};
 
-		world.onKeyDown = this.keyProcess;
-		world.onKeyUp = this.keyProcess;
-	}
+		let up = false;
+		let down = false;
+		let right = false;
+		let left = false;
 
-	keyProcess(e: KeyboardEvent) {
-		const value = e.type === 'keydown';
+		const keyHandler = (e: KeyboardEvent) => {
+			const value = e.type === 'keydown';
 
-		switch (e.code) {
-			case 'KeyW':
-			case 'ArrowUp':
-				this.up = value;
-				break;
-			case 'KeyS':
-			case 'ArrowDown':
-				this.down = value;
-				break;
-			case 'KeyA':
-			case 'ArrowLeft':
-				this.left = value;
-				break;
-			case 'KeyD':
-			case 'ArrowRight':
-				this.right = value;
-				break;
-			case 'Space':
-				if (value && this.player.settings.weapons) {
-					this.weapon++;
-					if (this.weapon >= this.player.settings.weapons.length) {
-						this.weapon = 0;
+			switch (e.code) {
+				case 'KeyW':
+				case 'ArrowUp':
+					up = value;
+					break;
+				case 'KeyS':
+				case 'ArrowDown':
+					down = value;
+					break;
+				case 'KeyA':
+				case 'ArrowLeft':
+					left = value;
+					break;
+				case 'KeyD':
+				case 'ArrowRight':
+					right = value;
+					break;
+				case 'Space':
+					if (value && this.player!.settings.weapons) {
+						this.weapon++;
+						if (this.weapon >= this.player!.settings.weapons.length) {
+							this.weapon = 0;
+						}
+						ui.setActiveWeapon(this.weapon);
 					}
-				}
-				break;
+					break;
+			};
+
+			this.direction.x = 0;
+			this.direction.y = 0;
+
+			if (up) {
+				this.direction.y -= 1;
+			}
+			if (down) {
+				this.direction.y += 1;
+			}
+			if (left) {
+				this.direction.x -= 1;
+			}
+			if (right) {
+				this.direction.x += 1;
+			}
+
+			Point.normalize(this.direction, 1);
+		}
+
+		world.onKeyDown = keyHandler;
+		world.onKeyUp = keyHandler;
+	}
+}
+
+export class MobilePlayerControl extends BasePlayerControl {
+	constructor(ui: UI) {
+		super(ui);
+
+		ui.moveJoystick.onChange = () => {
+			Point.copy(ui.moveJoystick.value, this.direction);
+			Point.normalize(this.direction, 1);
 		};
 
-		this.direction.x = 0;
-		this.direction.y = 0;
-
-		if (this.up) {
-			this.direction.y -= 1;
-		}
-		if (this.down) {
-			this.direction.y += 1;
-		}
-		if (this.left) {
-			this.direction.x -= 1;
-		}
-		if (this.right) {
-			this.direction.x += 1;
-		}
-
-		Point.normalize(this.direction, 1);
+		ui.attackJoystick.onChange = () => {
+			const { value } = ui.attackJoystick;
+			this.attack = ui.attackJoystick.isActive();
+			if (this.attack) {
+				this.rotation = mathAtan2(value.y, value.x);
+			}
+		};
 	}
 }
 
-export class MobilePlayerControl implements IPlayerControl {
-	direction = Point.create();
-	attack = false;
-	rotation = 0;
-	weapon = 0;
-}
-
-export function getPlayerControl(player: Unit, world: Component): IPlayerControl {
-	if ('ontouchstart' in window) {
-		return new MobilePlayerControl();
+export function getPlayerControl(world: Component, ui: UI): IPlayerControl {
+	if (hasTouch) {
+		return new MobilePlayerControl(ui);
 	} else {
-		return new DesktopPlayerControl(player, world);
+		return new DesktopPlayerControl(ui, world);
 	}
 }

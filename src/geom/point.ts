@@ -41,4 +41,9 @@ export namespace Point {
 			point.y *= value;
 		}
 	}
+
+	export function copy(source: Point, target: Point) {
+		target.x = source.x;
+		target.y = source.y;
+	}
 }
