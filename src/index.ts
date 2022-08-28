@@ -1,12 +1,9 @@
 import { Application, application } from './game/application';
 import { Point } from './geom/point';
-import { Component } from './graphics/component';
+import { componentKeyProcess, componentTouchProcess, componentUpdate } from './graphics/component';
 import { KeyboardEventType, TouchEventType } from './graphics/events';
-import { Graphics, dpr, globalMatrix } from './graphics/graphics';
+import { canvas, dpr, globalMatrix, graphicsRender } from './graphics/graphics';
 import { hasTouch } from './utils/browser';
-
-const canvas: HTMLCanvasElement = document.getElementById('c') as HTMLCanvasElement;
-Graphics.init(canvas);
 
 let app: Application;
 
@@ -22,9 +19,9 @@ function calculateTime(): number {
 function update() {
 	requestAnimationFrame(update);
 	const time = calculateTime();
-	Component.update(app, time);
+	componentUpdate(app, time);
 	app.updateView(time);
-	Graphics.render(app);
+	graphicsRender(app);
 }
 
 function start() {
@@ -33,15 +30,13 @@ function start() {
 	oldTime = performance.now();
 	update();
 
-	// keyboard
-
 	document.addEventListener('keydown', (e) => {
-		Component.keyProcess(app, e, KeyboardEventType.DOWN);
+		componentKeyProcess(app, e, KeyboardEventType.DOWN);
 		e.preventDefault();
 	});
 
 	document.addEventListener('keyup', (e) => {
-		Component.keyProcess(app, e, KeyboardEventType.UP);
+		componentKeyProcess(app, e, KeyboardEventType.UP);
 		e.preventDefault();
 	});
 
@@ -58,7 +53,7 @@ function start() {
 			for (let i = 0; i < e.changedTouches.length; i++) {
 				const touch = e.changedTouches[i];
 				const global: Point = { x: touch.clientX * dpr, y: touch.clientY * dpr };
-				Component.touchProcess(app, global, globalMatrix, type, touch.identifier);
+				componentTouchProcess(app, global, globalMatrix, type, touch.identifier);
 			}
 			e.preventDefault();
 		}
@@ -78,7 +73,7 @@ function start() {
 		function mouseHandler(e: MouseEvent) {
 			const type = typeMap.get(e.type)!;
 			const global: Point = { x: e.clientX * dpr, y: e.clientY * dpr };
-			Component.touchProcess(app, global, globalMatrix, type, 0);
+			componentTouchProcess(app, global, globalMatrix, type, 0);
 			e.preventDefault();
 		};
 

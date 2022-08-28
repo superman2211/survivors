@@ -1,5 +1,5 @@
 import { ColorTransform } from '../geom/color';
-import { Pattern } from './pattern';
+import { transformColor } from './pattern';
 
 export interface Text {
 	value?: string;
@@ -15,7 +15,7 @@ export function renderText(text: Text, ct: ColorTransform, context: CanvasRender
 		return;
 	}
 
-	context.fillStyle = Pattern.transformColor(text.color ?? 0xff000000, ct);
+	context.fillStyle = transformColor(text.color ?? 0xff000000, ct);
 	context.font = `${text.size ?? 10}px ${text.font ?? 'arial'}`;
 	context.textBaseline = 'top';
 

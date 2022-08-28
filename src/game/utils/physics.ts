@@ -1,5 +1,5 @@
-import { Point, pointLengthSquared } from "../../geom/point";
-import { mathMax, mathSqrt } from "../../utils/math";
+import { Point, pointCreate, pointLengthSquared, pointNormalize } from "../../geom/point";
+import { mathSqrt } from "../../utils/math";
 
 export interface IBody {
 	x: number;
@@ -17,7 +17,7 @@ export interface Body {
 	points?: Point[];
 }
 
-const vector = Point.create();
+const vector = pointCreate();
 
 export function updatePhysics(objects: IBody[], time: number) {
 	for (let i = 0; i < objects.length; i++) {
@@ -84,7 +84,7 @@ export function updatePhysics(objects: IBody[], time: number) {
 						if (object0.onCollision || object1.onCollision) {
 							vector.x = object0.x - object1.x;
 							vector.y = object0.y - object1.y;
-							Point.normalize(vector, body1.radius);
+							pointNormalize(vector, body1.radius);
 							vector.x += object1.x;
 							vector.y += object1.y;
 						}

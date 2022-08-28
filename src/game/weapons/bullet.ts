@@ -1,4 +1,4 @@
-import { Point } from "../../geom/point";
+import { Point, pointCreate, pointLength, pointNormalize } from "../../geom/point";
 import { Component } from "../../graphics/component";
 import { FILL, PATH, Shape } from "../../graphics/shape";
 import { mathCos, mathSin, mathSqrt } from "../../utils/math";
@@ -19,7 +19,7 @@ export function createBullet(x: number, y: number, rotation: number, weapon: Wea
 	}
 
 	let distance = 0;
-	const step = Point.length(speed);
+	const step = pointLength(speed);
 
 	const body: Body = {
 		weight: 0,
@@ -64,8 +64,8 @@ export function createBullet(x: number, y: number, rotation: number, weapon: Wea
 					world.removeBullet(bullet);
 
 					if (weapon.impulse) {
-						const value = Point.create(speed.x, speed.y);
-						Point.normalize(value, weapon.impulse);
+						const value = pointCreate(speed.x, speed.y);
+						pointNormalize(value, weapon.impulse);
 						world.addImpulse({ target, value });
 					}
 				}

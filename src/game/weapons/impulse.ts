@@ -1,4 +1,4 @@
-import { Point } from "../../geom/point";
+import { Point, pointLength, pointNormalize } from "../../geom/point";
 import { IBody } from "../utils/physics";
 
 export interface Impulse {
@@ -14,12 +14,12 @@ export function updateImpulses(impulses: Impulse[], time: number) {
 
 		const { weight } = target.body;
 
-		let length = Point.length(value);
+		let length = pointLength(value);
 		length -= length * weight / 4 * time;
 		if (length < 0.5) {
 			impulses.splice(impulses.indexOf(impulse));
 		} else {
-			Point.normalize(value, length);
+			pointNormalize(value, length);
 		}
 	}
 }

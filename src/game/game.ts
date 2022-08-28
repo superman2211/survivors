@@ -1,4 +1,4 @@
-import { Point } from '../geom/point';
+import { Point, pointCreate, pointDistance, pointDistanceSquared } from '../geom/point';
 import { Component } from '../graphics/component';
 
 import { mathMax, mathMin, randomFloat } from '../utils/math';
@@ -31,7 +31,7 @@ function randomPosition(unit: Unit, units: Unit[], min: number, max: number) {
 		let safe = true;
 		for (const u of units) {
 			if (!isFriend(u.type, unit.type)) {
-				if (Point.distanceSquared(unit, u) < safeDistanceSquared) {
+				if (pointDistanceSquared(unit, u) < safeDistanceSquared) {
 					safe = false;
 					break;
 				}
@@ -48,7 +48,7 @@ function randomPosition(unit: Unit, units: Unit[], min: number, max: number) {
 }
 
 export function game(ui: UI): Game {
-	const camera = Point.create();
+	const camera = pointCreate();
 
 	const world = createWorld();
 
@@ -111,7 +111,7 @@ export function game(ui: UI): Game {
 		},
 		calculateVolume(point: Point): number {
 			const maxDistance = SIZE / 2;
-			const distance = Point.distance(camera, point);
+			const distance = pointDistance(camera, point);
 			return 1 - mathMin(1, mathMax(0, distance / maxDistance));
 		}
 	};

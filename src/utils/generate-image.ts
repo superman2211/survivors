@@ -1,4 +1,4 @@
-import { Pattern } from "../graphics/pattern";
+import { formatColor } from "../graphics/pattern";
 import { mathRandom } from "./math";
 
 export const enum CommandType {
@@ -38,7 +38,7 @@ methods.set(CommandType.SIZE, (command, canvas, context) => {
 });
 
 methods.set(CommandType.FILL, (command, canvas, context) => {
-	context.fillStyle = Pattern.formatColor(command.color!);
+	context.fillStyle = formatColor(command.color!);
 });
 
 methods.set(CommandType.RECTANGLE, (command, canvas, context) => {

@@ -1,4 +1,4 @@
-import { Point } from "../../geom/point";
+import { Point, pointCreate, pointLength, pointNormalize } from "../../geom/point";
 import { Component } from "../../graphics/component";
 import { createCircleImage } from "./utils";
 
@@ -32,7 +32,7 @@ export function createJoystick(): Joystick {
 	return {
 		children: [back, front],
 		radius: RADIUS_BACK,
-		value: Point.create(),
+		value: pointCreate(),
 
 		isActive(): boolean {
 			return pressedId != -1;
@@ -44,7 +44,7 @@ export function createJoystick(): Joystick {
 		},
 
 		onTouchDown(p, g, id) {
-			if (pressedId === -1 && Point.length(p) < RADIUS_BACK) {
+			if (pressedId === -1 && pointLength(p) < RADIUS_BACK) {
 				pressedId = id;
 
 				this.updateValue(p);
@@ -74,8 +74,8 @@ export function createJoystick(): Joystick {
 			this.value.x = p.x / RADIUS_BACK;
 			this.value.y = p.y / RADIUS_BACK;
 
-			if (Point.length(this.value) > 1) {
-				Point.normalize(this.value, 1);
+			if (pointLength(this.value) > 1) {
+				pointNormalize(this.value, 1);
 			}
 
 			if (this.onChange) {

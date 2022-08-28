@@ -1,51 +1,44 @@
 import {
-	Component,
-	// getDrawCalls,
-	// resetDrawCalls,
+	Component, componentRender,
 } from './component';
-import { ColorTransform } from '../geom/color';
-import { Matrix } from '../geom/matrix';
+import { colorTransformCreate } from '../geom/color';
+import { matrixCreate } from '../geom/matrix';
 
-export const globalMatrix = Matrix.empty();
-const colorTransform = ColorTransform.empty();
+export const globalMatrix = matrixCreate();
+const colorTransform = colorTransformCreate();
 
 export const dpr = devicePixelRatio;
 
-export namespace Graphics {
-	let context: CanvasRenderingContext2D;
-	let canvas: HTMLCanvasElement;
+declare global {
+	const c:HTMLCanvasElement;
+}
 
-	export function render(component: Component) {
-		updateSize();
-		clean();
-		// resetDrawCalls();
-		Component.render(component, globalMatrix, colorTransform, context);
-		// console.log(getDrawCalls());
+export const canvas = c as HTMLCanvasElement;
+const context = canvas.getContext('2d')!;
+
+export function graphicsRender(component: Component) {
+	updateSize();
+	clean();
+	componentRender(component, globalMatrix, colorTransform, context);
+}
+
+function updateSize() {
+	const w = (innerWidth * dpr) | 0;
+	const h = (innerHeight * dpr) | 0;
+
+	if (w !== canvas.width) {
+		canvas.width = w;
 	}
 
-	function updateSize() {
-		const w = (innerWidth * dpr) | 0;
-		const h = (innerHeight * dpr) | 0;
-
-		if (w !== canvas.width) {
-			canvas.width = w;
-		}
-
-		if (h !== canvas.height) {
-			canvas.height = h;
-		}
-
-		globalMatrix.a = globalMatrix.d = dpr;
+	if (h !== canvas.height) {
+		canvas.height = h;
 	}
 
-	function clean() {
-		context.setTransform();
-		context.fillStyle = '#bbbbbb';
-		context.fillRect(0, 0, canvas.width, canvas.height);
-	}
+	globalMatrix.a = globalMatrix.d = dpr;
+}
 
-	export function init(c: HTMLCanvasElement) {
-		canvas = c;
-		context = canvas.getContext('2d')!;
-	}
+function clean() {
+	context.setTransform();
+	context.fillStyle = '#bbbbbb';
+	context.fillRect(0, 0, canvas.width, canvas.height);
 }

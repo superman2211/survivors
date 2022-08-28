@@ -1,4 +1,4 @@
-import { Point } from "../../geom/point";
+import { Point, pointDistanceSquared, pointLengthSquared, pointNormalize, pointVector } from "../../geom/point";
 import { mathAtan2 } from "../../utils/math";
 import { FSMAction } from "../utils/fsm";
 import { getWeaponControl } from "../weapons/weapon";
@@ -18,9 +18,9 @@ function getSafePosition(unit: Unit, units: Unit[], enemyDistance: number, enemy
 	let count = 1;
 	for (const u of units) {
 		if (!isFriend(u.type, unit.type)) {
-			const vector = Point.vector(u, unit);
-			if (Point.lengthSquared(vector) < enemyDistanceSquared) {
-				Point.normalize(vector, enemyDistance);
+			const vector = pointVector(u, unit);
+			if (pointLengthSquared(vector) < enemyDistanceSquared) {
+				pointNormalize(vector, enemyDistance);
 				x += vector.x;
 				y += vector.y;
 				count++;
@@ -70,9 +70,9 @@ export function createAlly(world: World) {
 
 			const safePosition = getSafePosition(unit, units, enemyDistance, enemyDistanceSquared);
 			if (safePosition) {
-				const vector = Point.vector(unit, safePosition);
-				if (Point.lengthSquared(vector) > walkSpeed) {
-					Point.normalize(vector, walkSpeed);
+				const vector = pointVector(unit, safePosition);
+				if (pointLengthSquared(vector) > walkSpeed) {
+					pointNormalize(vector, walkSpeed);
 					unit.x += vector.x * time;
 					unit.y += vector.y * time;
 				}
@@ -106,7 +106,7 @@ export function createAlly(world: World) {
 			if (target.health <= 0) {
 				return true;
 			}
-			const distanceSquared = Point.distanceSquared(target, unit);
+			const distanceSquared = pointDistanceSquared(target, unit);
 			return distanceSquared > enemyDistanceSquared * 1.5;
 		}
 	});

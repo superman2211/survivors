@@ -4,7 +4,7 @@ import { createGround } from "./objects/ground";
 import { IBody, updatePhysics } from "./utils/physics";
 import { isFriend, Unit, UnitType } from "./units/unit";
 import { Impulse, updateImpulses } from "./weapons/impulse";
-import { Point } from "../geom/point";
+import { Point, pointDistanceSquared } from "../geom/point";
 
 export interface World extends Component {
 	readonly units: Unit[];
@@ -80,7 +80,7 @@ export function createWorld(): World {
 			let minDistance = distance * distance;
 			for (const u of units) {
 				if (!isFriend(u.type, unit.type) && u.health > 0) {
-					const distanceSquared = Point.distanceSquared(u, unit);
+					const distanceSquared = pointDistanceSquared(u, unit);
 					if (distanceSquared < minDistance) {
 						minDistance = distanceSquared;
 						target = u;

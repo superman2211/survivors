@@ -1,4 +1,4 @@
-import { Point } from "../../geom/point";
+import { Point, pointDistanceSquared } from "../../geom/point";
 import { mathAtan2, mathCos, math2PI, mathRandom, mathSin, randomFloat } from "../../utils/math";
 import { FSMAction } from "../utils/fsm";
 import { isFriend, Unit, UnitSettings, UnitType } from "./unit";
@@ -15,7 +15,7 @@ const enum EnemyState {
 type TargetData = { target: Unit };
 
 function isTargetNearby(target: Unit, enemy: Unit): boolean {
-	const distanceSquared = Point.distanceSquared(target, enemy);
+	const distanceSquared = pointDistanceSquared(target, enemy);
 	const radiuses = enemy.body.radius + target.body.radius;
 	const radiusesSquared = radiuses * radiuses;
 	return distanceSquared < radiusesSquared * 1.1;
@@ -95,7 +95,7 @@ export function createEnemy(world: World) {
 				return true;
 			}
 
-			const distanceSquared = Point.distanceSquared(target, unit);
+			const distanceSquared = pointDistanceSquared(target, unit);
 			if (distanceSquared > enemyDistanceSquared * 1.5) {
 				return true;
 			}

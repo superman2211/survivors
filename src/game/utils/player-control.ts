@@ -1,4 +1,4 @@
-import { Point } from "../../geom/point";
+import { Point, pointCopy, pointCreate, pointNormalize } from "../../geom/point";
 import { Component } from "../../graphics/component";
 import { hasTouch } from "../../utils/browser";
 import { mathAtan2 } from "../../utils/math";
@@ -14,7 +14,7 @@ export interface IPlayerControl {
 }
 
 export abstract class BasePlayerControl implements IPlayerControl {
-	direction = Point.create();
+	direction = pointCreate();
 	attack = false;
 	rotation = 0;
 	weapon = 0;
@@ -109,7 +109,7 @@ export class DesktopPlayerControl extends BasePlayerControl {
 				this.direction.x += 1;
 			}
 
-			Point.normalize(this.direction, 1);
+			pointNormalize(this.direction, 1);
 		}
 
 		world.onKeyDown = keyHandler;
@@ -122,8 +122,8 @@ export class MobilePlayerControl extends BasePlayerControl {
 		super(ui);
 
 		ui.moveJoystick.onChange = () => {
-			Point.copy(ui.moveJoystick.value, this.direction);
-			Point.normalize(this.direction, 1);
+			pointCopy(ui.moveJoystick.value, this.direction);
+			pointNormalize(this.direction, 1);
 		};
 
 		ui.attackJoystick.onChange = () => {

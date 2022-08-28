@@ -1,5 +1,5 @@
 import { ColorTransform } from '../geom/color';
-import { Pattern } from './pattern';
+import { transformColor } from './pattern';
 
 export type Shape = Uint8Array | number[];
 
@@ -13,12 +13,12 @@ export function renderShape(shape: Shape, pallete: number[], ct: ColorTransform,
 	for (let i = 0; i < shape.length; i++) {
 		switch (shape[i]) {
 			case FILL:
-				context.fillStyle = Pattern.transformColor(pallete[shape[++i]], ct);
+				context.fillStyle = transformColor(pallete[shape[++i]], ct);
 				context.fill();
 				break;
 
 			case STROKE:
-				context.strokeStyle = Pattern.transformColor(pallete[shape[++i]], ct);
+				context.strokeStyle = transformColor(pallete[shape[++i]], ct);
 				context.lineWidth = shape[++i];
 				context.stroke();
 				break;
