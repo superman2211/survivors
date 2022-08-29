@@ -10,16 +10,12 @@
 		"clean": "rimraf ./dist",
 		"watch:ts": "tsc -w",
 		"watch:rollup": "rollup -c rollup.config.dev.js -w",
-		"build": "yarn clean && tsc && rollup -c rollup.config.prod.js && yarn build-libs",
+		"build": "yarn clean && yarn build-resources && tsc && rollup -c rollup.config.prod.js && yarn create-zip",
 		"serve": "http-server ./dist/build",
 		"lint": "eslint --fix",
-		"apply-roadroller": "roadroller dist/build/bundle.js -o dist/build/bundle-roadroller.js",
-		"apply-roadroller-jsfxr": "roadroller dist/build/jsfxr.js -o dist/build/jsfxr-roadroller.js",
-		"create-zip": "bestzip dist/survivors.zip dist/build/*",
-		"build-jsfxr": "yarn google-closure-compiler --js=libs/jsfxr.js --js_output_file=dist/build/jsfxr.js",
-		"build-libs": "yarn build-jsfxr",
-		"install-advzip": "brew install advancecomp",
-		"make-zip": "advzip --not-zip --shrink-insane --iter=1000 --add game.zip dist/build/bundle.js dist/build/index.html dist/build/jsfxr.js"
+		"build-resources": "node scripts/build-resources.js",
+		"apply-roadroller": "roadroller dist/build/bundle.js -o dist/build/bundle.js",
+		"create-zip": "bestzip dist/survivors.zip dist/build/*"
 	},
 	"dependencies": {
 		"svg-path": "^0.2.1",
@@ -33,7 +29,6 @@
 		"eslint": "^7.32.0",
 		"eslint-config-airbnb-base": "^14.2.1",
 		"eslint-plugin-import": "^2.24.1",
-		"google-closure-compiler": "^20210808.0.0",
 		"http-server": "^13.0.1",
 		"rimraf": "^3.0.2",
 		"roadroller": "^2.1.0",

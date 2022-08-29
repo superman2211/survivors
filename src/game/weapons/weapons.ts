@@ -1,4 +1,5 @@
 import { pointCreate } from "../../geom/point";
+import { sound_explosion, sound_gun, sound_hit, sound_shotgun } from "../../resources/ids";
 import { randomSelect } from "../../utils/math";
 import { Weapon } from "./weapon";
 
@@ -13,6 +14,7 @@ export function hand(radius: number, damage: number): Weapon {
 		length: 20,
 		width: 20,
 		impulse: 3,
+		sound: sound_hit
 	}
 }
 
@@ -27,6 +29,7 @@ export function gun(radius: number): Weapon {
 		length: 30,
 		width: 4,
 		impulse: 5,
+		sound: sound_gun,
 	};
 }
 
@@ -41,6 +44,7 @@ export function rifle(radius: number): Weapon {
 		length: 50,
 		width: 3,
 		impulse: 3,
+		sound: sound_explosion,
 	};
 }
 
@@ -55,7 +59,8 @@ export function shotgun(radius: number): Weapon {
 		length: 10,
 		width: 3,
 		angle: 0.7,
-		impulse: 5
+		impulse: 5,
+		sound: sound_shotgun
 	};
 }
 

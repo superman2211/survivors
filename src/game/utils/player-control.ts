@@ -1,5 +1,6 @@
 import { Point, pointCopy, pointCreate, pointNormalize } from "../../geom/point";
 import { Component } from "../../graphics/component";
+import { playAudio } from "../../media/sfx";
 import { hasTouch } from "../../utils/browser";
 import { mathAtan2 } from "../../utils/math";
 import { UI } from "../ui";
@@ -51,6 +52,7 @@ export class DesktopPlayerControl extends BasePlayerControl {
 
 		world.onTouchDown = (p: Point) => {
 			this.attack = true;
+			playAudio(this.player!.settings.weapons![this.weapon].sound);
 		};
 
 		world.onTouchUp = (p: Point) => {

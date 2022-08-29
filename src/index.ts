@@ -3,7 +3,9 @@ import { Point } from './geom/point';
 import { componentKeyProcess, componentTouchProcess, componentUpdate } from './graphics/component';
 import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './graphics/events';
 import { canvas, globalMatrix, graphicsRender } from './graphics/graphics';
+import { playAudio } from './media/sfx';
 import { domDocument, dpr, hasTouch } from './utils/browser';
+import { loadResources } from './resources/resources-loader';
 
 let app: Application;
 
@@ -50,7 +52,7 @@ function start() {
 		}
 
 		canvas.ontouchstart = (e) => touchHandler(e, TOUCH_DOWN);
-		canvas.ontouchend = (e) => touchHandler(e,TOUCH_UP);
+		canvas.ontouchend = (e) => touchHandler(e, TOUCH_UP);
 		canvas.ontouchcancel = (e) => touchHandler(e, TOUCH_UP);
 		canvas.ontouchmove = (e) => touchHandler(e, TOUCH_MOVE);
 	} else {
@@ -68,6 +70,7 @@ function start() {
 }
 
 async function main() {
+	await loadResources();
 	start();
 }
 

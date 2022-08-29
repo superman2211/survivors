@@ -80,5 +80,6 @@ export default {
 		// terser({ mangle: { properties: { builtins: true, regex } } }),
 		terser(),
 		filesize(),
+		// TODO replace const to let
 	],
 };

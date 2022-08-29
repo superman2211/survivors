@@ -15,6 +15,7 @@ export interface Weapon {
 	distance: number,
 	impulse?: number,
 	angle?: number,
+	sound: number,
 }
 
 export function getWeaponControl(unit: Unit, world: World) {

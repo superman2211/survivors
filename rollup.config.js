@@ -6,13 +6,12 @@ function template() {
 <html lang="en">
   <head>
     <meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Survivors</title>
   </head>
   <body style="margin: 0; overflow: hidden;">
     <canvas id="c" style="width: 100%; height: 100%;"></canvas>
-	<script src="jsfxr.js"></script>
-    <script src="bundle.js"></script>
+    <script src="s.js"></script>
   </body>
 </html>
 `;
@@ -21,7 +20,7 @@ function template() {
 export default {
 	input: 'dist/esm/index.js',
 	output: {
-		file: 'dist/build/bundle.js',
+		file: 'dist/build/s.js',
 		format: 'iife',
 	},
 	plugins: [
