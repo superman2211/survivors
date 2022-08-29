@@ -48,7 +48,7 @@ export function createEnemy(world: World) {
 
 	const weaponControl = getWeaponControl(unit, world);
 
-	actions.set(STATE_GOTO_TARGET, {
+	actions[STATE_GOTO_TARGET] = {
 		update(time: number) {
 			unit.rotation = mathAtan2(this.data!.target.y - unit.y, this.data!.target.x - unit.x);
 			const speedX = mathCos(unit.rotation) * walkSpeed;
@@ -59,78 +59,77 @@ export function createEnemy(world: World) {
 		start(target: Unit) {
 			this.data = { target };
 		}
-	} as FSMAction<TargetData>);
+	} as FSMAction<TargetData>;
 
-	actions.set(STATE_ATTACK, {
+	actions[STATE_ATTACK] = {
 		update(time: number) {
 			weaponControl(time, true);
 		},
 		start(target: Unit) {
 			this.data = { target };
 		}
-	} as FSMAction<TargetData>);
+	} as FSMAction<TargetData>;
 
-	transitions.push({
-		from: [STATE_ROTATE, STATE_WALK],
-		to: STATE_GOTO_TARGET,
-		condition() {
-			const target: Unit | null = world.getNearOpponent(unit, enemyDistance);
-			if (target) {
-				this.data = target;
-				return true;
+	transitions.push(
+		{
+			from: [STATE_ROTATE, STATE_WALK],
+			to: STATE_GOTO_TARGET,
+			condition() {
+				const target: Unit | null = world.getNearOpponent(unit, enemyDistance);
+				if (target) {
+					this.data = target;
+					return true;
+				}
+				return false;
 			}
-			return false;
+		},
+		{
+			from: [STATE_GOTO_TARGET, STATE_ATTACK],
+			to: STATE_ROTATE,
+			condition() {
+				const target: Unit = (fsm.getAction().data as TargetData).target;
+				if (target.health <= 0) {
+					return true;
+				}
+
+				const distanceSquared = pointDistanceSquared(target, unit);
+				if (distanceSquared > enemyDistanceSquared * 1.5) {
+					return true;
+				}
+
+				const opponent = world.getNearOpponent(unit, enemyDistance);
+				if (opponent != target) {
+					return true;
+				}
+
+				return false;
+			}
+		},
+		{
+			from: [STATE_GOTO_TARGET],
+			to: STATE_ATTACK,
+			condition() {
+				const target: Unit = (fsm.getAction().data as TargetData).target;
+				if (isTargetNearby(target, unit)) {
+					this.data = target;
+					return true;
+				}
+				return false;
+			}
+		},
+		{
+			from: [STATE_ATTACK],
+			to: STATE_GOTO_TARGET,
+			condition() {
+				const target: Unit = (fsm.getAction().data as TargetData).target
+				if (!isTargetNearby(target, unit)) {
+					this.data = target;
+					return true;
+				}
+				return false;
+			}
 		}
-	});
-
-	transitions.push({
-		from: [STATE_GOTO_TARGET, STATE_ATTACK],
-		to: STATE_ROTATE,
-		condition() {
-			const target: Unit = (fsm.getAction().data as TargetData).target;
-			if (target.health <= 0) {
-				return true;
-			}
-
-			const distanceSquared = pointDistanceSquared(target, unit);
-			if (distanceSquared > enemyDistanceSquared * 1.5) {
-				return true;
-			}
-
-			const opponent = world.getNearOpponent(unit, enemyDistance);
-			if (opponent != target) {
-				return true;
-			}
-
-			return false;
-		}
-	});
-
-	transitions.push({
-		from: [STATE_GOTO_TARGET],
-		to: STATE_ATTACK,
-		condition() {
-			const target: Unit = (fsm.getAction().data as TargetData).target;
-			if (isTargetNearby(target, unit)) {
-				this.data = target;
-				return true;
-			}
-			return false;
-		}
-	});
-
-	transitions.push({
-		from: [STATE_ATTACK],
-		to: STATE_GOTO_TARGET,
-		condition() {
-			const target: Unit = (fsm.getAction().data as TargetData).target
-			if (!isTargetNearby(target, unit)) {
-				this.data = target;
-				return true;
-			}
-			return false;
-		}
-	});
+	);
 
 	return unit;
 }

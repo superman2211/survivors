@@ -1,6 +1,7 @@
 import { ColorTransform } from '../geom/color';
 import { Matrix, matrixCreate } from '../geom/matrix';
 import { Point } from '../geom/point';
+import { mathAbs, mathCos, mathSin } from '../utils/math';
 
 const tempMatrix = matrixCreate();
 
@@ -31,8 +32,8 @@ export function getMatrix(transform: Transform, result: Matrix) {
 	result.y = transform.y ?? 0;
 
 	if (rotation) {
-		const cos = Math.cos(rotation);
-		const sin = Math.sin(rotation);
+		const cos = mathCos(rotation);
+		const sin = mathSin(rotation);
 
 		result.a = cos * sx;
 		result.b = sin * sx;
@@ -80,7 +81,7 @@ export function getColorTransform(transform: Transform, result: ColorTransform) 
 			brightness = -1;
 		}
 
-		const percent: number = 1 - Math.abs(brightness);
+		const percent: number = 1 - mathAbs(brightness);
 		let offset: number = 0;
 		if (brightness > 0) {
 			offset = brightness * 255;
@@ -108,11 +109,4 @@ export function getColorTransform(transform: Transform, result: ColorTransform) 
 	result.go = 0;
 	result.bo = 0;
 }
-
-// export function transformPoint(transform: Transform, point: Point, result: Point) {
-// 	const { x, y } = point;
-// 	getMatrix(transform, tempMatrix);
-// 	result.x = x * tempMatrix.a + y * tempMatrix.c + tempMatrix.x;
-// 	result.y = x * tempMatrix.b + y * tempMatrix.d + tempMatrix.y;
-// }
 

@@ -3,11 +3,10 @@ import {
 } from './component';
 import { colorTransformCreate } from '../geom/color';
 import { matrixCreate } from '../geom/matrix';
+import { dpr } from '../utils/browser';
 
 export const globalMatrix = matrixCreate();
 const colorTransform = colorTransformCreate();
-
-export const dpr = devicePixelRatio;
 
 declare global {
 	const c:HTMLCanvasElement;

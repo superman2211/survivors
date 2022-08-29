@@ -61,7 +61,7 @@ export function createAlly(world: World) {
 
 	const weaponControl = getWeaponControl(unit, world);
 
-	actions.set(STATE_ATTACK, {
+	actions[STATE_ATTACK] = {
 		update(time) {
 			const traget = this.data!.target;
 			unit.rotation = mathAtan2(traget.y - unit.y, traget.x - unit.x);
@@ -81,33 +81,34 @@ export function createAlly(world: World) {
 		start(target: Unit) {
 			this.data = { target };
 		}
-	} as FSMAction<TargetData>)
+	} as FSMAction<TargetData>;
 
-	transitions.push({
-		from: [STATE_ROTATE, STATE_WALK],
-		to: STATE_ATTACK,
-		condition() {
-			let target: Unit | null = world.getNearOpponent(unit, enemyDistance);
-			if (target) {
-				this.data = target;
-				return true;
+	transitions.push(
+		{
+			from: [STATE_ROTATE, STATE_WALK],
+			to: STATE_ATTACK,
+			condition() {
+				let target: Unit | null = world.getNearOpponent(unit, enemyDistance);
+				if (target) {
+					this.data = target;
+					return true;
+				}
+				return false;
 			}
-			return false;
-		}
-	});
-
-	transitions.push({
-		from: [STATE_ATTACK],
-		to: STATE_ROTATE,
-		condition() {
-			const target: Unit = (fsm.getAction().data as TargetData).target;
-			if (target.health <= 0) {
-				return true;
+		},
+		{
+			from: [STATE_ATTACK],
+			to: STATE_ROTATE,
+			condition() {
+				const target: Unit = (fsm.getAction().data as TargetData).target;
+				if (target.health <= 0) {
+					return true;
+				}
+				const distanceSquared = pointDistanceSquared(target, unit);
+				return distanceSquared > enemyDistanceSquared * 1.5;
 			}
-			const distanceSquared = pointDistanceSquared(target, unit);
-			return distanceSquared > enemyDistanceSquared * 1.5;
 		}
-	});
+	);
 
 	return unit;
 }

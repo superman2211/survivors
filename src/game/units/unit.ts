@@ -1,10 +1,9 @@
 import { Component } from "../../graphics/component";
 import { generateShape } from "../../utils/generate-shape";
+import { mathPI } from "../../utils/math";
 import { FSM } from "../utils/fsm";
 import { Body, IBody } from "../utils/physics";
 import { Weapon } from "../weapons/weapon";
-
-
 
 export interface UnitSettings {
 	type: number,
@@ -39,8 +38,8 @@ export function createUnit(settings: UnitSettings): Unit {
 	const wheapon = 0;
 
 	const shape: number[] = [];
-	generateShape(shape, 0, 0, 0, 5, 5, radius, radius, Math.PI / 10);
-	generateShape(shape, 1, radius / 2, 0, 3, 3, radius / 3, radius / 3, Math.PI / 2);
+	generateShape(shape, 0, 0, 0, 5, 5, radius, radius, mathPI / 10);
+	generateShape(shape, 1, radius / 2, 0, 3, 3, radius / 3, radius / 3, mathPI / 2);
 
 	return {
 		type,

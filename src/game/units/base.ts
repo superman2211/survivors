@@ -17,7 +17,7 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 	const { fsm } = unit;
 	const { actions, transitions } = fsm;
 
-	actions.set(STATE_ROTATE, {
+	actions[STATE_ROTATE] = {
 		update(time: number) {
 			unit.rotation += this.data!.speed * time;
 			this.data!.time -= time;
@@ -28,9 +28,9 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 				time: randomFloat(0.5, 2)
 			};
 		},
-	} as FSMAction<RotationData>);
+	} as FSMAction<RotationData>;
 
-	actions.set(STATE_WALK, {
+	actions[STATE_WALK] = {
 		update(time: number) {
 			unit.x += this.data!.speedX * time;
 			unit.y += this.data!.speedY * time;
@@ -43,9 +43,9 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 				time: randomFloat(1, 3),
 			}
 		}
-	} as FSMAction<WalkData>);
+	} as FSMAction<WalkData>;
 
-	actions.set(STATE_DEAD, {
+	actions[STATE_DEAD] = {
 		update(time) {
 			unit.alpha! -= time;
 			if (unit.alpha! < 0) {
@@ -56,51 +56,51 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 			unit.alpha = 0.9;
 			unit.body.enabled = false;
 		}
-	});
+	};
 
-	transitions.push({
-		from: [STATE_WALK],
-		to: STATE_ROTATE,
-		condition() {
-			if (unit.x < -500) {
-				unit.x += 5;
-				return true;
+	transitions.push(
+		{
+			from: [STATE_WALK],
+			to: STATE_ROTATE,
+			condition() {
+				if (unit.x < -500) {
+					unit.x += 5;
+					return true;
+				}
+
+				if (unit.x > 500) {
+					unit.x -= 5;
+					return true;
+				}
+
+				if (unit.y < -500) {
+					unit.y += 5;
+					return true;
+				}
+
+				if (unit.y > 500) {
+					unit.y -= 5;
+					return true;
+				}
+
+				return (fsm.getAction().data as WalkData).time < 0;
 			}
-
-			if (unit.x > 500) {
-				unit.x -= 5;
-				return true;
+		},
+		{
+			from: [STATE_ROTATE],
+			to: STATE_WALK,
+			condition() {
+				return (fsm.getAction().data as RotationData).time < 0;
 			}
-
-			if (unit.y < -500) {
-				unit.y += 5;
-				return true;
+		},
+		{
+			from: [],
+			to: STATE_DEAD,
+			condition() {
+				return unit.health <= 0;
 			}
-
-			if (unit.y > 500) {
-				unit.y -= 5;
-				return true;
-			}
-
-			return (fsm.getAction().data as WalkData).time < 0;
 		}
-	});
-
-	transitions.push({
-		from: [STATE_ROTATE],
-		to: STATE_WALK,
-		condition() {
-			return (fsm.getAction().data as RotationData).time < 0;
-		}
-	});
-
-	transitions.push({
-		from: [],
-		to: STATE_DEAD,
-		condition() {
-			return unit.health <= 0;
-		}
-	});
+	);
 
 	fsm.setState(STATE_ROTATE);
 

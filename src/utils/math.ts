@@ -7,6 +7,7 @@ export const mathAbs = Math.abs;
 export const mathMax = Math.max;
 export const mathMin = Math.min;
 export const mathSqrt = Math.sqrt;
+export const mathHypot = Math.hypot;
 export const mathPI = Math.PI;
 export const math2PI = mathPI * 2;
 

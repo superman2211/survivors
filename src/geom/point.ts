@@ -1,3 +1,5 @@
+import { mathHypot } from "../utils/math";
+
 export interface Point {
 	x: number,
 	y: number,
@@ -18,11 +20,11 @@ export function pointDistanceSquared(p0: Point, p1: Point): number {
 }
 
 export function pointDistance(p0: Point, p1: Point): number {
-	return Math.hypot(p0.x - p1.x, p0.y - p1.y);
+	return mathHypot(p0.x - p1.x, p0.y - p1.y);
 }
 
 export function pointLength(point: Point): number {
-	return Math.hypot(point.x, point.y);
+	return mathHypot(point.x, point.y);
 }
 
 export function pointLengthSquared(p: Point): number {

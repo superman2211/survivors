@@ -2,8 +2,8 @@ import { Application, application } from './game/application';
 import { Point } from './geom/point';
 import { componentKeyProcess, componentTouchProcess, componentUpdate } from './graphics/component';
 import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './graphics/events';
-import { canvas, dpr, globalMatrix, graphicsRender } from './graphics/graphics';
-import { hasTouch } from './utils/browser';
+import { canvas, globalMatrix, graphicsRender } from './graphics/graphics';
+import { domDocument, dpr, hasTouch } from './utils/browser';
 
 let app: Application;
 
@@ -35,8 +35,8 @@ function start() {
 		e.preventDefault();
 	}
 
-	document.onkeydown = (e) => keyHandler(e, KEY_DOWN);
-	document.onkeyup = (e) => keyHandler(e, KEY_UP);
+	domDocument.onkeydown = (e) => keyHandler(e, KEY_DOWN);
+	domDocument.onkeyup = (e) => keyHandler(e, KEY_UP);
 
 	if (hasTouch) {
 		function touchHandler(e: TouchEvent, type: number) {

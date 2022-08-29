@@ -14,7 +14,7 @@ export type FSMTransition<T> = {
 }
 
 export class FSM {
-	readonly actions = new Map<number, FSMAction<any>>();
+	readonly actions: { [key: number]: FSMAction<any> } = {};
 	readonly transitions: FSMTransition<any>[] = [];
 
 	private _state = -1;
@@ -34,7 +34,7 @@ export class FSM {
 	}
 
 	getAction<T>(): FSMAction<T> {
-		const action = this.actions.get(this._state);
+		const action = this.actions[this._state];
 		if (!action) throw 'Action not found: ' + this._state;
 		return action;
 	}

@@ -1,5 +1,6 @@
 import { formatColor } from "../graphics/pattern";
-import { mathRandom } from "./math";
+import { domDocument } from "./browser";
+import { math2PI, mathRandom } from "./math";
 
 export const CONTEXT_SIZE = 0;
 export const CONTEXT_FILL = 1;
@@ -46,7 +47,7 @@ const methods: { [key: number]: CommandMethod } = {
 		const radiusX = command.width! / 2;
 		const radiusY = command.height! / 2;
 		context.beginPath();
-		context.ellipse(command.x! + radiusX, command.y! + radiusY, radiusX, radiusY, 0, 0, Math.PI * 2);
+		context.ellipse(command.x! + radiusX, command.y! + radiusY, radiusX, radiusY, 0, 0, math2PI);
 		context.closePath();
 		context.fill();
 	},
@@ -92,7 +93,7 @@ const methods: { [key: number]: CommandMethod } = {
 };
 
 export function generateImage(commands: Command[]) {
-	const canvas = document.createElement('canvas');
+	const canvas = domDocument.createElement('canvas');
 	const context = canvas.getContext('2d')!;
 	let last: Command;
 	commands.forEach(command => {

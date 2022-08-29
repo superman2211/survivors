@@ -1,5 +1,6 @@
 import { Component } from "../../graphics/component";
 import { Command, CONTEXT_ELLIPSE, CONTEXT_FILL, CONTEXT_RECTANGLE, CONTEXT_REPEAT, CONTEXT_SIZE, generateImage } from "../../utils/generate-image";
+import { mathHypot } from "../../utils/math";
 
 const texture: Command[] = [
 	{ type: CONTEXT_FILL, color: 0xff666666 },// 5
@@ -18,7 +19,7 @@ export function createGround(): Component {
 	const size = 512;
 	const image = generateImage(texture);
 	const item = { image, x: -size / 2, y: -size / 2 };
-	const radius = Math.hypot(size) / 2;
+	const radius = mathHypot(size) / 2;
 	const children: Component[] = [];
 	for(let x = 0; x < 10; x++) {
 		for (let y = 0; y < 10; y++) {

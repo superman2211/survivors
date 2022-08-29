@@ -32,7 +32,7 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 
 	const weaponControl = getWeaponControl(unit, world);
 
-	actions.set(STATE_WALK, {
+	actions[STATE_WALK] = {
 		update(time) {
 			const currentWalkSpeed = walkSpeed * time;
 			unit.x += control.direction.x * currentWalkSpeed;
@@ -45,16 +45,16 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 		},
 		start() {
 		}
-	});
+	};
 
-	actions.set(STATE_DEAD, {
+	actions[STATE_DEAD] = {
 		update() {
 		},
 		start() {
 			unit.alpha = 0.5;
 			unit.body.enabled = false;
 		}
-	});
+	};
 
 	transitions.push({
 		from: [],
