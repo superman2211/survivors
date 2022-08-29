@@ -43,7 +43,7 @@ export function renderShape(shape: Shape, pallete: number[], ct: ColorTransform,
 				break;
 
 			default:
-				throw `unknown command: ${shape[i]}`;
+				throw '';
 		}
 	}
 }

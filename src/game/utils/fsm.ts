@@ -35,7 +35,7 @@ export class FSM {
 
 	getAction<T>(): FSMAction<T> {
 		const action = this.actions[this._state];
-		if (!action) throw 'Action not found: ' + this._state;
+		if (!action) throw '';
 		return action;
 	}
 
