@@ -19,6 +19,7 @@ export abstract class BasePlayerControl implements IPlayerControl {
 	attack = false;
 	rotation = 0;
 	weapon = 0;
+	player?: Unit;
 
 	constructor(ui: UI) {
 		ui.setActiveWeapon(this.weapon);
@@ -41,8 +42,6 @@ export abstract class BasePlayerControl implements IPlayerControl {
 }
 
 export class DesktopPlayerControl extends BasePlayerControl {
-	player?: Unit;
-
 	constructor(ui: UI, world: Component) {
 		super(ui);
 
@@ -133,6 +132,8 @@ export class MobilePlayerControl extends BasePlayerControl {
 			this.attack = ui.attackJoystick.isActive();
 			if (this.attack) {
 				this.rotation = mathAtan2(value.y, value.x);
+
+				playAudio(this.player!.settings.weapons![this.weapon].sound);
 			}
 		};
 	}
