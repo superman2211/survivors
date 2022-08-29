@@ -4,15 +4,10 @@ import { FSM } from "../utils/fsm";
 import { Body, IBody } from "../utils/physics";
 import { Weapon } from "../weapons/weapon";
 
-export const enum UnitType {
-	PLAYER,
-	NPC,
-	ENEMY,
-	NEUTRAL
-}
+
 
 export interface UnitSettings {
-	type: UnitType,
+	type: number,
 	radius: number,
 	weight: number,
 	health: number,
@@ -24,23 +19,12 @@ export interface UnitSettings {
 	color: number,
 }
 
-const friends = new Map<UnitType, UnitType>();
-friends.set(UnitType.NPC, UnitType.PLAYER);
-friends.set(UnitType.PLAYER, UnitType.NPC);
-
-export function isFriend(type1: UnitType, type2: UnitType): boolean {
-	if (type1 === type2) {
-		return true;
-	}
-	return friends.get(type1) === type2;
-}
-
 export interface Unit extends Component, IBody {
 	x: number;
 	y: number;
 	rotation: number;
 	fsm: FSM;
-	type: UnitType;
+	type: number;
 	body: Body;
 	settings: UnitSettings;
 	health: number;

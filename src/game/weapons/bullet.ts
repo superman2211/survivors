@@ -1,18 +1,19 @@
 import { Point, pointCreate, pointLength, pointNormalize } from "../../geom/point";
 import { Component } from "../../graphics/component";
 import { FILL, PATH, Shape } from "../../graphics/shape";
-import { mathCos, mathSin, mathSqrt } from "../../utils/math";
+import { mathCos, mathSin } from "../../utils/math";
 import { IBody, Body } from "../utils/physics";
-import { isFriend, Unit, UnitType } from "../units/unit";
+import { Unit } from "../units/unit";
 import { Weapon } from "./weapon";
 import { World } from "../world";
+import { isFriend } from "../units/types";
 
 export interface Bullet extends Component, IBody {
 	x: number,
 	y: number,
 }
 
-export function createBullet(x: number, y: number, rotation: number, weapon: Weapon, type: UnitType, world: World): Bullet {
+export function createBullet(x: number, y: number, rotation: number, weapon: Weapon, type: number, world: World): Bullet {
 	const speed: Point = {
 		x: weapon.speed * mathCos(rotation),
 		y: weapon.speed * mathSin(rotation),

@@ -1,7 +1,7 @@
 import { Application, application } from './game/application';
 import { Point } from './geom/point';
 import { componentKeyProcess, componentTouchProcess, componentUpdate } from './graphics/component';
-import { KeyboardEventType, TouchEventType } from './graphics/events';
+import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './graphics/events';
 import { canvas, dpr, globalMatrix, graphicsRender } from './graphics/graphics';
 import { hasTouch } from './utils/browser';
 
@@ -30,57 +30,40 @@ function start() {
 	oldTime = performance.now();
 	update();
 
-	document.addEventListener('keydown', (e) => {
-		componentKeyProcess(app, e, KeyboardEventType.DOWN);
+	function keyHandler(e: KeyboardEvent, type: number) {
+		componentKeyProcess(app, e, type);
 		e.preventDefault();
-	});
+	}
 
-	document.addEventListener('keyup', (e) => {
-		componentKeyProcess(app, e, KeyboardEventType.UP);
-		e.preventDefault();
-	});
+	document.onkeydown = (e) => keyHandler(e, KEY_DOWN);
+	document.onkeyup = (e) => keyHandler(e, KEY_UP);
 
 	if (hasTouch) {
-		const typeMap = new Map<string, TouchEventType>([
-			['touchstart', TouchEventType.DOWN],
-			['touchend', TouchEventType.UP],
-			['touchcancel', TouchEventType.UP],
-			['touchmove', TouchEventType.MOVE],
-		]);
-
-		function touchHandler(e: TouchEvent) {
-			const type = typeMap.get(e.type)!;
-			for (let i = 0; i < e.changedTouches.length; i++) {
-				const touch = e.changedTouches[i];
-				const global: Point = { x: touch.clientX * dpr, y: touch.clientY * dpr };
-				componentTouchProcess(app, global, globalMatrix, type, touch.identifier);
+		function touchHandler(e: TouchEvent, type: number) {
+			const touches = e.changedTouches;
+			for (let i = 0; i < touches.length; i++) {
+				const { clientX, clientY, identifier } = touches[i];
+				const global: Point = { x: clientX * dpr, y: clientY * dpr };
+				componentTouchProcess(app, global, globalMatrix, type, identifier);
 			}
 			e.preventDefault();
 		}
 
-		canvas.addEventListener('touchstart', touchHandler, false);
-		canvas.addEventListener('touchend', touchHandler, false);
-		canvas.addEventListener('touchcancel', touchHandler, false);
-		canvas.addEventListener('touchmove', touchHandler, false);
+		canvas.ontouchstart = (e) => touchHandler(e, TOUCH_DOWN);
+		canvas.ontouchend = (e) => touchHandler(e,TOUCH_UP);
+		canvas.ontouchcancel = (e) => touchHandler(e, TOUCH_UP);
+		canvas.ontouchmove = (e) => touchHandler(e, TOUCH_MOVE);
 	} else {
-		const typeMap = new Map<string, TouchEventType>([
-			['mousedown', TouchEventType.DOWN],
-			['mouseup', TouchEventType.UP],
-			['mouseleave', TouchEventType.UP],
-			['mousemove', TouchEventType.MOVE],
-		]);
-
-		function mouseHandler(e: MouseEvent) {
-			const type = typeMap.get(e.type)!;
+		function mouseHandler(e: MouseEvent, type: number) {
 			const global: Point = { x: e.clientX * dpr, y: e.clientY * dpr };
 			componentTouchProcess(app, global, globalMatrix, type, 0);
 			e.preventDefault();
 		};
 
-		canvas.addEventListener('mousedown', mouseHandler);
-		canvas.addEventListener('mousemove', mouseHandler);
-		canvas.addEventListener('mouseup', mouseHandler);
-		canvas.addEventListener('mouseleave', mouseHandler);
+		canvas.onmousedown = (e) => mouseHandler(e, TOUCH_DOWN);
+		canvas.onmousemove = (e) => mouseHandler(e, TOUCH_MOVE);
+		canvas.onmouseup = (e) => mouseHandler(e, TOUCH_UP);
+		canvas.onmouseleave = (e) => mouseHandler(e, TOUCH_UP);
 	}
 }
 

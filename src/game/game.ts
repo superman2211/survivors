@@ -6,11 +6,12 @@ import { createEnemy } from './units/enemy';
 import { createAlly } from './units/ally';
 import { createPlayer } from './units/player';
 import { createWorld } from './world';
-import { isFriend, Unit, UnitType } from './units/unit';
+import { Unit } from './units/unit';
 import { IBody } from './utils/physics';
 import { generateShape } from '../utils/generate-shape';
 import { createUI, UI } from './ui';
 import { getPlayerControl, IPlayerControl } from './utils/player-control';
+import { UNIT_ENEMY, isFriend } from './units/types';
 
 const SIZE = 2500;
 
@@ -94,7 +95,7 @@ export function game(ui: UI): Game {
 		],
 		size: SIZE,
 		onUpdate() {
-			if (world.getUnitCount(UnitType.ENEMY) < enemyCount) {
+			if (world.getUnitCount(UNIT_ENEMY) < enemyCount) {
 				const enemy = createEnemy(world);
 				randomPosition(enemy, world.units, -enemyDistance, enemyDistance);
 				world.addUnit(enemy);

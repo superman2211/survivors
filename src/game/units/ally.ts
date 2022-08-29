@@ -4,12 +4,10 @@ import { FSMAction } from "../utils/fsm";
 import { getWeaponControl } from "../weapons/weapon";
 import { randomWeapon } from "../weapons/weapons";
 import { World } from "../world";
-import { BaseState, createBase } from "./base";
-import { isFriend, Unit, UnitSettings, UnitType } from "./unit";
-
-const enum AllyState {
-	ATTACK = 10,
-}
+import { createBase } from "./base";
+import { STATE_ATTACK, STATE_ROTATE, STATE_WALK } from "./states";
+import { isFriend, UNIT_ALLY } from "./types";
+import { Unit, UnitSettings } from "./unit";
 
 type TargetData = { target: Unit };
 
@@ -39,7 +37,7 @@ export function createAlly(world: World) {
 	const radius = 30;
 
 	const settings: UnitSettings = {
-		type: UnitType.NPC,
+		type: UNIT_ALLY,
 		radius,
 		weight: 90,
 		health: 100,
@@ -63,7 +61,7 @@ export function createAlly(world: World) {
 
 	const weaponControl = getWeaponControl(unit, world);
 
-	actions.set(AllyState.ATTACK, {
+	actions.set(STATE_ATTACK, {
 		update(time) {
 			const traget = this.data!.target;
 			unit.rotation = mathAtan2(traget.y - unit.y, traget.x - unit.x);
@@ -86,8 +84,8 @@ export function createAlly(world: World) {
 	} as FSMAction<TargetData>)
 
 	transitions.push({
-		from: [BaseState.ROTATE, BaseState.WALK],
-		to: AllyState.ATTACK,
+		from: [STATE_ROTATE, STATE_WALK],
+		to: STATE_ATTACK,
 		condition() {
 			let target: Unit | null = world.getNearOpponent(unit, enemyDistance);
 			if (target) {
@@ -99,8 +97,8 @@ export function createAlly(world: World) {
 	});
 
 	transitions.push({
-		from: [AllyState.ATTACK],
-		to: BaseState.ROTATE,
+		from: [STATE_ATTACK],
+		to: STATE_ROTATE,
 		condition() {
 			const target: Unit = (fsm.getAction().data as TargetData).target;
 			if (target.health <= 0) {

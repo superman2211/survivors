@@ -1,19 +1,16 @@
 import { IPlayerControl } from "../utils/player-control";
-import { createUnit, Unit, UnitSettings, UnitType } from "./unit";
+import { createUnit, Unit, UnitSettings } from "./unit";
 import { getWeaponControl } from "../weapons/weapon";
 import { World } from "../world";
 import { gun, rifle, shotgun } from "../weapons/weapons";
-
-const enum PlayerState {
-	ALIVE = 0,
-	DEAD = 1,
-}
+import { UNIT_PLAYER } from "./types";
+import { STATE_DEAD, STATE_WALK } from "./states";
 
 export function createPlayer(world: World, control: IPlayerControl): Unit {
 	const radius = 30;
 
 	const settings: UnitSettings = {
-		type: UnitType.PLAYER,
+		type: UNIT_PLAYER,
 		radius,
 		weight: 90,
 		health: 100,
@@ -35,7 +32,7 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 
 	const weaponControl = getWeaponControl(unit, world);
 
-	actions.set(PlayerState.ALIVE, {
+	actions.set(STATE_WALK, {
 		update(time) {
 			const currentWalkSpeed = walkSpeed * time;
 			unit.x += control.direction.x * currentWalkSpeed;
@@ -50,7 +47,7 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 		}
 	});
 
-	actions.set(PlayerState.DEAD, {
+	actions.set(STATE_DEAD, {
 		update() {
 		},
 		start() {
@@ -61,13 +58,13 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 
 	transitions.push({
 		from: [],
-		to: PlayerState.DEAD,
+		to: STATE_DEAD,
 		condition() {
 			return unit.health <= 0;
 		}
 	});
 
-	fsm.setState(PlayerState.ALIVE);
+	fsm.setState(STATE_WALK);
 
 	return unit;
 }

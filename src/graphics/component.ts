@@ -6,7 +6,7 @@ import { renderText, Text } from './text';
 import { getColorTransform, getMatrix, Transform } from './transform';
 import { Keyboard, Pointer, Update } from './extensions';
 import { Point, pointCreate } from '../geom/point';
-import { KeyboardEventType, TouchEventType } from './events';
+import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './events';
 
 export interface Component extends Transform, Update, Keyboard, Pointer {
 	shape?: Shape;
@@ -96,14 +96,14 @@ export function componentUpdate(component: Component, time: number) {
 	children.forEach((child) => componentUpdate(child, time));
 }
 
-export function componentKeyProcess(component: Component, e: KeyboardEvent, type: KeyboardEventType) {
+export function componentKeyProcess(component: Component, e: KeyboardEvent, type: number) {
 	switch (type) {
-		case KeyboardEventType.DOWN:
+		case KEY_DOWN:
 			if (component.onKeyDown) {
 				component.onKeyDown(e);
 			}
 			break;
-		case KeyboardEventType.UP:
+		case KEY_UP:
 			if (component.onKeyUp) {
 				component.onKeyUp(e);
 			}
@@ -119,7 +119,7 @@ export function componentKeyProcess(component: Component, e: KeyboardEvent, type
 	children.forEach((child) => componentKeyProcess(child, e, type));
 }
 
-export function componentTouchProcess(component: Component, global: Point, parentMatrix: Matrix, type: TouchEventType, id: number) {
+export function componentTouchProcess(component: Component, global: Point, parentMatrix: Matrix, type: number, id: number) {
 	if (component.touchable === false) {
 		return;
 	}
@@ -129,21 +129,21 @@ export function componentTouchProcess(component: Component, global: Point, paren
 	matrixConcat(parentMatrix, matrix, matrix);
 
 	switch (type) {
-		case TouchEventType.DOWN:
+		case TOUCH_DOWN:
 			if (component.onTouchDown) {
 				matrixTransformInversePoint(matrix, global, local);
 				component.onTouchDown(local, global, id);
 			}
 			break;
 
-		case TouchEventType.UP:
+		case TOUCH_UP:
 			if (component.onTouchUp) {
 				matrixTransformInversePoint(matrix, global, local);
 				component.onTouchUp(local, global, id);
 			}
 			break;
 
-		case TouchEventType.MOVE:
+		case TOUCH_MOVE:
 			if (component.onTouchMove) {
 				matrixTransformInversePoint(matrix, global, local);
 				component.onTouchMove(local, global, id);

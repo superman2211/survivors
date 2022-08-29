@@ -1,18 +1,16 @@
 import { formatColor } from "../graphics/pattern";
 import { mathRandom } from "./math";
 
-export const enum CommandType {
-	SIZE,
-	FILL,
-	RECTANGLE,
-	ELLIPSE,
-	LINE,
-	REPEAT,
-	NOISE,
-}
+export const CONTEXT_SIZE = 0;
+export const CONTEXT_FILL = 1;
+export const CONTEXT_RECTANGLE = 2;
+export const CONTEXT_ELLIPSE = 3;
+export const CONTEXT_LINE = 4;
+export const CONTEXT_REPEAT = 5;
+export const CONTEXT_NOISE = 6;
 
 export interface Command {
-	type: CommandType,
+	type: number,
 	x?: number,
 	y?: number,
 	width?: number;
@@ -27,9 +25,9 @@ export interface Command {
 
 type CommandMethod = (command: Command, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, last: Command) => void;
 
-const methods = new Map<CommandType, CommandMethod>();
+const methods = new Map<number, CommandMethod>();
 
-methods.set(CommandType.SIZE, (command, canvas, context) => {
+methods.set(CONTEXT_SIZE, (command, canvas, context) => {
 	const fillStyle = context.fillStyle;
 	canvas.width = command.width!;
 	canvas.height = command.height!;
@@ -37,15 +35,15 @@ methods.set(CommandType.SIZE, (command, canvas, context) => {
 	context.fillRect(0, 0, canvas.width, canvas.height);
 });
 
-methods.set(CommandType.FILL, (command, canvas, context) => {
+methods.set(CONTEXT_FILL, (command, canvas, context) => {
 	context.fillStyle = formatColor(command.color!);
 });
 
-methods.set(CommandType.RECTANGLE, (command, canvas, context) => {
+methods.set(CONTEXT_RECTANGLE, (command, canvas, context) => {
 	context.fillRect(command.x!, command.y!, command.width!, command.height!);
 });
 
-methods.set(CommandType.ELLIPSE, (command, canvas, context) => {
+methods.set(CONTEXT_ELLIPSE, (command, canvas, context) => {
 	const radiusX = command.width! / 2;
 	const radiusY = command.height! / 2;
 	context.beginPath();
@@ -54,7 +52,7 @@ methods.set(CommandType.ELLIPSE, (command, canvas, context) => {
 	context.fill();
 });
 
-methods.set(CommandType.REPEAT, (command, canvas, context, last) => {
+methods.set(CONTEXT_REPEAT, (command, canvas, context, last) => {
 	const method = methods.get(last.type)!;
 	const startX = last.x!;
 	const stepX = command.stepX!;
@@ -75,7 +73,7 @@ methods.set(CommandType.REPEAT, (command, canvas, context, last) => {
 	}
 });
 
-methods.set(CommandType.NOISE, (command, canvas, context) => {
+methods.set(CONTEXT_NOISE, (command, canvas, context) => {
 	const offset = command.colorOffset!;
 	const offset2 = offset / 2;
 	const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
