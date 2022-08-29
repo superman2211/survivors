@@ -11,10 +11,11 @@
 		"watch:ts": "tsc -w",
 		"watch:rollup": "rollup -c rollup.config.dev.js -w",
 		"build": "yarn clean && yarn build-resources && tsc && rollup -c rollup.config.prod.js && yarn create-zip",
+		"build-roadroller": "yarn clean && yarn build-resources && tsc && rollup -c rollup.config.prod.js && yarn apply-roadroller && yarn create-zip",
 		"serve": "http-server ./dist/build",
 		"lint": "eslint --fix",
 		"build-resources": "node scripts/build-resources.js",
-		"apply-roadroller": "roadroller dist/build/bundle.js -o dist/build/bundle.js",
+		"apply-roadroller": "roadroller dist/build/s.js -o dist/build/s.js",
 		"create-zip": "bestzip dist/survivors.zip dist/build/*"
 	},
 	"dependencies": {
@@ -23,6 +24,7 @@
 	},
 	"devDependencies": {
 		"@rollup/plugin-html": "^0.2.3",
+		"@rollup/plugin-replace": "^4.0.0",
 		"@typescript-eslint/eslint-plugin": "^4.29.3",
 		"@typescript-eslint/parser": "^4.29.3",
 		"bestzip": "^2.2.0",

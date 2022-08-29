@@ -1,5 +1,6 @@
 import { terser } from 'rollup-plugin-terser';
 import filesize from 'rollup-plugin-filesize';
+import replace from '@rollup/plugin-replace';
 import base from './rollup.config';
 
 const properties = [
@@ -80,6 +81,6 @@ export default {
 		// terser({ mangle: { properties: { builtins: true, regex } } }),
 		terser(),
 		filesize(),
-		// TODO replace const to let
+		replace({ 'const ': 'let '}),
 	],
 };
