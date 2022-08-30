@@ -1,18 +1,18 @@
 import { Component } from "../../graphics/component";
-import { Command, CONTEXT_ELLIPSE, CONTEXT_FILL, CONTEXT_RECTANGLE, CONTEXT_REPEAT, CONTEXT_SIZE, generateImage } from "../../utils/generate-image";
+import { Command, CommandType, generateImage } from "../../utils/generate-image";
 import { mathHypot } from "../../utils/math";
 
 const texture: Command[] = [
-	{ type: CONTEXT_FILL, color: 0xff666666 },// 5
-	{ type: CONTEXT_SIZE, width: 512, height: 512 }, // 5
-	{ type: CONTEXT_FILL, color: 0xff778877 }, // 5
-	{ type: CONTEXT_RECTANGLE, x: 20, y: 20, width: 50, height: 50 }, // 5
-	{ type: CONTEXT_REPEAT, stepX: 70, stepY: 70, count: 48, cols: 7, }, // 5 
-	{ type: CONTEXT_FILL, color: 0xff666666 }, // 5
-	{ type: CONTEXT_RECTANGLE, x: 140, y: 140, width: 220, height: 220 }, // 5
-	{ type: CONTEXT_FILL, color: 0xff778877 }, // 5
-	{ type: CONTEXT_ELLIPSE, x: 160, y: 160, width: 190, height: 190 }, // 5
-	// { type: CONTEXT_NOISE, colorOffset: 30 }, // 2
+	{ type: CommandType.FILL, color: 0xff666666 },// 5
+	{ type: CommandType.SIZE, width: 512, height: 512 }, // 5
+	{ type: CommandType.FILL, color: 0xff778877 }, // 5
+	{ type: CommandType.RECTANGLE, x: 20, y: 20, width: 50, height: 50 }, // 5
+	{ type: CommandType.REPEAT, stepX: 70, stepY: 70, count: 48, cols: 7, }, // 5 
+	{ type: CommandType.FILL, color: 0xff666666 }, // 5
+	{ type: CommandType.RECTANGLE, x: 140, y: 140, width: 220, height: 220 }, // 5
+	{ type: CommandType.FILL, color: 0xff778877 }, // 5
+	{ type: CommandType.ELLIPSE, x: 160, y: 160, width: 190, height: 190 }, // 5
+	// { type: CommandType.NOISE, colorOffset: 30 }, // 2
 ];
 
 export function createGround(): Component {

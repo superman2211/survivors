@@ -9,9 +9,9 @@ import { createWorld } from './world';
 import { Unit } from './units/unit';
 import { IBody } from './utils/physics';
 import { generateShape } from '../utils/generate-shape';
-import { createUI, UI } from './ui';
-import { getPlayerControl, IPlayerControl } from './utils/player-control';
-import { UNIT_ENEMY, isFriend } from './units/types';
+import { UI } from './ui';
+import { getPlayerControl } from './utils/player-control';
+import { UnitType, isFriend } from './units/types';
 
 const SIZE = 2500;
 
@@ -31,7 +31,7 @@ function randomPosition(unit: Unit, units: Unit[], min: number, max: number) {
 		unit.y = randomFloat(min, max);
 		let safe = true;
 		for (const u of units) {
-			if (!isFriend(u.type, unit.type)) {
+			if (!isFriend(u.settings.type, unit.settings.type)) {
 				if (pointDistanceSquared(unit, u) < safeDistanceSquared) {
 					safe = false;
 					break;
@@ -95,7 +95,7 @@ export function game(ui: UI): Game {
 		],
 		size: SIZE,
 		onUpdate() {
-			if (world.getUnitCount(UNIT_ENEMY) < enemyCount) {
+			if (world.getUnitCount(UnitType.ENEMY) < enemyCount) {
 				const enemy = createEnemy(world);
 				randomPosition(enemy, world.units, -enemyDistance, enemyDistance);
 				world.addUnit(enemy);

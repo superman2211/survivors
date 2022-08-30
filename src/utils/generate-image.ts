@@ -2,13 +2,15 @@ import { formatColor } from "../graphics/pattern";
 import { domDocument } from "./browser";
 import { math2PI, mathRandom } from "./math";
 
-export const CONTEXT_SIZE = 0;
-export const CONTEXT_FILL = 1;
-export const CONTEXT_RECTANGLE = 2;
-export const CONTEXT_ELLIPSE = 3;
-export const CONTEXT_LINE = 4;
-export const CONTEXT_REPEAT = 5;
-export const CONTEXT_NOISE = 6;
+export const enum CommandType {
+	SIZE = 0,
+	FILL = 1,
+	RECTANGLE = 2,
+	ELLIPSE = 3,
+	LINE = 4,
+	REPEAT = 5,
+	NOISE = 6,
+}
 
 export interface Command {
 	type: number,
@@ -27,7 +29,7 @@ export interface Command {
 type CommandMethod = (command: Command, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, last: Command) => void;
 
 const methods: { [key: number]: CommandMethod } = {
-	[CONTEXT_SIZE]: (command, canvas, context) => {
+	[CommandType.SIZE]: (command, canvas, context) => {
 		const fillStyle = context.fillStyle;
 		canvas.width = command.width!;
 		canvas.height = command.height!;
@@ -35,15 +37,15 @@ const methods: { [key: number]: CommandMethod } = {
 		context.fillRect(0, 0, canvas.width, canvas.height);
 	},
 
-	[CONTEXT_FILL]: (command, canvas, context) => {
+	[CommandType.FILL]: (command, canvas, context) => {
 		context.fillStyle = formatColor(command.color!);
 	},
 
-	[CONTEXT_RECTANGLE]: (command, canvas, context) => {
+	[CommandType.RECTANGLE]: (command, canvas, context) => {
 		context.fillRect(command.x!, command.y!, command.width!, command.height!);
 	},
 
-	[CONTEXT_ELLIPSE]: (command, canvas, context) => {
+	[CommandType.ELLIPSE]: (command, canvas, context) => {
 		const radiusX = command.width! / 2;
 		const radiusY = command.height! / 2;
 		context.beginPath();
@@ -52,7 +54,7 @@ const methods: { [key: number]: CommandMethod } = {
 		context.fill();
 	},
 
-	[CONTEXT_REPEAT]: (command, canvas, context, last) => {
+	[CommandType.REPEAT]: (command, canvas, context, last) => {
 		const method = methods[last.type]!;
 		const startX = last.x!;
 		const stepX = command.stepX!;
@@ -73,7 +75,7 @@ const methods: { [key: number]: CommandMethod } = {
 		}
 	},
 
-	[CONTEXT_NOISE]: (command, canvas, context) => {
+	[CommandType.NOISE]: (command, canvas, context) => {
 		const offset = command.colorOffset!;
 		const offset2 = offset / 2;
 		const imageData = context.getImageData(0, 0, canvas.width, canvas.height);

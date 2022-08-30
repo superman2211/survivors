@@ -21,14 +21,16 @@ export interface Weapon {
 export function getWeaponControl(unit: Unit, world: World) {
 	let weaponTime = 0;
 	let pointIndex = 0;
+	const { settings } = unit;
+	const { type, weapons } = settings;
 	return (time: number, active: boolean) => {
-		if (active && unit.settings.weapons) {
-			const weapon = unit.settings.weapons[unit.weapon];
+		if (active && weapons) {
+			const weapon = weapons[unit.weapon];
 			weaponTime -= time;
 			if (weaponTime <= 0) {
 				weaponTime = 1 / weapon.frequency;
 
-				const { rotation, type } = unit;
+				const { rotation } = unit;
 
 				if (weapon.angle) {
 					let angle = rotation - weapon.angle / 2;

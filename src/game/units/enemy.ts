@@ -6,8 +6,8 @@ import { getWeaponControl } from "../weapons/weapon";
 import { World } from "../world";
 import { createBase } from "./base";
 import { hand } from "../weapons/weapons";
-import { UNIT_ENEMY } from "./types";
-import { STATE_ATTACK, STATE_GOTO_TARGET, STATE_ROTATE, STATE_WALK } from "./states";
+import { UnitType } from "./types";
+import { UnitState } from "./states";
 
 type TargetData = { target: Unit };
 
@@ -22,7 +22,7 @@ export function createEnemy(world: World) {
 	const radius = randomFloat(25, 45);
 
 	const settings: UnitSettings = {
-		type: UNIT_ENEMY,
+		type: UnitType.ENEMY,
 		radius,
 		weight: radius * 3,
 		health: radius * 4,
@@ -48,7 +48,7 @@ export function createEnemy(world: World) {
 
 	const weaponControl = getWeaponControl(unit, world);
 
-	actions[STATE_GOTO_TARGET] = {
+	actions[UnitState.GOTO_TARGET] = {
 		update(time: number) {
 			unit.rotation = mathAtan2(this.data!.target.y - unit.y, this.data!.target.x - unit.x);
 			const speedX = mathCos(unit.rotation) * walkSpeed;
@@ -61,7 +61,7 @@ export function createEnemy(world: World) {
 		}
 	} as FSMAction<TargetData>;
 
-	actions[STATE_ATTACK] = {
+	actions[UnitState.ATTACK] = {
 		update(time: number) {
 			weaponControl(time, true);
 		},
@@ -72,8 +72,8 @@ export function createEnemy(world: World) {
 
 	transitions.push(
 		{
-			from: [STATE_ROTATE, STATE_WALK],
-			to: STATE_GOTO_TARGET,
+			from: [UnitState.ROTATE, UnitState.WALK],
+			to: UnitState.GOTO_TARGET,
 			condition() {
 				const target: Unit | null = world.getNearOpponent(unit, enemyDistance);
 				if (target) {
@@ -84,8 +84,8 @@ export function createEnemy(world: World) {
 			}
 		},
 		{
-			from: [STATE_GOTO_TARGET, STATE_ATTACK],
-			to: STATE_ROTATE,
+			from: [UnitState.GOTO_TARGET, UnitState.ATTACK],
+			to: UnitState.ROTATE,
 			condition() {
 				const target: Unit = (fsm.getAction().data as TargetData).target;
 				if (target.health <= 0) {
@@ -106,8 +106,8 @@ export function createEnemy(world: World) {
 			}
 		},
 		{
-			from: [STATE_GOTO_TARGET],
-			to: STATE_ATTACK,
+			from: [UnitState.GOTO_TARGET],
+			to: UnitState.ATTACK,
 			condition() {
 				const target: Unit = (fsm.getAction().data as TargetData).target;
 				if (isTargetNearby(target, unit)) {
@@ -118,8 +118,8 @@ export function createEnemy(world: World) {
 			}
 		},
 		{
-			from: [STATE_ATTACK],
-			to: STATE_GOTO_TARGET,
+			from: [UnitState.ATTACK],
+			to: UnitState.GOTO_TARGET,
 			condition() {
 				const target: Unit = (fsm.getAction().data as TargetData).target
 				if (!isTargetNearby(target, unit)) {

@@ -1,7 +1,7 @@
 import { chance, math2PI, mathCos, mathRandom, mathSin, randomFloat } from "../../utils/math";
 import { FSMAction } from "../utils/fsm";
 import { World } from "../world";
-import { STATE_DEAD, STATE_ROTATE, STATE_WALK } from "./states";
+import { UnitState } from "./states";
 import { createUnit, Unit, UnitSettings } from "./unit";
 
 type RotationData = { time: number, speed: number };
@@ -17,7 +17,7 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 	const { fsm } = unit;
 	const { actions, transitions } = fsm;
 
-	actions[STATE_ROTATE] = {
+	actions[UnitState.ROTATE] = {
 		update(time: number) {
 			unit.rotation += this.data!.speed * time;
 			this.data!.time -= time;
@@ -30,7 +30,7 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 		},
 	} as FSMAction<RotationData>;
 
-	actions[STATE_WALK] = {
+	actions[UnitState.WALK] = {
 		update(time: number) {
 			unit.x += this.data!.speedX * time;
 			unit.y += this.data!.speedY * time;
@@ -45,7 +45,7 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 		}
 	} as FSMAction<WalkData>;
 
-	actions[STATE_DEAD] = {
+	actions[UnitState.DEAD] = {
 		update(time) {
 			unit.alpha! -= time;
 			if (unit.alpha! < 0) {
@@ -60,8 +60,8 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 
 	transitions.push(
 		{
-			from: [STATE_WALK],
-			to: STATE_ROTATE,
+			from: [UnitState.WALK],
+			to: UnitState.ROTATE,
 			condition() {
 				if (unit.x < -500) {
 					unit.x += 5;
@@ -87,22 +87,22 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 			}
 		},
 		{
-			from: [STATE_ROTATE],
-			to: STATE_WALK,
+			from: [UnitState.ROTATE],
+			to: UnitState.WALK,
 			condition() {
 				return (fsm.getAction().data as RotationData).time < 0;
 			}
 		},
 		{
 			from: [],
-			to: STATE_DEAD,
+			to: UnitState.DEAD,
 			condition() {
 				return unit.health <= 0;
 			}
 		}
 	);
 
-	fsm.setState(STATE_ROTATE);
+	fsm.setState(UnitState.ROTATE);
 
 	return unit;
 }

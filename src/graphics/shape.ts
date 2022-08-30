@@ -3,36 +3,38 @@ import { transformColor } from './pattern';
 
 export type Shape = Uint8Array | number[];
 
-export const FILL = 0;
-export const STROKE = 1;
-export const MOVE = 2;
-export const LINE = 3;
-export const PATH = 4;
+export const enum ShapeCommand {
+	FILL = 0,
+	STROKE = 1,
+	MOVE = 2,
+	LINE = 3,
+	PATH = 4,
+}
 
 export function renderShape(shape: Shape, pallete: number[], ct: ColorTransform, context: CanvasRenderingContext2D) {
 	for (let i = 0; i < shape.length; i++) {
 		switch (shape[i]) {
-			case FILL:
+			case ShapeCommand.FILL:
 				context.fillStyle = transformColor(pallete[shape[++i]], ct);
 				context.fill();
 				break;
 
-			case STROKE:
+			case ShapeCommand.STROKE:
 				context.strokeStyle = transformColor(pallete[shape[++i]], ct);
 				context.lineWidth = shape[++i];
 				context.stroke();
 				break;
 
-			case MOVE:
+			case ShapeCommand.MOVE:
 				context.beginPath();
 				context.moveTo(shape[++i], shape[++i]);
 				break;
 
-			case LINE:
+			case ShapeCommand.LINE:
 				context.lineTo(shape[++i], shape[++i]);
 				break;
 
-			case PATH:
+			case ShapeCommand.PATH:
 				let count = shape[++i];
 				count--;
 				context.beginPath();

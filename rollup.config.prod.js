@@ -37,6 +37,8 @@ const properties = [
 	'pallete',
 	'shape',
 	'visible',
+	'brightness',
+	'tint',
 
 	// game
 	'addUnit',

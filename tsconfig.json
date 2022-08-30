@@ -6,7 +6,6 @@
 		"esModuleInterop": true,
 		"noImplicitAny": true,
 		"removeComments": true,
-		"preserveConstEnums": true,
 		"declaration": true,
 		"sourceMap": true,
 		"declarationDir": "dist/esm",

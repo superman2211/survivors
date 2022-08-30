@@ -5,14 +5,14 @@ import { IBody, updatePhysics } from "./utils/physics";
 import { Unit } from "./units/unit";
 import { Impulse, updateImpulses } from "./weapons/impulse";
 import { Point, pointDistanceSquared } from "../geom/point";
-import { isFriend } from "./units/types";
+import { isFriend, UnitType } from "./units/types";
 
 export interface World extends Component {
 	readonly units: Unit[];
 
 	addUnit(unit: Unit): void;
 	removeUnit(unit: Unit): void;
-	getUnitCount(type: number): number;
+	getUnitCount(type: UnitType): number;
 	getNearOpponent(unit: Unit, distance: number): Unit | null;
 
 	addObject(obj: Component & IBody): void;
@@ -66,10 +66,10 @@ export function createWorld(): World {
 			bodies.splice(bodies.indexOf(unit), 1);
 		},
 
-		getUnitCount(type: number): number {
+		getUnitCount(type: UnitType): number {
 			let count = 0;
 			for (const unit of this.units) {
-				if (unit.type === type) {
+				if (unit.settings.type === type) {
 					count++;
 				}
 			}
@@ -80,7 +80,7 @@ export function createWorld(): World {
 			let target: Unit | null = null;
 			let minDistance = distance * distance;
 			for (const u of units) {
-				if (!isFriend(u.type, unit.type) && u.health > 0) {
+				if (!isFriend(u.settings.type, unit.settings.type) && u.health > 0) {
 					const distanceSquared = pointDistanceSquared(u, unit);
 					if (distanceSquared < minDistance) {
 						minDistance = distanceSquared;

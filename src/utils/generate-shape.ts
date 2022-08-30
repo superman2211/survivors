@@ -1,4 +1,4 @@
-import { FILL, PATH } from '../graphics/shape';
+import { ShapeCommand } from '../graphics/shape';
 import {
 	math2PI,
 	mathCos, mathPI, mathRandom, mathSin, randomInt,
@@ -14,7 +14,7 @@ export function generateShape(
 ) {
 	let count = randomInt(countMin, countMax);
 
-	array.push(PATH, count);
+	array.push(ShapeCommand.PATH, count);
 
 	const angleStep = math2PI / count;
 	if (angle === undefined) {
@@ -29,5 +29,5 @@ export function generateShape(
 		angle += angleStep;
 	}
 
-	array.push(FILL, color);
+	array.push(ShapeCommand.FILL, color);
 }

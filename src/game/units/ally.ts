@@ -5,8 +5,8 @@ import { getWeaponControl } from "../weapons/weapon";
 import { randomWeapon } from "../weapons/weapons";
 import { World } from "../world";
 import { createBase } from "./base";
-import { STATE_ATTACK, STATE_ROTATE, STATE_WALK } from "./states";
-import { isFriend, UNIT_ALLY } from "./types";
+import { UnitState } from "./states";
+import { isFriend, UnitType } from "./types";
 import { Unit, UnitSettings } from "./unit";
 
 type TargetData = { target: Unit };
@@ -15,7 +15,7 @@ function getSafePosition(unit: Unit, units: Unit[], enemyDistance: number, enemy
 	let { x, y } = unit;
 	let count = 1;
 	for (const u of units) {
-		if (!isFriend(u.type, unit.type)) {
+		if (!isFriend(u.settings.type, unit.settings.type)) {
 			const vector = pointVector(u, unit);
 			if (pointLengthSquared(vector) < enemyDistanceSquared) {
 				pointNormalize(vector, enemyDistance);
@@ -37,7 +37,7 @@ export function createAlly(world: World) {
 	const radius = 30;
 
 	const settings: UnitSettings = {
-		type: UNIT_ALLY,
+		type: UnitType.ALLY,
 		radius,
 		weight: 90,
 		health: 100,
@@ -61,7 +61,7 @@ export function createAlly(world: World) {
 
 	const weaponControl = getWeaponControl(unit, world);
 
-	actions[STATE_ATTACK] = {
+	actions[UnitState.ATTACK] = {
 		update(time) {
 			const traget = this.data!.target;
 			unit.rotation = mathAtan2(traget.y - unit.y, traget.x - unit.x);
@@ -85,8 +85,8 @@ export function createAlly(world: World) {
 
 	transitions.push(
 		{
-			from: [STATE_ROTATE, STATE_WALK],
-			to: STATE_ATTACK,
+			from: [UnitState.ROTATE, UnitState.WALK],
+			to: UnitState.ATTACK,
 			condition() {
 				let target: Unit | null = world.getNearOpponent(unit, enemyDistance);
 				if (target) {
@@ -97,8 +97,8 @@ export function createAlly(world: World) {
 			}
 		},
 		{
-			from: [STATE_ATTACK],
-			to: STATE_ROTATE,
+			from: [UnitState.ATTACK],
+			to: UnitState.ROTATE,
 			condition() {
 				const target: Unit = (fsm.getAction().data as TargetData).target;
 				if (target.health <= 0) {

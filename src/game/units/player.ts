@@ -3,14 +3,14 @@ import { createUnit, Unit, UnitSettings } from "./unit";
 import { getWeaponControl } from "../weapons/weapon";
 import { World } from "../world";
 import { gun, rifle, shotgun } from "../weapons/weapons";
-import { UNIT_PLAYER } from "./types";
-import { STATE_DEAD, STATE_WALK } from "./states";
+import { UnitType } from "./types";
+import { UnitState } from "./states";
 
 export function createPlayer(world: World, control: IPlayerControl): Unit {
 	const radius = 30;
 
 	const settings: UnitSettings = {
-		type: UNIT_PLAYER,
+		type: UnitType.PLAYER,
 		radius,
 		weight: 90,
 		health: 100,
@@ -32,7 +32,7 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 
 	const weaponControl = getWeaponControl(unit, world);
 
-	actions[STATE_WALK] = {
+	actions[UnitState.WALK] = {
 		update(time) {
 			const currentWalkSpeed = walkSpeed * time;
 			unit.x += control.direction.x * currentWalkSpeed;
@@ -47,7 +47,7 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 		}
 	};
 
-	actions[STATE_DEAD] = {
+	actions[UnitState.DEAD] = {
 		update() {
 		},
 		start() {
@@ -58,13 +58,13 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 
 	transitions.push({
 		from: [],
-		to: STATE_DEAD,
+		to: UnitState.DEAD,
 		condition() {
 			return unit.health <= 0;
 		}
 	});
 
-	fsm.setState(STATE_WALK);
+	fsm.setState(UnitState.WALK);
 
 	return unit;
 }
