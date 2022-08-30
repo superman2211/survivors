@@ -34,6 +34,9 @@ const properties = [
 	'getWidth',
 	'onChange',
 	'touchable',
+	'pallete',
+	'shape',
+	'visible',
 
 	// game
 	'addUnit',
@@ -85,6 +88,8 @@ const properties = [
 	'gunButton',
 	'rifleButton',
 	'shotgunButton',
+	'units',
+	'count',
 ];
 
 const regex = new RegExp(properties.join('|'));

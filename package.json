@@ -10,14 +10,13 @@
 		"clean": "rimraf ./dist",
 		"watch:ts": "tsc -w",
 		"watch:rollup": "rollup -c rollup.config.dev.js -w",
-		"build": "yarn clean && yarn build-resources && tsc && rollup -c rollup.config.prod.js && yarn create-zip",
-		"build-roadroller": "yarn clean && yarn build-resources && tsc && rollup -c rollup.config.prod.js && yarn apply-roadroller && yarn create-zip",
+		"build": "yarn clean && yarn build-resources && tsc && rollup -c rollup.config.prod.js && yarn create-advzip",
+		"build-roadroller": "yarn clean && yarn build-resources && tsc && rollup -c rollup.config.prod.js && yarn apply-roadroller && yarn create-advzip",
 		"serve": "http-server ./dist/build",
 		"lint": "eslint --fix",
 		"build-resources": "node scripts/build-resources.js",
 		"apply-roadroller": "roadroller dist/build/s.js -o dist/build/s.js",
-		"create-zip": "bestzip dist/survivors.zip dist/build/*",
-		"create-advzip": "advzip --not-zip --shrink-insane --iter=1000 --add dist/game.zip zip/index.html zip/s.js zip/r"
+		"create-advzip": "advzip --shrink-insane --iter=1000 --add dist/survivors.zip dist/build/index.html dist/build/s.js dist/build/r"
 	},
 	"dependencies": {
 		"svg-path": "^0.2.1",
@@ -28,7 +27,6 @@
 		"@rollup/plugin-replace": "^4.0.0",
 		"@typescript-eslint/eslint-plugin": "^4.29.3",
 		"@typescript-eslint/parser": "^4.29.3",
-		"bestzip": "^2.2.0",
 		"eslint": "^7.32.0",
 		"eslint-config-airbnb-base": "^14.2.1",
 		"eslint-plugin-import": "^2.24.1",
