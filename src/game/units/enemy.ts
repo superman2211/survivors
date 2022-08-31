@@ -18,7 +18,7 @@ function isTargetNearby(target: Unit, enemy: Unit): boolean {
 	return distanceSquared < radiusesSquared * 1.1;
 }
 
-export function createEnemy(world: World) {
+export function createEnemy(world: World, newEnemy: boolean = false) {
 	const radius = randomFloat(25, 45);
 
 	const settings: UnitSettings = {
@@ -26,7 +26,7 @@ export function createEnemy(world: World) {
 		radius,
 		weight: radius * 3,
 		health: radius * 4,
-		color: 0xff990000,
+		color: newEnemy ? 0xff000099 : 0xff990000,
 		walkSpeed: randomFloat(80, 150),
 		reaction: 0.5,
 		weapons: [

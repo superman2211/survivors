@@ -1,16 +1,13 @@
 import { Point, pointCreate, pointLength, pointNormalize } from "../../geom/point";
-import { Component } from "../../graphics/component";
 import { ShapeCommand, Shape } from "../../graphics/shape";
 import { mathCos, mathSin } from "../../utils/math";
-import { IBody, Body } from "../utils/physics";
+import { IBody, Body } from "../../physics/body";
 import { Unit } from "../units/unit";
 import { Weapon } from "./weapon";
-import { World } from "../world";
+import { World, WorldObject } from "../world";
 import { isFriend } from "../units/types";
 
-export interface Bullet extends Component, IBody {
-	x: number,
-	y: number,
+export interface Bullet extends WorldObject {
 }
 
 export function createBullet(x: number, y: number, rotation: number, weapon: Weapon, type: number, world: World): Bullet {
@@ -70,6 +67,8 @@ export function createBullet(x: number, y: number, rotation: number, weapon: Wea
 						world.addImpulse({ target, value });
 					}
 				}
+			} else if (o.body.static) {
+				world.removeBullet(bullet);
 			}
 		}
 	}

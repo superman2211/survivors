@@ -1,5 +1,5 @@
 import { Point, pointLength, pointNormalize } from "../../geom/point";
-import { IBody } from "../utils/physics";
+import { IBody } from "../../physics/body";
 
 export interface Impulse {
 	target: IBody,

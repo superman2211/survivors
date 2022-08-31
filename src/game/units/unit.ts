@@ -1,10 +1,10 @@
-import { Component } from "../../graphics/component";
 import { generateShape } from "../../utils/generate-shape";
 import { mathPI } from "../../utils/math";
 import { FSM } from "../utils/fsm";
-import { Body, IBody } from "../utils/physics";
+import { Body, IBody } from "../../physics/body";
 import { Weapon } from "../weapons/weapon";
 import { UnitType } from "./types";
+import { WorldObject } from "../world";
 
 export interface UnitSettings {
 	type: UnitType,
@@ -19,9 +19,7 @@ export interface UnitSettings {
 	color: number,
 }
 
-export interface Unit extends Component, IBody {
-	x: number;
-	y: number;
+export interface Unit extends WorldObject {
 	rotation: number;
 	fsm: FSM;
 	body: Body;

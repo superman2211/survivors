@@ -1,11 +1,17 @@
 import { Component } from "../graphics/component";
 import { Bullet } from "./weapons/bullet";
 import { createGround } from "./objects/ground";
-import { IBody, updatePhysics } from "./utils/physics";
+import { updatePhysics } from "../physics/update-physics";
 import { Unit } from "./units/unit";
 import { Impulse, updateImpulses } from "./weapons/impulse";
-import { Point, pointDistanceSquared } from "../geom/point";
+import { pointDistanceSquared } from "../geom/point";
 import { isFriend, UnitType } from "./units/types";
+import { IBody } from "../physics/body";
+
+export interface WorldObject extends Component, IBody {
+	x: number,
+	y: number,
+}
 
 export interface World extends Component {
 	readonly units: Unit[];
@@ -15,8 +21,8 @@ export interface World extends Component {
 	getUnitCount(type: UnitType): number;
 	getNearOpponent(unit: Unit, distance: number): Unit | null;
 
-	addObject(obj: Component & IBody): void;
-	removeObject(obj: Component & IBody): void;
+	addObject(obj: WorldObject): void;
+	removeObject(obj: WorldObject): void;
 
 	addBullet(bullet: Bullet): void;
 	removeBullet(bullet: Bullet): void;

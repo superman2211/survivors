@@ -1,17 +1,17 @@
 import { Point, pointCreate, pointDistance, pointDistanceSquared } from '../geom/point';
 import { Component } from '../graphics/component';
-
 import { mathMax, mathMin, randomFloat } from '../utils/math';
 import { createEnemy } from './units/enemy';
 import { createAlly } from './units/ally';
 import { createPlayer } from './units/player';
-import { createWorld } from './world';
+import { createWorld, WorldObject } from './world';
 import { Unit } from './units/unit';
-import { IBody } from './utils/physics';
+import { createBox } from '../physics/body';
 import { generateShape } from '../utils/generate-shape';
 import { UI } from './ui';
 import { getPlayerControl } from './utils/player-control';
 import { UnitType, isFriend } from './units/types';
+import { ShapeCommand } from '../graphics/shape';
 
 const SIZE = 2500;
 
@@ -59,15 +59,6 @@ export function game(ui: UI): Game {
 	playerControl.player = player;
 	world.addUnit(player);
 
-	const enemyCount = 30;
-	const enemyDistance = 600;
-
-	for (let i = 0; i < enemyCount; i++) {
-		const enemy = createEnemy(world);
-		randomPosition(enemy, world.units, -enemyDistance, enemyDistance);
-		world.addUnit(enemy);
-	}
-
 	const allyDistance = 300;
 	for (let i = 0; i < 10; i++) {
 		const ally = createAlly(world);
@@ -76,18 +67,53 @@ export function game(ui: UI): Game {
 		world.addUnit(ally);
 	}
 
+	const enemyCount = 50;
+	const enemyDistance = 600;
+
+	for (let i = 0; i < enemyCount; i++) {
+		const enemy = createEnemy(world);
+		randomPosition(enemy, world.units, -enemyDistance, enemyDistance);
+		world.addUnit(enemy);
+	}
+
 	const shape: number[] = [];
 	generateShape(shape, 0, 0, 0, 10, 10, 100, 100);
-	const colon: Component & IBody = {
+	const colon: WorldObject = {
 		x: 512, y: 0,
 		rotation: 0,
 		pallete: [0xff660066],
 		shape,
 		body: { weight: 0, static: true, radius: 100, },
 	}
-
 	world.addObject(colon);
 
+	const boxSizeX = 700;
+	const boxSizeY = 500;
+	const boxBorder = 300;
+	const boxRotation = 0.1;
+	for(let x = 0; x < 5; x++) {
+		for (let y = 0; y < 5; y++) {
+			const box: WorldObject = {
+				x: -2500 + x * (boxSizeX + boxBorder), y: -2500 + y * (boxSizeY + boxBorder),
+				rotation: boxRotation,
+				pallete: [0xff660066],
+				shape: [
+					ShapeCommand.PATH, 4,
+					0, 0,
+					0, boxSizeY,
+					boxSizeX, boxSizeY,
+					boxSizeX, 0,
+					ShapeCommand.FILL, 0,
+				],
+				body: {
+					...createBox(0, 0, boxSizeX, boxSizeY, boxRotation),
+					static: true,
+				},
+			}
+			world.addObject(box);
+		}
+	}
+	
 	const component: Game = {
 		camera,
 		children: [
@@ -96,7 +122,7 @@ export function game(ui: UI): Game {
 		size: SIZE,
 		onUpdate() {
 			if (world.getUnitCount(UnitType.ENEMY) < enemyCount) {
-				const enemy = createEnemy(world);
+				const enemy = createEnemy(world, true);
 				randomPosition(enemy, world.units, -enemyDistance, enemyDistance);
 				world.addUnit(enemy);
 			}

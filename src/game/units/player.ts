@@ -13,7 +13,7 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 		type: UnitType.PLAYER,
 		radius,
 		weight: 90,
-		health: 100,
+		health: 100000,
 		color: 0xff009999,
 		walkSpeed: 200,
 		reaction: 0.2,
