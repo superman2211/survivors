@@ -30,17 +30,14 @@ const worldViewProjectionLocation = gl.getUniformLocation(program, "u_worldViewP
 const worldInverseTransposeLocation = gl.getUniformLocation(program, "u_worldInverseTranspose");
 const colorLocation = gl.getUniformLocation(program, "u_color");
 const lightWorldPositionLocation = gl.getUniformLocation(program, "u_lightWorldPosition");
+const lightWorldPositionLocation2 = gl.getUniformLocation(program, "u_lightWorldPosition2");
 const worldLocation = gl.getUniformLocation(program, "u_world");
 
 const cube = createCube(20, 20, 20);
 
-console.log(cube);
-
-const positionBuffer = gl.createBuffer();
-const normalBuffer = gl.createBuffer();
+const elementsBuffer = gl.createBuffer();
 
 const positionsData: number[] = [];
-const normalsData: number[] = [];
 
 const fieldOfViewRadians = mathPI / 3;
 
@@ -70,16 +67,8 @@ export function addObject(entity: Geometry, matrix: Float32Array) {
 	const { vertecies, normals } = entity;
 	const vector = createV3();
 
-	for (let i = 0; i < vertecies.length; i += 3) {
-		vector[0] = vertecies[i];
-		vector[1] = vertecies[i + 1];
-		vector[2] = vertecies[i + 2];
-		transformV3(matrix, vector, vector);
-		positionsData.push(...vector);
-	}
-
 	const normalsMatrix = createM4();
-	for(let i = 0; i< matrix.length;i++) {
+	for (let i = 0; i < matrix.length; i++) {
 		normalsMatrix[i] = matrix[i];
 	}
 
@@ -87,15 +76,22 @@ export function addObject(entity: Geometry, matrix: Float32Array) {
 	normalsMatrix[13] = 0;
 	normalsMatrix[14] = 0;
 	normalsMatrix[15] = 1;
-	
-	for (let i = 0; i < normals.length; i += 3) {
+
+	for (let i = 0; i < vertecies.length; i += 3) {
+		vector[0] = vertecies[i];
+		vector[1] = vertecies[i + 1];
+		vector[2] = vertecies[i + 2];
+		transformV3(matrix, vector, vector);
+		positionsData.push(...vector);
+
 		vector[0] = normals[i];
 		vector[1] = normals[i + 1];
 		vector[2] = normals[i + 2];
 		transformV3(normalsMatrix, vector, vector);
 		// normalizeV3(vector, vector);
-		normalsData.push(...vector);
+		positionsData.push(...vector);
 	}
+
 }
 
 interface Object3d {
@@ -113,7 +109,7 @@ interface Object3d {
 	rx?: number;
 	ry?: number;
 	rz?: number;
-} 
+}
 
 interface Cube3d extends Object3d {
 	rsx: number;
@@ -123,7 +119,7 @@ interface Cube3d extends Object3d {
 
 const objects: Cube3d[] = [];
 
-for (let i = 0; i < 20;i++) {
+for (let i = 0; i < 10; i++) {
 	objects.push({
 		geometry: cube,
 		x: randomFloat(-100, 100),
@@ -148,13 +144,13 @@ export function render() {
 	gl.enable(gl.DEPTH_TEST);
 	gl.useProgram(program);
 
+	gl.bindBuffer(gl.ARRAY_BUFFER, elementsBuffer);
+	const stride = 3 * 4 + 3 * 4;
+	gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, stride, 0);
 	gl.enableVertexAttribArray(positionLocation);
-	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-	gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
-
+	gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, stride, 3 * 4);
 	gl.enableVertexAttribArray(normalLocation);
-	gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-	gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, 0, 0);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positionsData), gl.DYNAMIC_DRAW);
 
 	const aspect = canvas.width / canvas.height;
 	const zNear = 1;
@@ -185,18 +181,12 @@ export function render() {
 	gl.uniformMatrix4fv(worldLocation, false, worldMatrix);
 
 	gl.uniform4fv(colorLocation, [0.3, 1, 0.2, 1]); // green
-	gl.uniform3fv(lightWorldPositionLocation, [300, 0, 100]);
+	gl.uniform3fv(lightWorldPositionLocation, [200, 0, 100]);
+	gl.uniform3fv(lightWorldPositionLocation2, [0, 200, 100]);
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positionsData), gl.STATIC_DRAW);
-
-	gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalsData), gl.STATIC_DRAW);
-
-	gl.drawArrays(gl.TRIANGLES, 0, positionsData.length / 3);
+	gl.drawArrays(gl.TRIANGLES, 0, positionsData.length / 6);
 
 	positionsData.length = 0;
-	normalsData.length = 0;
 
 	objects.forEach(o => {
 		o.rx! += o.rsx;
@@ -205,18 +195,18 @@ export function render() {
 
 		transformM4(
 			objectMatrix,
-			o.x ?? 0, 
-			o.y ?? 0, 
-			o.z ?? 0, 
-			o.rx ?? 0, 
-			o.ry ?? 0, 
-			o.rz ?? 0, 
-			o.sx ?? 1, 
-			o.sy ?? 1, 
-			o.sz ?? 1, 
+			o.x ?? 0,
+			o.y ?? 0,
+			o.z ?? 0,
+			o.rx ?? 0,
+			o.ry ?? 0,
+			o.rz ?? 0,
+			o.sx ?? 1,
+			o.sy ?? 1,
+			o.sz ?? 1,
 		);
-		addObject(o.geometry, objectMatrix);	
+		addObject(o.geometry, objectMatrix);
 	});
-	
+
 	requestAnimationFrame(render);
 }
