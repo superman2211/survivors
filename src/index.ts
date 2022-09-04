@@ -3,9 +3,9 @@ import { Point } from './geom/point';
 import { componentKeyProcess, componentTouchProcess, componentUpdate } from './graphics/component';
 import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './graphics/events';
 import { canvas, globalMatrix, graphicsRender } from './graphics/graphics';
-import { playAudio } from './media/sfx';
 import { domDocument, dpr, hasTouch } from './utils/browser';
 import { loadResources } from './resources/resources-loader';
+import { render } from "./webgl/render";
 
 let app: Application;
 
@@ -23,7 +23,7 @@ function update() {
 	const time = calculateTime();
 	componentUpdate(app, time);
 	app.updateView(time);
-	graphicsRender(app);
+	// graphicsRender(app);
 }
 
 function start() {
@@ -75,3 +75,5 @@ async function main() {
 }
 
 main();
+
+render();
