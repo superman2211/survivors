@@ -1,5 +1,6 @@
+import { generateGroundImage } from "../game/objects/ground";
 import { dpr } from "../utils/browser";
-import { mathPI, randomFloat } from "../utils/math";
+import { mathPI, mathSin, randomFloat } from "../utils/math";
 import { createCube } from "./cube";
 import { Geometry } from "./geometry";
 import { createM4, createV3, identityM4, inverseM4, lookAt, multiplyM4, normalizeV3, perspectiveM4, transformM4, transformV3, translationM4, transposeM4, yRotationM4 } from "./m4";
@@ -25,6 +26,7 @@ gl.linkProgram(program);
 
 const positionLocation = gl.getAttribLocation(program, "a_position");
 const normalLocation = gl.getAttribLocation(program, "a_normal");
+const texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
 
 const worldViewProjectionLocation = gl.getUniformLocation(program, "u_worldViewProjection");
 const worldInverseTransposeLocation = gl.getUniformLocation(program, "u_worldInverseTranspose");
@@ -33,11 +35,19 @@ const lightWorldPositionLocation = gl.getUniformLocation(program, "u_lightWorldP
 const lightWorldPositionLocation2 = gl.getUniformLocation(program, "u_lightWorldPosition2");
 const worldLocation = gl.getUniformLocation(program, "u_world");
 
+const image = generateGroundImage();
+const texture = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D, texture);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
 const cube = createCube(20, 20, 20);
 
 const elementsBuffer = gl.createBuffer();
-
-const positionsData: number[] = [];
+const elementsData: number[] = [];
 
 const fieldOfViewRadians = mathPI / 3;
 
@@ -64,7 +74,7 @@ function updateSize() {
 }
 
 export function addObject(entity: Geometry, matrix: Float32Array) {
-	const { vertecies, normals } = entity;
+	const { vertecies, normals, uvs } = entity;
 	const vector = createV3();
 
 	const normalsMatrix = createM4();
@@ -77,25 +87,32 @@ export function addObject(entity: Geometry, matrix: Float32Array) {
 	normalsMatrix[14] = 0;
 	normalsMatrix[15] = 1;
 
-	for (let i = 0; i < vertecies.length; i += 3) {
-		vector[0] = vertecies[i];
-		vector[1] = vertecies[i + 1];
-		vector[2] = vertecies[i + 2];
-		transformV3(matrix, vector, vector);
-		positionsData.push(...vector);
+	const elements = vertecies.length / 3;
 
-		vector[0] = normals[i];
-		vector[1] = normals[i + 1];
-		vector[2] = normals[i + 2];
+	for (let i = 0; i < elements; i++) {
+		const j = i * 3;
+		const k = i * 2;
+
+		vector[0] = vertecies[j];
+		vector[1] = vertecies[j + 1];
+		vector[2] = vertecies[j + 2];
+		transformV3(matrix, vector, vector);
+		elementsData.push(...vector);
+
+		vector[0] = normals[j];
+		vector[1] = normals[j + 1];
+		vector[2] = normals[j + 2];
 		transformV3(normalsMatrix, vector, vector);
 		// normalizeV3(vector, vector);
-		positionsData.push(...vector);
-	}
+		elementsData.push(...vector);
 
+		elementsData.push(uvs[k], uvs[k + 1]);
+	}
 }
 
 interface Object3d {
 	geometry: Geometry,
+	texture: HTMLCanvasElement | HTMLImageElement
 	matrix?: Float32Array,
 
 	x?: number;
@@ -120,20 +137,45 @@ interface Cube3d extends Object3d {
 const objects: Cube3d[] = [];
 
 for (let i = 0; i < 10; i++) {
+	const x = -70 + (i % 5) * 150;
+	const y = -70 + ((i / 5) | 0) * 150;
 	objects.push({
 		geometry: cube,
-		x: randomFloat(-100, 100),
-		y: randomFloat(-100, 100),
-		rx: randomFloat(-1, 1),
-		ry: randomFloat(-1, 1),
-		rz: randomFloat(-1, 1),
-		rsx: randomFloat(-0.02, 0.02),
-		rsy: randomFloat(-0.02, 0.02),
-		rsz: randomFloat(-0.02, 0.02),
+		texture: image,
+		x,//: randomFloat(-100, 100),
+		y,//: randomFloat(-100, 100),
+		z: 50,
+		sx: 1.5,
+		sy: 1.5,
+		rx: 0,//randomFloat(-1, 1),
+		ry: 0,//randomFloat(-1, 1),
+		rz: 0,//randomFloat(-1, 1),
+		rsx: 0,//randomFloat(-0.02, 0.02),
+		rsy: 0,//randomFloat(-0.02, 0.02),
+		rsz: 0,//randomFloat(-0.02, 0.02),
 	})
 }
 
+objects.push({
+	geometry: cube,
+	texture: image,
+	x: 0,
+	y: 0,
+	rx: 0,
+	ry: 0,
+	rz: 0,
+	rsx: 0,
+	rsy: 0,
+	rsz: 0,
+	sx: 6,
+	sy: 6,
+	sz: 0.01,
+})
+
 const objectMatrix = createM4();
+
+let light1 = 0;
+let light2 = 0;
 
 export function render() {
 	updateSize();
@@ -145,12 +187,15 @@ export function render() {
 	gl.useProgram(program);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, elementsBuffer);
-	const stride = 3 * 4 + 3 * 4;
+	const elementSize = 3 + 3 + 2;
+	const stride = elementSize * 4;
 	gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, stride, 0);
 	gl.enableVertexAttribArray(positionLocation);
 	gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, stride, 3 * 4);
 	gl.enableVertexAttribArray(normalLocation);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positionsData), gl.DYNAMIC_DRAW);
+	gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, stride, 3 * 4 + 3 * 4);
+	gl.enableVertexAttribArray(texCoordLocation);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(elementsData), gl.DYNAMIC_DRAW);
 
 	const aspect = canvas.width / canvas.height;
 	const zNear = 1;
@@ -181,12 +226,15 @@ export function render() {
 	gl.uniformMatrix4fv(worldLocation, false, worldMatrix);
 
 	gl.uniform4fv(colorLocation, [0.3, 1, 0.2, 1]); // green
-	gl.uniform3fv(lightWorldPositionLocation, [200, 0, 100]);
-	gl.uniform3fv(lightWorldPositionLocation2, [0, 200, 100]);
+	gl.uniform3fv(lightWorldPositionLocation, [mathSin(light1) * 100, 0, 40]);
+	gl.uniform3fv(lightWorldPositionLocation2, [0, mathSin(light2) * 50, 40]);
 
-	gl.drawArrays(gl.TRIANGLES, 0, positionsData.length / 6);
+	light1 += 0.01;
+	light2 += 0.02;
 
-	positionsData.length = 0;
+	gl.drawArrays(gl.TRIANGLES, 0, elementsData.length / elementSize);
+
+	elementsData.length = 0;
 
 	objects.forEach(o => {
 		o.rx! += o.rsx;
@@ -205,6 +253,7 @@ export function render() {
 			o.sy ?? 1,
 			o.sz ?? 1,
 		);
+
 		addObject(o.geometry, objectMatrix);
 	});
 

@@ -79,5 +79,20 @@ export function createCube(w: number, h: number, l: number): Geometry {
 		normals.push(...n);
 	}
 
-	return { vertecies, normals };
+	const uvs = [
+		1, 1, 0, 1, 0, 0, // front
+		1, 1, 0, 0, 1, 0,
+		1, 1, 0, 1, 0, 0, // right
+		1, 1, 0, 0, 1, 0,
+		1, 1, 0, 1, 0, 0, // up
+		1, 1, 0, 0, 1, 0,
+		1, 1, 0, 1, 0, 0, // left
+		1, 1, 0, 0, 1, 0,
+		1, 1, 0, 1, 0, 0, // back
+		1, 1, 0, 0, 1, 0,
+		1, 1, 0, 1, 0, 0, // down
+		1, 1, 0, 0, 1, 0
+	]
+
+	return { vertecies, normals, uvs };
 }
