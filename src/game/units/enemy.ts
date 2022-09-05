@@ -19,7 +19,7 @@ function isTargetNearby(target: Unit, enemy: Unit): boolean {
 }
 
 export function createEnemy(world: World, newEnemy: boolean = false) {
-	const radius = randomFloat(25, 45);
+	const radius = randomFloat(25, 35);
 
 	const settings: UnitSettings = {
 		type: UnitType.ENEMY,
@@ -41,7 +41,7 @@ export function createEnemy(world: World, newEnemy: boolean = false) {
 	const enemyDistance = 400;
 	const enemyDistanceSquared = enemyDistance * enemyDistance;
 
-	unit.rotation = math2PI * mathRandom();
+	unit.rotationZ = math2PI * mathRandom();
 
 	const { fsm } = unit;
 	const { actions, transitions } = fsm;
@@ -50,9 +50,9 @@ export function createEnemy(world: World, newEnemy: boolean = false) {
 
 	actions[UnitState.GOTO_TARGET] = {
 		update(time: number) {
-			unit.rotation = mathAtan2(this.data!.target.y - unit.y, this.data!.target.x - unit.x);
-			const speedX = mathCos(unit.rotation) * walkSpeed;
-			const speedY = mathSin(unit.rotation) * walkSpeed;
+			unit.rotationZ = mathAtan2(this.data!.target.y - unit.y, this.data!.target.x - unit.x);
+			const speedX = mathCos(unit.rotationZ) * walkSpeed;
+			const speedY = mathSin(unit.rotationZ) * walkSpeed;
 			unit.x += speedX * time;
 			unit.y += speedY * time;
 		},

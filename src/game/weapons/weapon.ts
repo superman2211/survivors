@@ -30,10 +30,10 @@ export function getWeaponControl(unit: Unit, world: World) {
 			if (weaponTime <= 0) {
 				weaponTime = 1 / weapon.frequency;
 
-				const { rotation } = unit;
+				const { rotationZ } = unit;
 
 				if (weapon.angle) {
-					let angle = rotation - weapon.angle / 2;
+					let angle = rotationZ - weapon.angle / 2;
 					const angleStep = weapon.angle / weapon.points.length;
 					for (const point of weapon.points) {
 						const cos = mathCos(angle);
@@ -58,8 +58,8 @@ export function getWeaponControl(unit: Unit, world: World) {
 						pointIndex = 0;
 					}
 
-					const cos = mathCos(rotation);
-					const sin = mathSin(rotation);
+					const cos = mathCos(rotationZ);
+					const sin = mathSin(rotationZ);
 
 					const { x, y } = weapon.points[pointIndex];
 					const resultX = unit.x + x * cos - y * sin;
@@ -67,7 +67,7 @@ export function getWeaponControl(unit: Unit, world: World) {
 					const bullet = createBullet(
 						resultX,
 						resultY,
-						rotation,
+						rotationZ,
 						weapon,
 						type,
 						world,

@@ -6,8 +6,6 @@ export function createV3(): Float32Array {
 	return new Float32Array(3);
 }
 
-const tempM4 = createM4();
-
 export function identityM4(dst: Float32Array) {
 	dst[0] = 1;
 	dst[1] = 0;

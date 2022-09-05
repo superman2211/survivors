@@ -1,6 +1,6 @@
 import { ColorTransform } from '../geom/color';
 
-export type Image = HTMLImageElement | HTMLCanvasElement;
+export type Image = HTMLCanvasElement;
 
 export function renderImage(image: Image, ct: ColorTransform, context: CanvasRenderingContext2D) {
 	context.fillStyle = context.createPattern(image, 'no-repeat')!;

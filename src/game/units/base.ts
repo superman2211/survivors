@@ -12,14 +12,14 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 
 	const { walkSpeed } = settings;
 
-	unit.rotation = math2PI * mathRandom();
+	unit.rotationZ = math2PI * mathRandom();
 
 	const { fsm } = unit;
 	const { actions, transitions } = fsm;
 
 	actions[UnitState.ROTATE] = {
 		update(time: number) {
-			unit.rotation += this.data!.speed * time;
+			unit.rotationZ += this.data!.speed * time;
 			this.data!.time -= time;
 		},
 		start() {
@@ -38,8 +38,8 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 		},
 		start() {
 			this.data = {
-				speedX: mathCos(unit.rotation) * walkSpeed,
-				speedY: mathSin(unit.rotation) * walkSpeed,
+				speedX: mathCos(unit.rotationZ) * walkSpeed,
+				speedY: mathSin(unit.rotationZ) * walkSpeed,
 				time: randomFloat(1, 3),
 			}
 		}

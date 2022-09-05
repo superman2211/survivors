@@ -33,18 +33,15 @@ const worldInverseTransposeLocation = gl.getUniformLocation(program, "u_worldInv
 const colorLocation = gl.getUniformLocation(program, "u_color");
 const lightWorldPositionLocation = gl.getUniformLocation(program, "u_lightWorldPosition");
 const lightWorldPositionLocation2 = gl.getUniformLocation(program, "u_lightWorldPosition2");
+const lightWorldPositionLocation3 = gl.getUniformLocation(program, "u_lightWorldPosition3");
 const worldLocation = gl.getUniformLocation(program, "u_world");
 
-const image = generateGroundImage();
-const texture = gl.createTexture();
-gl.bindTexture(gl.TEXTURE_2D, texture);
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+// const image = generateGroundImage();
 
-const cube = createCube(20, 20, 20);
+
+const textures = new Map<HTMLCanvasElement,WebGLTexture>();
+
+// const cube = createCube(20, 20, 20);
 
 const elementsBuffer = gl.createBuffer();
 const elementsData: number[] = [];
@@ -60,7 +57,7 @@ const worldViewProjectionMatrix = createM4();
 const worldInverseMatrix = createM4();
 const worldInverseTransposeMatrix = createM4();
 
-function updateSize() {
+export function updateSize() {
 	const w = (innerWidth * dpr) | 0;
 	const h = (innerHeight * dpr) | 0;
 
@@ -73,7 +70,26 @@ function updateSize() {
 	}
 }
 
-export function addObject(entity: Geometry, matrix: Float32Array) {
+let currentImage: HTMLCanvasElement | undefined;
+
+export function renderObject(entity: Geometry, image: HTMLCanvasElement, matrix: Float32Array) {
+	if (currentImage !== image) {
+		renderBatch();
+		currentImage = image;
+		if (textures.has(image)) {
+			gl.bindTexture(gl.TEXTURE_2D, textures.get(image)!);
+		} else {
+			const texture = gl.createTexture()!;
+			gl.bindTexture(gl.TEXTURE_2D, texture);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+			textures.set(image, texture);
+		}
+	}
+
 	const { vertecies, normals, uvs } = entity;
 	const vector = createV3();
 
@@ -134,51 +150,63 @@ interface Cube3d extends Object3d {
 	rsz: number;
 }
 
-const objects: Cube3d[] = [];
+// const objects: Cube3d[] = [];
 
-for (let i = 0; i < 10; i++) {
-	const x = -70 + (i % 5) * 150;
-	const y = -70 + ((i / 5) | 0) * 150;
-	objects.push({
-		geometry: cube,
-		texture: image,
-		x,//: randomFloat(-100, 100),
-		y,//: randomFloat(-100, 100),
-		z: 50,
-		sx: 1.5,
-		sy: 1.5,
-		rx: 0,//randomFloat(-1, 1),
-		ry: 0,//randomFloat(-1, 1),
-		rz: 0,//randomFloat(-1, 1),
-		rsx: 0,//randomFloat(-0.02, 0.02),
-		rsy: 0,//randomFloat(-0.02, 0.02),
-		rsz: 0,//randomFloat(-0.02, 0.02),
-	})
-}
+// for (let i = 0; i < 10; i++) {
+// 	const x = -70 + (i % 5) * 150;
+// 	const y = -70 + ((i / 5) | 0) * 150;
+// 	objects.push({
+// 		geometry: cube,
+// 		texture: image,
+// 		x,//: randomFloat(-100, 100),
+// 		y,//: randomFloat(-100, 100),
+// 		z: 50,
+// 		sx: 1.5,
+// 		sy: 1.5,
+// 		rx: 0,//randomFloat(-1, 1),
+// 		ry: 0,//randomFloat(-1, 1),
+// 		rz: 0,//randomFloat(-1, 1),
+// 		rsx: 0,//randomFloat(-0.02, 0.02),
+// 		rsy: 0,//randomFloat(-0.02, 0.02),
+// 		rsz: 0,//randomFloat(-0.02, 0.02),
+// 	})
+// }
 
-objects.push({
-	geometry: cube,
-	texture: image,
-	x: 0,
-	y: 0,
-	rx: 0,
-	ry: 0,
-	rz: 0,
-	rsx: 0,
-	rsy: 0,
-	rsz: 0,
-	sx: 6,
-	sy: 6,
-	sz: 0.01,
-})
+// objects.push({
+// 	geometry: cube,
+// 	texture: image,
+// 	x: 0,
+// 	y: 0,
+// 	rx: 0,
+// 	ry: 0,
+// 	rz: 0,
+// 	rsx: 0,
+// 	rsy: 0,
+// 	rsz: 0,
+// 	sx: 6,
+// 	sy: 6,
+// 	sz: 0.01,
+// })
 
 const objectMatrix = createM4();
 
 let light1 = 0;
 let light2 = 0;
 
-export function render() {
-	updateSize();
+let cameraX = 0;
+let cameraY = 0;
+let cameraZ = 0;
+
+let drawCalls = 0;
+
+export function setCamera(x: number, y: number, z: number) {
+	cameraX = x;
+	cameraY = y;
+	cameraZ = z;
+}
+
+export function renderBegin() {
+	drawCalls = 0;
 
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -187,30 +215,20 @@ export function render() {
 	gl.useProgram(program);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, elementsBuffer);
-	const elementSize = 3 + 3 + 2;
-	const stride = elementSize * 4;
+	const stride = (3 + 3 + 2) * 4;
 	gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, stride, 0);
 	gl.enableVertexAttribArray(positionLocation);
 	gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, stride, 3 * 4);
 	gl.enableVertexAttribArray(normalLocation);
 	gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, stride, 3 * 4 + 3 * 4);
 	gl.enableVertexAttribArray(texCoordLocation);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(elementsData), gl.DYNAMIC_DRAW);
 
 	const aspect = canvas.width / canvas.height;
 	const zNear = 1;
 	const zFar = 2000;
 	perspectiveM4(fieldOfViewRadians, aspect, zNear, zFar, projectionMatrix);
 
-	// const camera = new Float32Array([100, 0, 200]);
-	// const target = new Float32Array([0, 35, 0]);
-	// const up = new Float32Array([0, 1, 0]);
-	// lookAt(camera, target, up, cameraMatrix);
-
-	translationM4(0, 0, 200, cameraMatrix);
-	// const rotationCamera = createM4();
-	// yRotationM4(fRotationRadians, rotationCamera);
-	// multiplyM4(cameraMatrix, rotationCamera, cameraMatrix);
+	translationM4(cameraX, cameraY, cameraZ, cameraMatrix);
 
 	inverseM4(cameraMatrix, viewMatrix);
 	multiplyM4(projectionMatrix, viewMatrix, viewProjectionMatrix);
@@ -225,37 +243,61 @@ export function render() {
 	gl.uniformMatrix4fv(worldInverseTransposeLocation, false, worldInverseTransposeMatrix);
 	gl.uniformMatrix4fv(worldLocation, false, worldMatrix);
 
-	gl.uniform4fv(colorLocation, [0.3, 1, 0.2, 1]); // green
-	gl.uniform3fv(lightWorldPositionLocation, [mathSin(light1) * 100, 0, 40]);
-	gl.uniform3fv(lightWorldPositionLocation2, [0, mathSin(light2) * 50, 40]);
-
-	light1 += 0.01;
-	light2 += 0.02;
-
-	gl.drawArrays(gl.TRIANGLES, 0, elementsData.length / elementSize);
-
-	elementsData.length = 0;
-
-	objects.forEach(o => {
-		o.rx! += o.rsx;
-		o.ry! += o.rsy;
-		o.rz! += o.rsz;
-
-		transformM4(
-			objectMatrix,
-			o.x ?? 0,
-			o.y ?? 0,
-			o.z ?? 0,
-			o.rx ?? 0,
-			o.ry ?? 0,
-			o.rz ?? 0,
-			o.sx ?? 1,
-			o.sy ?? 1,
-			o.sz ?? 1,
-		);
-
-		addObject(o.geometry, objectMatrix);
-	});
-
-	requestAnimationFrame(render);
+	gl.uniform4fv(colorLocation, [0.3, 1, 0.2, 1]);
+	gl.uniform3fv(lightWorldPositionLocation, [0, 0, 200]);
+	gl.uniform3fv(lightWorldPositionLocation2, [1000, 0, 200]);
+	gl.uniform3fv(lightWorldPositionLocation3, [cameraX, cameraY, 90]);
 }
+
+function renderBatch() {
+	if (elementsData.length) {
+		drawCalls++;
+		gl.bindBuffer(gl.ARRAY_BUFFER, elementsBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(elementsData), gl.DYNAMIC_DRAW);
+		gl.drawArrays(gl.TRIANGLES, 0, elementsData.length / (3 + 3 + 2));
+		elementsData.length = 0;
+	}
+}
+
+declare global {
+	const i: HTMLDivElement;
+}
+const info = i;
+
+export function renderEnd() {
+	renderBatch();
+	info.innerText = 'drawCalls: ' + drawCalls;
+	// console.log(drawCalls);
+}
+
+// export function renderTest() {
+// 	updateSize();
+// 	renderBegin();
+// 	renderEnd();
+	
+// 	light1 += 0.01;
+// 	light2 += 0.02;
+
+// 	objects.forEach(o => {
+// 		o.rx! += o.rsx;
+// 		o.ry! += o.rsy;
+// 		o.rz! += o.rsz;
+
+// 		transformM4(
+// 			objectMatrix,
+// 			o.x ?? 0,
+// 			o.y ?? 0,
+// 			o.z ?? 0,
+// 			o.rx ?? 0,
+// 			o.ry ?? 0,
+// 			o.rz ?? 0,
+// 			o.sx ?? 1,
+// 			o.sy ?? 1,
+// 			o.sz ?? 1,
+// 		);
+
+// 		renderObject(o.geometry, objectMatrix);
+// 	});
+
+// 	requestAnimationFrame(renderTest);
+// }

@@ -38,7 +38,7 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 			unit.x += control.direction.x * currentWalkSpeed;
 			unit.y += control.direction.y * currentWalkSpeed;
 
-			unit.rotation = control.rotation;
+			unit.rotationZ = control.rotation;
 			unit.weapon = control.weapon;
 
 			weaponControl(time, control.attack);

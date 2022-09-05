@@ -5,7 +5,7 @@ import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './graphics/e
 import { canvas, globalMatrix, graphicsRender } from './graphics/graphics';
 import { domDocument, dpr, hasTouch } from './utils/browser';
 import { loadResources } from './resources/resources-loader';
-import { render } from "./webgl/render";
+// import { renderTest } from "./webgl/render";
 
 let app: Application;
 
@@ -23,7 +23,7 @@ function update() {
 	const time = calculateTime();
 	componentUpdate(app, time);
 	app.updateView(time);
-	// graphicsRender(app);
+	graphicsRender(app);
 }
 
 function start() {
@@ -46,7 +46,7 @@ function start() {
 			for (let i = 0; i < touches.length; i++) {
 				const { clientX, clientY, identifier } = touches[i];
 				const global: Point = { x: clientX * dpr, y: clientY * dpr };
-				componentTouchProcess(app, global, globalMatrix, type, identifier);
+				componentTouchProcess(app, global, type, identifier);
 			}
 			e.preventDefault();
 		}
@@ -58,7 +58,7 @@ function start() {
 	} else {
 		function mouseHandler(e: MouseEvent, type: number) {
 			const global: Point = { x: e.clientX * dpr, y: e.clientY * dpr };
-			componentTouchProcess(app, global, globalMatrix, type, 0);
+			componentTouchProcess(app, global, type, 0);
 			e.preventDefault();
 		};
 
@@ -76,4 +76,4 @@ async function main() {
 
 main();
 
-render();
+// renderTest();

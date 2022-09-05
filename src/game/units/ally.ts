@@ -64,7 +64,7 @@ export function createAlly(world: World) {
 	actions[UnitState.ATTACK] = {
 		update(time) {
 			const traget = this.data!.target;
-			unit.rotation = mathAtan2(traget.y - unit.y, traget.x - unit.x);
+			unit.rotationZ = mathAtan2(traget.y - unit.y, traget.x - unit.x);
 
 			const safePosition = getSafePosition(unit, units, enemyDistance, enemyDistanceSquared);
 			if (safePosition) {

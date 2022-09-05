@@ -12,12 +12,15 @@ import { UI } from './ui';
 import { getPlayerControl } from './utils/player-control';
 import { UnitType, isFriend } from './units/types';
 import { ShapeCommand } from '../graphics/shape';
+import { setCamera } from '../webgl/render';
+import { createCube } from '../webgl/cube';
+import { Command, CommandType, generateImage } from '../utils/generate-image';
 
 const SIZE = 2500;
 
 export interface Game extends Component {
-	camera: Point;
-	size: number;
+	// camera: Point;
+	// size: number;
 	calculateVolume(point: Point): number;
 	updateCamera(time: number): void;
 }
@@ -76,50 +79,72 @@ export function game(ui: UI): Game {
 		world.addUnit(enemy);
 	}
 
-	const shape: number[] = [];
-	generateShape(shape, 0, 0, 0, 10, 10, 100, 100);
-	const colon: WorldObject = {
-		x: 512, y: 0,
-		rotation: 0,
-		pallete: [0xff660066],
-		shape,
-		body: { weight: 0, static: true, radius: 100, },
-	}
-	world.addObject(colon);
+	// const shape: number[] = [];
+	// generateShape(shape, 0, 0, 0, 10, 10, 100, 100);
+	// const colon: WorldObject = {
+	// 	x: 512, y: 0,
+	// 	rotation: 0,
+	// 	pallete: [0xff660066],
+	// 	shape,
+	// 	body: { weight: 0, static: true, radius: 100, },
+	// }
+	// world.addObject(colon);
 
 	const boxSizeX = 700;
 	const boxSizeY = 500;
-	const boxBorder = 300;
-	const boxRotation = 0.1;
-	for(let x = 0; x < 5; x++) {
-		for (let y = 0; y < 5; y++) {
+	const boxSizeZ = 300;
+	const boxBorder = 700;
+	const boxRotation = 0;
+	const boxGeometry = createCube(boxSizeX / 2, boxSizeY / 2, boxSizeZ);
+
+	const texture: Command[] = [
+		{ type: CommandType.FILL, color: 0xff964b00 },// 5
+		{ type: CommandType.SIZE, width: 512, height: 512 }, // 5
+		{ type: CommandType.FILL, color: 0xff999999 }, // 5
+		{ type: CommandType.RECTANGLE, x: 20, y: 20, width: 50, height: 50 }, // 5
+		{ type: CommandType.REPEAT, stepX: 70, stepY: 70, count: 48, cols: 7, }, // 5 
+		// { type: CommandType.FILL, color: 0xff666666 }, // 5
+		// { type: CommandType.RECTANGLE, x: 140, y: 140, width: 220, height: 220 }, // 5
+		// { type: CommandType.FILL, color: 0xff778877 }, // 5
+		// { type: CommandType.ELLIPSE, x: 160, y: 160, width: 190, height: 190 }, // 5
+		{ type: CommandType.NOISE, colorOffset: 20 }, // 2
+	];
+
+	const boxImage = generateImage(texture);
+
+	for (let x = 0; x < 3; x++) {
+		for (let y = 0; y < 3; y++) {
 			const box: WorldObject = {
-				x: -2500 + x * (boxSizeX + boxBorder), y: -2500 + y * (boxSizeY + boxBorder),
-				rotation: boxRotation,
-				pallete: [0xff660066],
-				shape: [
-					ShapeCommand.PATH, 4,
-					0, 0,
-					0, boxSizeY,
-					boxSizeX, boxSizeY,
-					boxSizeX, 0,
-					ShapeCommand.FILL, 0,
-				],
+				x: -2000 + x * (boxSizeX + boxBorder),
+				y: -2000 + y * (boxSizeY + boxBorder),
+				z: boxSizeZ,
+				rotationZ: boxRotation,
+				// pallete: [0xff660066],
+				// shape: [
+				// 	ShapeCommand.PATH, 4,
+				// 	0, 0,
+				// 	0, boxSizeY,
+				// 	boxSizeX, boxSizeY,
+				// 	boxSizeX, 0,
+				// 	ShapeCommand.FILL, 0,
+				// ],
+				geometry: boxGeometry,
+				image: boxImage,
 				body: {
-					...createBox(0, 0, boxSizeX, boxSizeY, boxRotation),
+					...createBox(-boxSizeX / 2, -boxSizeY / 2, boxSizeX, boxSizeY, boxRotation),
 					static: true,
 				},
 			}
 			world.addObject(box);
 		}
 	}
-	
+
 	const component: Game = {
-		camera,
+		// camera,
 		children: [
 			world,
 		],
-		size: SIZE,
+		// size: SIZE,
 		onUpdate() {
 			if (world.getUnitCount(UnitType.ENEMY) < enemyCount) {
 				const enemy = createEnemy(world, true);
@@ -128,13 +153,13 @@ export function game(ui: UI): Game {
 			}
 		},
 		updateCamera() {
-			this.camera.x = player.x!;
-			this.camera.y = player.y!;
-
-			this.children?.forEach(child => {
-				world.x = -this.camera.x;
-				world.y = -this.camera.y;
-			});
+			// this.camera.x = player.x!;
+			// this.camera.y = player.y!;
+			setCamera(player.x!, player.y!, 1000);
+			// this.children?.forEach(child => {
+			// 	world.x = -this.camera.x;
+			// 	world.y = -this.camera.y;
+			// });
 		},
 		calculateVolume(point: Point): number {
 			const maxDistance = SIZE / 2;

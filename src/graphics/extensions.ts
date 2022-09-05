@@ -12,7 +12,7 @@ export interface Keyboard {
 
 export interface Pointer {
 	touchable?: boolean;
-	onTouchDown?: (local: Point, global: Point, id: number) => void;
-	onTouchUp?: (local: Point, global: Point, id: number) => void;
-	onTouchMove?: (local: Point, global: Point, id: number) => void;
+	onTouchDown?: (global: Point, id: number) => void;
+	onTouchUp?: (global: Point, id: number) => void;
+	onTouchMove?: (global: Point, id: number) => void;
 }

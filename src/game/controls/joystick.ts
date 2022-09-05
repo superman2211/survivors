@@ -43,7 +43,7 @@ export function createJoystick(): Joystick {
 			front.y = -RADIUS_FRONT + this.value.y * RADIUS_BACK;
 		},
 
-		onTouchDown(p, g, id) {
+		onTouchDown(p, id) {
 			if (pressedId === -1 && pointLength(p) < RADIUS_BACK) {
 				pressedId = id;
 
@@ -51,7 +51,7 @@ export function createJoystick(): Joystick {
 			}
 		},
 
-		onTouchUp(p, g, id) {
+		onTouchUp(p, id) {
 			if (pressedId === id) {
 				pressedId = -1;
 
@@ -64,7 +64,7 @@ export function createJoystick(): Joystick {
 			}
 		},
 
-		onTouchMove(p, g, id) {
+		onTouchMove(p, id) {
 			if (pressedId === id) {
 				this.updateValue(p);
 			}
