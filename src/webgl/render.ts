@@ -33,6 +33,7 @@ const worldInverseTransposeLocation = gl.getUniformLocation(program, "u_worldInv
 const colorLocation = gl.getUniformLocation(program, "u_color");
 const lightWorldPositionLocation = gl.getUniformLocation(program, "u_lightWorldPosition");
 const lightWorldPositionLocation2 = gl.getUniformLocation(program, "u_lightWorldPosition2");
+const lightWorldPositionLocation3 = gl.getUniformLocation(program, "u_lightWorldPosition3");
 const worldLocation = gl.getUniformLocation(program, "u_world");
 
 // const image = generateGroundImage();
@@ -40,7 +41,7 @@ const worldLocation = gl.getUniformLocation(program, "u_world");
 
 const textures = new Map<HTMLCanvasElement,WebGLTexture>();
 
-const cube = createCube(20, 20, 20);
+// const cube = createCube(20, 20, 20);
 
 const elementsBuffer = gl.createBuffer();
 const elementsData: number[] = [];
@@ -245,6 +246,7 @@ export function renderBegin() {
 	gl.uniform4fv(colorLocation, [0.3, 1, 0.2, 1]);
 	gl.uniform3fv(lightWorldPositionLocation, [0, 0, 200]);
 	gl.uniform3fv(lightWorldPositionLocation2, [1000, 0, 200]);
+	gl.uniform3fv(lightWorldPositionLocation3, [cameraX, cameraY, 90]);
 }
 
 function renderBatch() {
