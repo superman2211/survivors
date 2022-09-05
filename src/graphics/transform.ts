@@ -13,40 +13,44 @@ export interface TintColor {
 export interface Transform {
 	x?: number;
 	y?: number;
-	rotation?: number;
+	z?: number;
+	rotationX?: number;
+	rotationY?: number;
+	rotationZ?: number;
 	scale?: number;
 	scaleX?: number;
 	scaleY?: number;
+	scaleZ?: number;
 	alpha?: number;
 	tint?: TintColor;
 	brightness?: number;
 }
 
-export function getMatrix(transform: Transform, result: Matrix) {
-	const { rotation } = transform;
+// export function getMatrix(transform: Transform, result: Matrix) {
+// 	const { rotation } = transform;
 
-	const sx = transform.scaleX ?? transform.scale ?? 1;
-	const sy = transform.scaleY ?? transform.scale ?? 1;
+// 	const sx = transform.scaleX ?? 1;
+// 	const sy = transform.scaleY ?? 1;
 
-	result.x = transform.x ?? 0;
-	result.y = transform.y ?? 0;
+// 	result.x = transform.x ?? 0;
+// 	result.y = transform.y ?? 0;
 
-	if (rotation) {
-		const cos = mathCos(rotation);
-		const sin = mathSin(rotation);
+// 	if (rotation) {
+// 		const cos = mathCos(rotation);
+// 		const sin = mathSin(rotation);
 
-		result.a = cos * sx;
-		result.b = sin * sx;
-		result.c = -sin * sy;
-		result.d = cos * sy;
-		return;
-	}
+// 		result.a = cos * sx;
+// 		result.b = sin * sx;
+// 		result.c = -sin * sy;
+// 		result.d = cos * sy;
+// 		return;
+// 	}
 
-	result.a = sx;
-	result.b = 0;
-	result.c = 0;
-	result.d = sy;
-}
+// 	result.a = sx;
+// 	result.b = 0;
+// 	result.c = 0;
+// 	result.d = sy;
+// }
 
 export function getColorTransform(transform: Transform, result: ColorTransform) {
 	const alpha = transform.alpha ?? 1;

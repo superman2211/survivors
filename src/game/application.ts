@@ -21,16 +21,16 @@ export function application(options: ApplicationOptions): Application {
 	return {
 		children: [game, ui],
 		updateView(time: number) {
-			const w = options.getWidth();
-			const h = options.getHeight();
+			// const w = options.getWidth();
+			// const h = options.getHeight();
 
-			const scale = mathMin(w / SIZE, h / SIZE);
+			// const scale = mathMin(w / SIZE, h / SIZE);
 
-			game.scale = scale;
-			game.x = w / 2;
-			game.y = h / 2;
+			// game.scale = scale;
+			// game.x = w / 2;
+			// game.y = h / 2;
 
-			ui.scale = scale;
+			// ui.scale = scale;
 
 			game.updateCamera(time);
 		},

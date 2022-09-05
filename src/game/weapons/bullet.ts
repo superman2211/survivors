@@ -6,14 +6,26 @@ import { Unit } from "../units/unit";
 import { Weapon } from "./weapon";
 import { World, WorldObject } from "../world";
 import { isFriend } from "../units/types";
+import { createCube } from "../../webgl/cube";
+import { Command, CommandType, generateImage } from "../../utils/generate-image";
 
 export interface Bullet extends WorldObject {
 }
 
-export function createBullet(x: number, y: number, rotation: number, weapon: Weapon, type: number, world: World): Bullet {
+const geometry = createCube(1, 1, 1);
+
+const texture: Command[] = [
+	{ type: CommandType.FILL, color: 0xffffffff },// 5
+	{ type: CommandType.SIZE, width: 64, height: 64 },
+	{ type: CommandType.NOISE, colorOffset: 20 }, // 2
+];
+
+const image = generateImage(texture);
+
+export function createBullet(x: number, y: number, rotationZ: number, weapon: Weapon, type: number, world: World): Bullet {
 	const speed: Point = {
-		x: weapon.speed * mathCos(rotation),
-		y: weapon.speed * mathSin(rotation),
+		x: weapon.speed * mathCos(rotationZ),
+		y: weapon.speed * mathSin(rotationZ),
 	}
 
 	let distance = 0;
@@ -27,22 +39,27 @@ export function createBullet(x: number, y: number, rotation: number, weapon: Wea
 
 	const { length, width, color } = weapon;
 	const width2 = width / 2;
-	const pallete = [color];
-	const shape: Shape = [
-		ShapeCommand.PATH, 3,
-		-length, 0,
-		0, -width2,
-		0, width2,
-		ShapeCommand.FILL, 0,
-	];
+	// const pallete = [color];
+	// const shape: Shape = [
+	// 	ShapeCommand.PATH, 3,
+	// 	-length, 0,
+	// 	0, -width2,
+	// 	0, width2,
+	// 	ShapeCommand.FILL, 0,
+	// ];
+
+	
 
 	const bullet: Bullet = {
-		x, y, rotation,
+		x,
+		y,
+		scaleX: length,
+		scaleY: width2,
+		scaleZ: width2,
+		rotationZ,
 		body,
-
-		// view
-		shape,
-		pallete,
+		geometry,
+		image,
 
 		onUpdate(time) {
 			this.x += speed.x * time;

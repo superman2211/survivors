@@ -3,6 +3,7 @@ import { Component } from "../../graphics/component";
 import { playAudio } from "../../media/sfx";
 import { hasTouch } from "../../utils/browser";
 import { mathAtan2 } from "../../utils/math";
+import { canvas } from "../../webgl/render";
 import { UI } from "../ui";
 import { Unit } from "../units/unit";
 
@@ -46,7 +47,7 @@ export class DesktopPlayerControl extends BasePlayerControl {
 		super(ui);
 
 		world.onTouchMove = (p: Point) => {
-			this.rotation = mathAtan2(p.y - this.player!.y!, p.x - this.player!.x!);
+			this.rotation = -mathAtan2(p.y - canvas.height / 2, p.x - canvas.width / 2);
 		};
 
 		world.onTouchDown = (p: Point) => {
@@ -69,11 +70,11 @@ export class DesktopPlayerControl extends BasePlayerControl {
 			switch (e.code) {
 				case 'KeyW':
 				case 'ArrowUp':
-					up = value;
+					down = value;
 					break;
 				case 'KeyS':
 				case 'ArrowDown':
-					down = value;
+					up = value;
 					break;
 				case 'KeyA':
 				case 'ArrowLeft':

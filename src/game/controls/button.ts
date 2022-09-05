@@ -17,13 +17,13 @@ export function createRoundButton(text: string): Button {
 	const fontSize = 30;
 	
 	const label: Component = {
-		text: {
-			value: text,
-			font: 'arial',
-			size: fontSize,
-			align: 0.5,
-			color: INACTIVE_COLOR,
-		},
+		// text: {
+		// 	value: text,
+		// 	font: 'arial',
+		// 	size: fontSize,
+		// 	align: 0.5,
+		// 	color: INACTIVE_COLOR,
+		// },
 	}
 
 	label.x = BUTTON_RADIUS;
@@ -43,7 +43,7 @@ export function createRoundButton(text: string): Button {
 		},
 
 		setActive(value: boolean) {
-			label.text!.color = value ? ACTIVE_COLOR : INACTIVE_COLOR
+			//label.text!.color = value ? ACTIVE_COLOR : INACTIVE_COLOR
 		}
 	}
 }

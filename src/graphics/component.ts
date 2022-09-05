@@ -3,17 +3,24 @@ import { Matrix, matrixConcat, matrixCreate, matrixGetScale, matrixTransformInve
 import { renderImage, Image } from './image';
 import { renderShape, Shape } from './shape';
 import { renderText, Text } from './text';
-import { getColorTransform, getMatrix, Transform } from './transform';
+import { getColorTransform, Transform } from './transform';
 import { Keyboard, Pointer, Update } from './extensions';
 import { Point, pointCreate } from '../geom/point';
 import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './events';
+import { createM4, multiplyM4, transformM4 } from '../webgl/m4';
+import { renderObject } from '../webgl/render';
+import { createCube } from '../webgl/cube';
+import { Geometry } from '../webgl/geometry';
+
+const cube = createCube(1, 1, 1);
 
 export interface Component extends Transform, Update, Keyboard, Pointer {
-	shape?: Shape;
-	pallete?: number[];
-	text?: Text;
+	// shape?: Shape;
+	// pallete?: number[];
+	// text?: Text;
+	geometry?: Geometry;
 	children?: Component[];
-	image?: Image;
+	image?: HTMLCanvasElement;
 	visible?: boolean;
 	radius?: number;
 	onScreen?: boolean;
@@ -21,7 +28,7 @@ export interface Component extends Transform, Update, Keyboard, Pointer {
 
 const local = pointCreate();
 
-export function componentRender(component: Component, parentMatrix: Matrix, parentColorTranform: ColorTransform, context: CanvasRenderingContext2D) {
+export function componentRender(component: Component, parentMatrix: Float32Array, parentColorTranform: ColorTransform) {
 	component.onScreen = false;
 
 	const visible = component.visible ?? true;
@@ -29,21 +36,32 @@ export function componentRender(component: Component, parentMatrix: Matrix, pare
 		return;
 	}
 
-	const matrix = matrixCreate();
-	getMatrix(component, matrix);
-	matrixConcat(parentMatrix, matrix, matrix);
+	const matrix = createM4();
+	transformM4(
+		matrix,
+		component.x ?? 0,
+		component.y ?? 0,
+		component.z ?? 0,
+		component.rotationX ?? 0,
+		component.rotationY ?? 0,
+		component.rotationZ ?? 0,
+		component.scaleX ?? component.scale ?? 1,
+		component.scaleY ?? component.scale ?? 1,
+		component.scaleZ ?? component.scale ?? 1,
+	);
+	multiplyM4(parentMatrix, matrix, matrix);
 
-	if (component.radius) {
-		const radius = matrixGetScale(matrix) * component.radius;
-		if (
-			matrix.x + radius < 0
-			|| matrix.y + radius < 0
-			|| matrix.x - radius > context.canvas.width - 0
-			|| matrix.y - radius > context.canvas.height - 0
-		) {
-			return;
-		}
-	}
+	// if (component.radius) {
+	// 	const radius = matrixGetScale(matrix) * component.radius;
+	// 	if (
+	// 		matrix.x + radius < 0
+	// 		|| matrix.y + radius < 0
+	// 		|| matrix.x - radius > context.canvas.width - 0
+	// 		|| matrix.y - radius > context.canvas.height - 0
+	// 	) {
+	// 		return;
+	// 	}
+	// }
 
 	const colorTransform = colorTransformCreate();
 	getColorTransform(component, colorTransform);
@@ -55,26 +73,35 @@ export function componentRender(component: Component, parentMatrix: Matrix, pare
 
 	component.onScreen = true;
 
-	context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.x, matrix.y);
+	// context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.x, matrix.y);
 
 	const {
-		shape, image, pallete, text, children,
+		children,
+		geometry,
+		image,
 	} = component;
 
-	if (shape && pallete) {
-		renderShape(shape, pallete, colorTransform, context);
-	}
+	// if (shape && pallete) {
+	// 	renderShape(shape, pallete, colorTransform, context);
+	// }
 
-	if (text) {
-		renderText(text, colorTransform, context);
-	}
+	// if (text) {
+	// 	renderText(text, colorTransform, context);
+	// }
 
-	if (image) {
-		renderImage(image, colorTransform, context);
+	// if (image) {
+	// 	renderImage(image, colorTransform, context);
+	// }
+
+	if (geometry) {
+		if (!image) {
+			throw 'image is null'
+		}
+		renderObject(geometry, image, matrix);
 	}
 
 	if (children) {
-		children.forEach((child) => componentRender(child, matrix, colorTransform, context));
+		children.forEach((child) => componentRender(child, matrix, colorTransform));
 	}
 }
 
@@ -119,34 +146,27 @@ export function componentKeyProcess(component: Component, e: KeyboardEvent, type
 	children.forEach((child) => componentKeyProcess(child, e, type));
 }
 
-export function componentTouchProcess(component: Component, global: Point, parentMatrix: Matrix, type: number, id: number) {
+export function componentTouchProcess(component: Component, global: Point, type: number, id: number) {
 	if (component.touchable === false) {
 		return;
 	}
 
-	const matrix = matrixCreate();
-	getMatrix(component, matrix);
-	matrixConcat(parentMatrix, matrix, matrix);
-
 	switch (type) {
 		case TOUCH_DOWN:
 			if (component.onTouchDown) {
-				matrixTransformInversePoint(matrix, global, local);
-				component.onTouchDown(local, global, id);
+				component.onTouchDown(global, id);
 			}
 			break;
 
 		case TOUCH_UP:
 			if (component.onTouchUp) {
-				matrixTransformInversePoint(matrix, global, local);
-				component.onTouchUp(local, global, id);
+				component.onTouchUp(global, id);
 			}
 			break;
 
 		case TOUCH_MOVE:
 			if (component.onTouchMove) {
-				matrixTransformInversePoint(matrix, global, local);
-				component.onTouchMove(local, global, id);
+				component.onTouchMove(global, id);
 			}
 			break;
 	}
@@ -157,5 +177,5 @@ export function componentTouchProcess(component: Component, global: Point, paren
 		return;
 	}
 
-	children.forEach((child) => componentTouchProcess(child, global, matrix, type, id));
+	children.forEach((child) => componentTouchProcess(child, global, type, id));
 }
