@@ -4,7 +4,9 @@ import { componentKeyProcess, componentTouchProcess, componentUpdate } from './g
 import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './graphics/events';
 import { canvas, globalMatrix, graphicsRender } from './graphics/graphics';
 import { domDocument, dpr, hasTouch } from './utils/browser';
-import { loadResources } from './resources/resources-loader';
+import { loadResources, resources } from './resources/resources-loader';
+import { readAnimation } from './resources/animation';
+import { Resources } from './resources/ids';
 // import { renderTest } from "./webgl/render";
 
 let app: Application;
@@ -72,6 +74,7 @@ function start() {
 async function main() {
 	await loadResources();
 	start();
+	console.log(readAnimation(resources[Resources.walk_forward]));
 }
 
 main();
