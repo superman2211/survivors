@@ -6,7 +6,7 @@ export async function loadResources() {
 	const view = new Uint8Array(buffer);
 	let p = 0;
 	while(p < view.length) {
-		const length = view[p++];
+		const length = view[p++] | (view[p++] << 8);
 		resources.push(buffer.slice(p, p + length));
 		p += length;
 	}
