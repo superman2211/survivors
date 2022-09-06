@@ -2,3 +2,4 @@ node_modules
 dist/esm
 dist/survivors.zip
 temp
+*.blend1
