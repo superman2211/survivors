@@ -30,6 +30,7 @@ const POINTS = [
 	'h3',
 ]
 
+// console.log('POINTS.length', POINTS.length); // 20
 function readFrame(file) {
 	// console.log(file);
 	const points = {};
@@ -138,9 +139,10 @@ function readAnimation(folder) {
 	for (const frame of frames) {
 		for (const pointName of POINTS) {
 			const point = frame[pointName];
-			pointsData[p++] = point.x * 64;
-			pointsData[p++] = point.y * 64;
-			pointsData[p++] = point.z * 64;
+			// console.log(point.x, point.y, point.z); 
+			pointsData[p++] = (point.x - min.x) / (max.x - min.x) * 0xff;
+			pointsData[p++] = (point.y - min.y) / (max.y - min.y) * 0xff;
+			pointsData[p++] = (point.z - min.z) / (max.z - min.z) * 0xff;
 		}
 	}
 
