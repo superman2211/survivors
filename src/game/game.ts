@@ -63,14 +63,14 @@ export function game(ui: UI): Game {
 	world.addUnit(player);
 
 	const allyDistance = 300;
-	for (let i = 0; i < 10; i++) {
+	for (let i = 0; i < 5; i++) {
 		const ally = createAlly(world);
 		ally.x = randomFloat(-allyDistance, allyDistance);
 		ally.y = randomFloat(-allyDistance, allyDistance);
 		world.addUnit(ally);
 	}
 
-	const enemyCount = 50;
+	const enemyCount = 30;
 	const enemyDistance = 600;
 
 	for (let i = 0; i < enemyCount; i++) {
@@ -119,15 +119,6 @@ export function game(ui: UI): Game {
 				y: -2000 + y * (boxSizeY + boxBorder),
 				z: boxSizeZ,
 				rotationZ: boxRotation,
-				// pallete: [0xff660066],
-				// shape: [
-				// 	ShapeCommand.PATH, 4,
-				// 	0, 0,
-				// 	0, boxSizeY,
-				// 	boxSizeX, boxSizeY,
-				// 	boxSizeX, 0,
-				// 	ShapeCommand.FILL, 0,
-				// ],
 				geometry: boxGeometry,
 				image: boxImage,
 				body: {

@@ -139,11 +139,15 @@ function readAnimation(folder) {
 	for (const frame of frames) {
 		for (const pointName of POINTS) {
 			const point = frame[pointName];
-			// console.log(point.x, point.y, point.z); 
+			console.log(pointName, point.x, point.y, point.z); 
 			pointsData[p++] = (point.x - min.x) / (max.x - min.x) * 0xff;
 			pointsData[p++] = (point.y - min.y) / (max.y - min.y) * 0xff;
 			pointsData[p++] = (point.z - min.z) / (max.z - min.z) * 0xff;
+			// pointsData[p++] = point.x * 0xff;
+			// pointsData[p++] = point.y * 0xff;
+			// pointsData[p++] = point.z * 0xff;
 		}
+		console.log('-------------');
 	}
 
 	// console.log(pointsData);

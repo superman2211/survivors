@@ -393,34 +393,99 @@ export function transformM4(
 	sy: number = 1,
 	sz: number = 1
 ) {
-	var cosX = Math.cos(rx);
-	var cosY = Math.cos(ry);
-	var cosZ = Math.cos(rz);
+	// var cosX = Math.cos(rx);
+	// var cosY = Math.cos(ry);
+	// var cosZ = Math.cos(rz);
 
-	var sinX = Math.sin(rx);
-	var sinY = Math.sin(ry);
-	var sinZ = Math.sin(rz);
+	// var sinX = Math.sin(rx);
+	// var sinY = Math.sin(ry);
+	// var sinZ = Math.sin(rz);
 
-	var cosZsinY = cosZ * sinY;
-	var sinZsinY = sinZ * sinY;
+	// var cosZsinY = cosZ * sinY;
+	// var sinZsinY = sinZ * sinY;
 
-	m[0] = cosZ * cosY * sx;
-	m[1] = sinZ * cosY * sx;
-	m[2] = - sinY * sx;
-	m[3] = 0;
+	// m[0] = cosZ * cosY * sx;
+	// m[1] = sinZ * cosY * sx;
+	// m[2] = sinY * sx;
+	// m[3] = 0;
 
-	m[4] = cosZsinY * sinX - sinZ * cosX * sy;
-	m[5] = sinZsinY * sinX + cosZ * cosX * sy;
-	m[6] = cosY * sinX * sy;
-	m[7] = 0;
+	// m[4] = cosZsinY * sinX - sinZ * cosX * sy;
+	// m[5] = sinZsinY * sinX + cosZ * cosX * sy;
+	// m[6] = cosY * sinX * sy;
+	// m[7] = 0;
 
-	m[8] = cosZsinY * cosX + sinZ * sinX * sz;
-	m[9] = sinZsinY * cosX - cosZ * sinX * sz;
-	m[10] = cosY * cosX * sz;
-	m[11] = 0;
+	// m[8] = cosZsinY * cosX + sinZ * sinX * sz;
+	// m[9] = sinZsinY * cosX - cosZ * sinX * sz;
+	// m[10] = cosY * cosX * sz;
+	// m[11] = 0;
 
-	m[12] = tx;
-	m[13] = ty;
-	m[14] = tz;
-	m[15] = 1;
+	// m[12] = tx;
+	// m[13] = ty;
+	// m[14] = tz;
+	// m[15] = 1;
+
+	scalingM4(sx, sy, sz, m);
+
+	const temp = createM4();
+	
+	xRotationM4(rx, temp);
+	multiplyM4(temp, m, m);
+
+	yRotationM4(ry, temp);
+	multiplyM4(temp, m, m);
+
+	zRotationM4(rz, temp);
+	multiplyM4(temp, m, m);
+
+	translationM4(tx, ty, tz, temp);
+	multiplyM4(temp, m, m);
+}
+
+export function composeM4(translation:number[], quaternion:number[], scale:number[], dst:Float32Array) {
+	const x = quaternion[0];
+	const y = quaternion[1];
+	const z = quaternion[2];
+	const w = quaternion[3];
+
+	const x2 = x + x;
+	const y2 = y + y;
+	const z2 = z + z;
+
+	const xx = x * x2;
+	const xy = x * y2;
+	const xz = x * z2;
+
+	const yy = y * y2;
+	const yz = y * z2;
+	const zz = z * z2;
+
+	const wx = w * x2;
+	const wy = w * y2;
+	const wz = w * z2;
+
+	const sx = scale[0];
+	const sy = scale[1];
+	const sz = scale[2];
+
+	dst[0] = (1 - (yy + zz)) * sx;
+	dst[1] = (xy + wz) * sx;
+	dst[2] = (xz - wy) * sx;
+	dst[3] = 0;
+
+	dst[4] = (xy - wz) * sy;
+	dst[5] = (1 - (xx + zz)) * sy;
+	dst[6] = (yz + wx) * sy;
+	dst[7] = 0;
+
+	dst[8] = (xz + wy) * sz;
+	dst[9] = (yz - wx) * sz;
+	dst[10] = (1 - (xx + yy)) * sz;
+	dst[11] = 0;
+
+	dst[12] = translation[0];
+	dst[13] = translation[1];
+	dst[14] = translation[2];
+	dst[15] = 1;
+
+	return dst;
 }

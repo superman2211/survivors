@@ -46,6 +46,8 @@ export class DesktopPlayerControl extends BasePlayerControl {
 	constructor(ui: UI, world: Component) {
 		super(ui);
 
+		// return;
+
 		world.onTouchMove = (p: Point) => {
 			this.rotation = -mathAtan2(p.y - canvas.height / 2, p.x - canvas.width / 2);
 		};

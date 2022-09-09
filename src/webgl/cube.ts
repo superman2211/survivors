@@ -1,7 +1,9 @@
-import { Geometry } from "./geometry";
+import { Geometry, writeGeometry } from "./geometry";
 import { createV3, crossV3, normalizeV3 } from "./m4";
 
-export function createCube(w: number, h: number, l: number): Geometry {
+export const CUBE_POINTS = 6 * 2 * 3;
+
+export function createCube(w: number, h: number, l: number): Float32Array {
 	const vertecies = [
 		// front
 		w, h, l,
@@ -94,5 +96,5 @@ export function createCube(w: number, h: number, l: number): Geometry {
 		1, 1, 0, 0, 1, 0
 	]
 
-	return { vertecies, normals, uvs };
+	return writeGeometry({ vertecies, normals, uvs });
 }

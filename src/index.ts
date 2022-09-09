@@ -7,6 +7,7 @@ import { domDocument, dpr, hasTouch } from './utils/browser';
 import { loadResources, resources } from './resources/resources-loader';
 import { readAnimation } from './resources/animation';
 import { Resources } from './resources/ids';
+import { direction } from './game/units/unit';
 // import { renderTest } from "./webgl/render";
 
 let app: Application;
@@ -61,6 +62,8 @@ function start() {
 		function mouseHandler(e: MouseEvent, type: number) {
 			const global: Point = { x: e.clientX * dpr, y: e.clientY * dpr };
 			componentTouchProcess(app, global, type, 0);
+			direction.x = e.clientX - innerWidth / 2 / dpr;
+			direction.y = e.clientY - innerHeight / 2 / dpr;
 			e.preventDefault();
 		};
 
@@ -74,7 +77,6 @@ function start() {
 async function main() {
 	await loadResources();
 	start();
-	console.log(readAnimation(resources[Resources.walk_forward]));
 }
 
 main();

@@ -9,16 +9,16 @@ import { Point, pointCreate } from '../geom/point';
 import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './events';
 import { createM4, multiplyM4, transformM4 } from '../webgl/m4';
 import { renderObject } from '../webgl/render';
-import { createCube } from '../webgl/cube';
+// import { createCube } from '../webgl/cube';
 import { Geometry } from '../webgl/geometry';
 
-const cube = createCube(1, 1, 1);
+// const cube = createCube(1, 1, 1);
 
 export interface Component extends Transform, Update, Keyboard, Pointer {
 	// shape?: Shape;
 	// pallete?: number[];
 	// text?: Text;
-	geometry?: Geometry;
+	geometry?: Float32Array;
 	children?: Component[];
 	image?: HTMLCanvasElement;
 	visible?: boolean;
@@ -26,7 +26,7 @@ export interface Component extends Transform, Update, Keyboard, Pointer {
 	onScreen?: boolean;
 }
 
-const local = pointCreate();
+// const local = pointCreate();
 
 export function componentRender(component: Component, parentMatrix: Float32Array, parentColorTranform: ColorTransform) {
 	component.onScreen = false;

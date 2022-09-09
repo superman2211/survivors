@@ -1,8 +1,9 @@
 import { generateGroundImage } from "../game/objects/ground";
+import { ANIMATION_POINTS } from "../resources/animation";
 import { dpr } from "../utils/browser";
 import { mathPI, mathSin, randomFloat } from "../utils/math";
-import { createCube } from "./cube";
-import { Geometry } from "./geometry";
+import { createCube, CUBE_POINTS } from "./cube";
+import { ELEMENT_SIZE, Geometry, transformGeometry } from "./geometry";
 import { createM4, createV3, identityM4, inverseM4, lookAt, multiplyM4, normalizeV3, perspectiveM4, transformM4, transformV3, translationM4, transposeM4, yRotationM4 } from "./m4";
 import { fragmentShaderSource } from "./shaders/fragment";
 import { vertexShaderSource } from "./shaders/vertex";
@@ -44,7 +45,8 @@ const textures = new Map<HTMLCanvasElement,WebGLTexture>();
 // const cube = createCube(20, 20, 20);
 
 const elementsBuffer = gl.createBuffer();
-const elementsData: number[] = [];
+const elementsData = new Float32Array(1024 * 1024 * 10);
+let elementsCount = 0;
 
 const fieldOfViewRadians = mathPI / 3;
 
@@ -72,9 +74,12 @@ export function updateSize() {
 
 let currentImage: HTMLCanvasElement | undefined;
 
-export function renderObject(entity: Geometry, image: HTMLCanvasElement, matrix: Float32Array) {
+// const normalsMatrix = createM4();
+
+export function renderObject(geometry: Float32Array, image: HTMLCanvasElement, matrix: Float32Array) {
 	if (currentImage !== image) {
 		renderBatch();
+
 		currentImage = image;
 		if (textures.has(image)) {
 			gl.bindTexture(gl.TEXTURE_2D, textures.get(image)!);
@@ -90,65 +95,63 @@ export function renderObject(entity: Geometry, image: HTMLCanvasElement, matrix:
 		}
 	}
 
-	const { vertecies, normals, uvs } = entity;
-	const vector = createV3();
+	elementsCount = transformGeometry(geometry, matrix, elementsData, elementsCount);
 
-	const normalsMatrix = createM4();
-	for (let i = 0; i < matrix.length; i++) {
-		normalsMatrix[i] = matrix[i];
-	}
+	//const { vertecies, normals, uvs } = geometry;
+	// const vector = createV3();
 
-	normalsMatrix[12] = 0;
-	normalsMatrix[13] = 0;
-	normalsMatrix[14] = 0;
-	normalsMatrix[15] = 1;
+	// normalsMatrix.set(matrix);
+	// normalsMatrix[12] = 0;
+	// normalsMatrix[13] = 0;
+	// normalsMatrix[14] = 0;
+	// normalsMatrix[15] = 1;
 
-	const elements = vertecies.length / 3;
+	// const elements = vertecies.length / 3;
 
-	for (let i = 0; i < elements; i++) {
-		const j = i * 3;
-		const k = i * 2;
+	// for (let i = 0; i < elements; i++) {
+	// 	const j = i * 3;
+	// 	const k = i * 2;
 
-		vector[0] = vertecies[j];
-		vector[1] = vertecies[j + 1];
-		vector[2] = vertecies[j + 2];
-		transformV3(matrix, vector, vector);
-		elementsData.push(...vector);
+	// 	vector[0] = vertecies[j];
+	// 	vector[1] = vertecies[j + 1];
+	// 	vector[2] = vertecies[j + 2];
+	// 	transformV3(matrix, vector, vector);
+	// 	elementsData.push(...vector);
 
-		vector[0] = normals[j];
-		vector[1] = normals[j + 1];
-		vector[2] = normals[j + 2];
-		transformV3(normalsMatrix, vector, vector);
-		// normalizeV3(vector, vector);
-		elementsData.push(...vector);
+	// 	vector[0] = normals[j];
+	// 	vector[1] = normals[j + 1];
+	// 	vector[2] = normals[j + 2];
+	// 	transformV3(normalsMatrix, vector, vector);
+	// 	// normalizeV3(vector, vector);
+	// 	elementsData.push(...vector);
 
-		elementsData.push(uvs[k], uvs[k + 1]);
-	}
+	// 	elementsData.push(uvs[k], uvs[k + 1]);
+	// }
 }
 
-interface Object3d {
-	geometry: Geometry,
-	texture: HTMLCanvasElement | HTMLImageElement
-	matrix?: Float32Array,
+// interface Object3d {
+// 	geometry: Geometry,
+// 	texture: HTMLCanvasElement | HTMLImageElement
+// 	matrix?: Float32Array,
 
-	x?: number;
-	y?: number;
-	z?: number;
+// 	x?: number;
+// 	y?: number;
+// 	z?: number;
 
-	sx?: number;
-	sy?: number;
-	sz?: number;
+// 	sx?: number;
+// 	sy?: number;
+// 	sz?: number;
 
-	rx?: number;
-	ry?: number;
-	rz?: number;
-}
+// 	rx?: number;
+// 	ry?: number;
+// 	rz?: number;
+// }
 
-interface Cube3d extends Object3d {
-	rsx: number;
-	rsy: number;
-	rsz: number;
-}
+// interface Cube3d extends Object3d {
+// 	rsx: number;
+// 	rsy: number;
+// 	rsz: number;
+// }
 
 // const objects: Cube3d[] = [];
 
@@ -250,12 +253,15 @@ export function renderBegin() {
 }
 
 function renderBatch() {
-	if (elementsData.length) {
+	if (elementsCount) {
+		// console.log(elementsCount, ANIMATION_POINTS * CUBE_POINTS * ELEMENT_SIZE);
 		drawCalls++;
+		// elementsCount = CUBE_POINTS * ELEMENT_SIZE * 6;
+		const data = elementsData.buffer.slice(0, elementsCount * 4);
 		gl.bindBuffer(gl.ARRAY_BUFFER, elementsBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(elementsData), gl.DYNAMIC_DRAW);
-		gl.drawArrays(gl.TRIANGLES, 0, elementsData.length / (3 + 3 + 2));
-		elementsData.length = 0;
+		gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW);
+		gl.drawArrays(gl.TRIANGLES, 0, elementsCount / ELEMENT_SIZE);
+		elementsCount = 0;
 	}
 }
 

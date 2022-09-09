@@ -7,6 +7,14 @@ import { UnitType } from "./types";
 import { WorldObject } from "../world";
 import { createCube } from "../../webgl/cube";
 import { Command, CommandType, generateImage } from "../../utils/generate-image";
+import { createFrame, getAnimation, readAnimation } from "../../resources/animation";
+import { resources } from "../../resources/resources-loader";
+import { Resources } from "../../resources/ids";
+
+export const direction = {
+	x: 0,
+	y: 0,
+}
 
 export interface UnitSettings {
 	type: UnitType,
@@ -32,8 +40,6 @@ export interface Unit extends WorldObject {
 	health: number;
 	weapon: number;
 }
-
-const geometry = createCube(1, 1, 1);
 
 function createUnitImage(color: number) {
 	const texture: Command[] = [
@@ -62,18 +68,23 @@ export function createUnit(settings: UnitSettings): Unit {
 	// generateShape(shape, 0, 0, 0, 5, 5, radius, radius, mathPI / 10);
 	// generateShape(shape, 1, radius / 2, 0, 3, 3, radius / 3, radius / 3, mathPI / 2);
 
+	let animationTime = 0;
+	let animationType = Resources.walk_forward;
+	let animationSpeed = 30;
+
 	const image = images[settings.type];
 
 	return {
-		geometry,
 		image,
 		rotationZ: 0,
+		rotationX: 0,
+		rotationY: 0,
 		x: 0,
 		y: 0,
 		z: radius,
-		scaleX: radius * 0.8,
-		scaleY: radius * 0.8,
-		scaleZ: radius * 2,
+		scaleX: radius,
+		scaleY: radius,
+		scaleZ: radius,
 		fsm,
 		body,
 		health,
@@ -82,6 +93,16 @@ export function createUnit(settings: UnitSettings): Unit {
 
 		onUpdate(time) {
 			this.fsm.update(time);
+			
+			// this.rotationX! = direction.y / 200;
+			// this.rotationY! = direction.x / 200;
+			
+			animationTime += time * animationSpeed;
+			const animation = getAnimation(animationType);
+			while(animationTime >= animation.length) {
+				animationTime -= animation.length;
+			}
+			this.geometry = animation[animationTime | 0];
 		}
 	}
 }
