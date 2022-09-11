@@ -1,5 +1,5 @@
 import { createCube, CUBE_POINTS } from "../webgl/cube";
-import { ELEMENT_SIZE, transformGeometry, writeGeometry } from "../webgl/geometry";
+import { ELEMENT_SIZE, smoothNormals, transformGeometry, updateNormals, writeGeometry } from "../webgl/geometry";
 import { composeM4, createM4, createV3, identityM4, lookAt, multiplyM4, normalizeV3, scalingM4, subtractV3, transformM4, translationM4, xRotationM4, yRotationM4, zRotationM4 } from "../webgl/m4";
 import { createSphere } from "../webgl/sphere";
 import { Resources } from "./ids";
@@ -182,19 +182,8 @@ export function createFrame(points: Float32Array): Float32Array {
 		);
 	}
 
-	p = connectPoints(
-		getCenter(points, PointType.hl0, PointType.fl0, 0.5),
-		getCenter(points, PointType.hr0, PointType.fr0, 0.5),
-		0.15, 0.2,
-		data, p
-	);
-
-	p = connectPoints(
-		getCenter(points, PointType.hl0, PointType.fl0, 0.7),
-		getCenter(points, PointType.hr0, PointType.fr0, 0.7),
-		0.15, 0.2,
-		data, p
-	);
+	updateNormals(data);
+	smoothNormals(data);
 
 	return new Float32Array(data);
 }
