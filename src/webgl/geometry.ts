@@ -1,4 +1,4 @@
-import { createM4, createV3, inverseM4, transformV3, transposeM4 } from "./m4";
+import { createM4, createV3, crossV3, inverseM4, normalizeV3, transformV3, transposeM4 } from "./m4";
 
 export interface Geometry {
 	vertecies: number[];
@@ -59,10 +59,84 @@ export function transformGeometry(data: Float32Array | number[], matrix: Float32
 		stream[p++] = vector[0];
 		stream[p++] = vector[1];
 		stream[p++] = vector[2];
-		
+
 		stream[p++] = data[i++];
 		stream[p++] = data[i++];
 	}
 
 	return p;
+}
+
+export function updateNormals(data: Float32Array | number[]) {
+	const u = createV3();
+	const v = createV3();
+	const n = createV3();
+
+	for (let i = 0; i < data.length; i += ELEMENT_SIZE * 3) {
+		let i0 = i + 0 * ELEMENT_SIZE;
+		let i1 = i + 1 * ELEMENT_SIZE;
+		let i2 = i + 2 * ELEMENT_SIZE;
+
+		u[0] = data[i1 + 0] - data[i0 + 0];
+		u[1] = data[i1 + 1] - data[i0 + 1];
+		u[2] = data[i1 + 2] - data[i0 + 2];
+
+		v[0] = data[i2 + 0] - data[i0 + 0];
+		v[1] = data[i2 + 1] - data[i0 + 1];
+		v[2] = data[i2 + 2] - data[i0 + 2];
+
+		crossV3(u, v, n);
+		normalizeV3(n, n);
+
+		i0 += 3;
+		i1 += 3;
+		i2 += 3;
+
+		data[i0 + 0] = n[0];
+		data[i0 + 1] = n[1];
+		data[i0 + 2] = n[2];
+
+		data[i1 + 0] = n[0];
+		data[i1 + 1] = n[1];
+		data[i1 + 2] = n[2];
+
+		data[i2 + 0] = n[0];
+		data[i2 + 1] = n[1];
+		data[i2 + 2] = n[2];
+	}
+}
+
+export function smoothNormals(data: Float32Array | number[]) {
+	// const u = createV3();
+	// const v = createV3();
+	const n = createV3();
+
+	const map = new Map<number, number[]>();
+
+	for (let i = 0; i < data.length; i += ELEMENT_SIZE) {
+		const hash = data[i + 0] + data[i + 1] * 1000 + data[i + 2] * 1000000;
+		if (!map.has(hash)) {
+			map.set(hash, []);
+		}
+		map.get(hash)!.push(i);
+	}
+
+	for (const [hash, verts] of map) {
+		n[0] = 0;
+		n[1] = 0;
+		n[2] = 0;
+		for (const v of verts) {
+			n[0] += data[v + 3 + 0];
+			n[1] += data[v + 3 + 1];
+			n[2] += data[v + 3 + 2];
+		}
+		n[0] /= verts.length;
+		n[1] /= verts.length;
+		n[2] /= verts.length;
+		for (const v of verts) {
+			data[v + 3 + 0] = n[0];
+			data[v + 3 + 1] = n[1];
+			data[v + 3 + 2] = n[2];
+		}
+	};
 }
