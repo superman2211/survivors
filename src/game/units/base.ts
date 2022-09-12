@@ -1,3 +1,4 @@
+import { Resources } from "../../resources/ids";
 import { chance, math2PI, mathCos, mathRandom, mathSin, randomFloat } from "../../utils/math";
 import { FSMAction } from "../utils/fsm";
 import { World } from "../world";
@@ -5,6 +6,7 @@ import { UnitState } from "./states";
 import { createUnit, Unit, UnitSettings } from "./unit";
 
 type RotationData = { time: number, speed: number };
+type DeatData = { time: number, speed: number };
 type WalkData = { time: number, speedX: number, speedY: number };
 
 export function createBase(settings: UnitSettings, world: World): Unit {
@@ -27,6 +29,7 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 				speed: chance() ? -1 : 1,
 				time: randomFloat(0.5, 2)
 			};
+			unit.animationPaused = true;
 		},
 	} as FSMAction<RotationData>;
 
@@ -42,21 +45,29 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 				speedY: mathSin(unit.rotationZ) * walkSpeed,
 				time: randomFloat(1, 3),
 			}
+			unit.playAnimation(settings.animationWalk, true);
 		}
 	} as FSMAction<WalkData>;
 
 	actions[UnitState.DEAD] = {
 		update(time) {
-			unit.alpha! -= time;
-			if (unit.alpha! < 0) {
-				world.removeUnit(unit);
+			this.data!.time -= time;
+			if (this.data!.time < 0) {
+				unit.z! += this.data!.speed;
+				if (unit.z! < -10) {
+					world.removeUnit(unit);
+				}
 			}
 		},
 		start() {
-			unit.alpha = 0.9;
+			this.data = {
+				time: randomFloat(2, 4),
+				speed: randomFloat(-0.5, -1),
+			};
 			unit.body.enabled = false;
+			unit.playAnimation(chance() ? Resources.dead_hero : Resources.dead_zombie, false);
 		}
-	};
+	} as FSMAction<DeatData>;
 
 	transitions.push(
 		{

@@ -5,6 +5,8 @@ import { World } from "../world";
 import { gun, rifle, shotgun } from "../weapons/weapons";
 import { UnitType } from "./types";
 import { UnitState } from "./states";
+import { Resources } from "../../resources/ids";
+import { chance } from "../../utils/math";
 
 export function createPlayer(world: World, control: IPlayerControl): Unit {
 	const radius = 30;
@@ -14,9 +16,9 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 		radius,
 		weight: 90,
 		health: 100000,
-		color: 0xff009999,
 		walkSpeed: 200,
 		reaction: 0.2,
+		animationWalk: Resources.walk_forward,
 		weapons: [
 			gun(radius),
 			rifle(radius),
@@ -34,16 +36,20 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 
 	actions[UnitState.WALK] = {
 		update(time) {
+			const { direction, rotation, attack, weapon } = control;
 			const currentWalkSpeed = walkSpeed * time;
-			unit.x += control.direction.x * currentWalkSpeed;
-			unit.y += control.direction.y * currentWalkSpeed;
+			unit.x += direction.x * currentWalkSpeed;
+			unit.y += direction.y * currentWalkSpeed;
 
-			unit.rotationZ = control.rotation;
-			unit.weapon = control.weapon;
+			unit.animationPaused = direction.x === 0 && direction.y === 0;
 
-			weaponControl(time, control.attack);
+			unit.rotationZ = rotation;
+			unit.weapon = weapon;
+
+			weaponControl(time, attack);
 		},
 		start() {
+			unit.playAnimation(settings.animationWalk, true);
 		}
 	};
 
@@ -53,6 +59,7 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 		start() {
 			unit.alpha = 0.5;
 			unit.body.enabled = false;
+			unit.playAnimation(chance() ? Resources.dead_hero : Resources.dead_zombie, false);
 		}
 	};
 

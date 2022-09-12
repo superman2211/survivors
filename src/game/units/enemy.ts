@@ -1,5 +1,5 @@
 import { pointDistanceSquared } from "../../geom/point";
-import { mathAtan2, mathCos, math2PI, mathRandom, mathSin, randomFloat } from "../../utils/math";
+import { mathAtan2, mathCos, math2PI, mathRandom, mathSin, randomFloat, chance } from "../../utils/math";
 import { FSMAction } from "../utils/fsm";
 import { Unit, UnitSettings } from "./unit";
 import { getWeaponControl } from "../weapons/weapon";
@@ -8,6 +8,7 @@ import { createBase } from "./base";
 import { hand } from "../weapons/weapons";
 import { UnitType } from "./types";
 import { UnitState } from "./states";
+import { Resources } from "../../resources/ids";
 
 type TargetData = { target: Unit };
 
@@ -26,9 +27,9 @@ export function createEnemy(world: World, newEnemy: boolean = false) {
 		radius,
 		weight: radius * 3,
 		health: radius * 4,
-		color: newEnemy ? 0xff000099 : 0xff990000,
 		walkSpeed: randomFloat(80, 150),
 		reaction: 0.5,
+		animationWalk: Resources.walk_zombie,
 		weapons: [
 			hand(radius, radius)
 		]
@@ -58,6 +59,7 @@ export function createEnemy(world: World, newEnemy: boolean = false) {
 		},
 		start(target: Unit) {
 			this.data = { target };
+			unit.playAnimation(settings.animationWalk, true);
 		}
 	} as FSMAction<TargetData>;
 
@@ -67,6 +69,7 @@ export function createEnemy(world: World, newEnemy: boolean = false) {
 		},
 		start(target: Unit) {
 			this.data = { target };
+			unit.playAnimation(chance() ? Resources.attack_zombie_1 : Resources.attack_zombie_2, true)
 		}
 	} as FSMAction<TargetData>;
 

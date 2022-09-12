@@ -140,3 +140,11 @@ export function smoothNormals(data: Float32Array | number[]) {
 		}
 	};
 }
+
+export function transformUV(data: Float32Array, uvTransform: number[]) {
+	const [du, dv, su, sv] = uvTransform;
+	for (let i = 0; i < data.length; i += ELEMENT_SIZE) {
+		data[i + 6 + 0] = du + data[i + 6 + 0] * su;
+		data[i + 6 + 1] = dv + data[i + 6 + 1] * sv;
+	}
+}

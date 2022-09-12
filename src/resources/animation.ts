@@ -1,11 +1,31 @@
 import { createCube, CUBE_POINTS } from "../webgl/cube";
-import { ELEMENT_SIZE, smoothNormals, transformGeometry, updateNormals, writeGeometry } from "../webgl/geometry";
+import { ELEMENT_SIZE, smoothNormals, transformGeometry, transformUV, updateNormals, writeGeometry } from "../webgl/geometry";
 import { composeM4, createM4, createV3, identityM4, lookAt, multiplyM4, normalizeV3, scalingM4, subtractV3, transformM4, translationM4, xRotationM4, yRotationM4, zRotationM4 } from "../webgl/m4";
 import { createSphere } from "../webgl/sphere";
 import { Resources } from "./ids";
 import { resources } from "./resources-loader";
 
 export const ANIMATION_POINTS = 20;
+
+export const animationSpeed: { [key: number]: number } = {
+	[Resources.attack_zombie_1]: 30,
+	[Resources.attack_zombie_2]: 30,
+	[Resources.dead_hero]: 40,
+	[Resources.dead_zombie]: 40,
+	[Resources.walk_forward]: 30,
+	[Resources.walk_right]: 30,
+	[Resources.walk_zombie]: 30,
+} 
+
+export const animationDuration: { [key: number]: number } = {
+	[Resources.attack_zombie_1]: 1,
+	[Resources.attack_zombie_2]: 1,
+	[Resources.dead_hero]: 0.8,
+	[Resources.dead_zombie]: 0.8,
+	[Resources.walk_forward]: 1,
+	[Resources.walk_right]: 1,
+	[Resources.walk_zombie]: 1,
+} 
 
 const enum PointType {
 	fl0 = 0,
@@ -33,6 +53,28 @@ const enum PointType {
 	h2 = 18,
 	h3 = 19,
 }
+
+const enum UnitPart {
+	SKIN = 0,
+	SHIRT = 1,
+	PANTS = 2,
+	BOOTS = 3,
+}
+
+const uvParts: { [key: number]: number[] } = {
+	[UnitPart.SKIN]: [0, 0, 0.5, 0.5],
+	[UnitPart.SHIRT]: [0.5, 0, 0.5, 0.5],
+	[UnitPart.PANTS]: [0, 0.5, 0.5, 0.5],
+	[UnitPart.BOOTS]: [0.5, 0.5, 0.5, 0.5],
+}
+
+// const ttt = [0.5, 0.5, 0.5, 0.5];
+// const uvParts: { [key: number]: number[] } = {
+// 	[UnitPart.SKIN]: ttt,
+// 	[UnitPart.SHIRT]: ttt,
+// 	[UnitPart.PANTS]: ttt,
+// 	[UnitPart.BOOTS]: ttt,
+// }
 
 export function readAnimation(buffer: ArrayBuffer): Float32Array[] {
 	const limitView = new Float32Array(buffer, 0, 6);
@@ -65,13 +107,15 @@ export function readAnimation(buffer: ArrayBuffer): Float32Array[] {
 
 const matrix = createM4();
 
-function connectPoints(point0: Float32Array, point1: Float32Array, width: number, lengthAppedix: number, stream: number[], p: number): number {
+function connectPoints(point0: Float32Array, point1: Float32Array, width: number, lengthAppedix: number, uvPart: UnitPart, stream: number[], p: number): number {
 	const vector = createV3();
 	subtractV3(point0, point1, vector);
 
 	const length = Math.hypot(...vector) + lengthAppedix;
 
 	const geometry = createSphere(1, 5);
+
+	transformUV(geometry, uvParts[uvPart]);
 
 	lookAt(point0, point1, point0, matrix);
 
@@ -123,35 +167,35 @@ export function createFrame(points: Float32Array): Float32Array {
 	const widthFoot = 0.1;
 
 	const basicConnections = [
-		[PointType.fl0, PointType.fl1, widthFoot],
-		[PointType.fl1, PointType.fl2, widthFoot],
-		[PointType.fl2, PointType.fl3, 0.07, 0.2],
+		[PointType.fl0, PointType.fl1, UnitPart.PANTS, widthFoot],
+		[PointType.fl1, PointType.fl2, UnitPart.PANTS, widthFoot],
+		[PointType.fl2, PointType.fl3, UnitPart.BOOTS, 0.07, 0.2],
 
-		[PointType.fr0, PointType.fr1, widthFoot],
-		[PointType.fr1, PointType.fr2, widthFoot],
-		[PointType.fr2, PointType.fr3, 0.07, 0.2],
+		[PointType.fr0, PointType.fr1, UnitPart.PANTS, widthFoot],
+		[PointType.fr1, PointType.fr2, UnitPart.PANTS, widthFoot],
+		[PointType.fr2, PointType.fr3, UnitPart.BOOTS, 0.07, 0.2],
 
-		[PointType.hl1, PointType.hl0, widthHand],
-		[PointType.hl1, PointType.hl2, widthHand],
-		[PointType.hl2, PointType.hl3, widthHand],
+		[PointType.hl1, PointType.hl0, UnitPart.SHIRT, widthHand],
+		[PointType.hl1, PointType.hl2, UnitPart.SHIRT, widthHand],
+		[PointType.hl2, PointType.hl3, UnitPart.SKIN, widthHand],
 
-		[PointType.hr0, PointType.hr1, widthHand],
-		[PointType.hr1, PointType.hr2, widthHand],
-		[PointType.hr2, PointType.hr3, widthHand],
+		[PointType.hr0, PointType.hr1, UnitPart.SHIRT, widthHand],
+		[PointType.hr1, PointType.hr2, UnitPart.SHIRT, widthHand],
+		[PointType.hr2, PointType.hr3, UnitPart.SKIN, widthHand],
 
-		[PointType.hr0, PointType.hl0],
-		[PointType.fl0, PointType.fr0, 0.16, 0.18],
-		[PointType.hl0, PointType.fl0],
-		[PointType.hr0, PointType.fr0],
+		[PointType.hr0, PointType.hl0, UnitPart.SHIRT],
+		[PointType.fl0, PointType.fr0, UnitPart.PANTS, 0.16, 0.18],
+		[PointType.hl0, PointType.fl0, UnitPart.SHIRT],
+		[PointType.hr0, PointType.fr0, UnitPart.SHIRT],
 
-		[PointType.h0, PointType.h1, 0.08],
-		[PointType.h1, PointType.h2],
-		[PointType.h2, PointType.h3, 0.15, 0.15],
+		[PointType.h0, PointType.h1, UnitPart.SKIN, 0.08],
+		[PointType.h1, PointType.h2, UnitPart.SKIN],
+		[PointType.h2, PointType.h3, UnitPart.SKIN, 0.15, 0.15],
 	];
 
 	for (const connection of basicConnections) {
-		const [type0, type1, width = 0.1, lengthAppedix = 0.1] = connection;
-		p = connectPoints(getPoint(points, type0), getPoint(points, type1), width, lengthAppedix, data, p);
+		const [type0, type1, uvPart, width = 0.1, lengthAppedix = 0.1] = connection;
+		p = connectPoints(getPoint(points, type0), getPoint(points, type1), width, lengthAppedix, uvPart, data, p);
 	}
 
 	const interpolationConnections = [
@@ -159,25 +203,29 @@ export function createFrame(points: Float32Array): Float32Array {
 			PointType.hl0, PointType.fl0, 0.2,
 			PointType.hr0, PointType.fr0, 0.2,
 			0.2, 0.2,
+			UnitPart.SHIRT
 		],
 		[
 			PointType.hl0, PointType.fl0, 0.5,
 			PointType.hr0, PointType.fr0, 0.5,
 			0.15, 0.2,
+			UnitPart.SHIRT
 		],
 		[
 			PointType.hl0, PointType.fl0, 0.7,
 			PointType.hr0, PointType.fr0, 0.7,
 			0.15, 0.2,
+			UnitPart.SHIRT
 		]
 	]
 
 	for (const connection of interpolationConnections) {
-		const [p0, p1, value0, p2, p3, value1, width, length] = connection;
+		const [p0, p1, value0, p2, p3, value1, width, length, uvPart] = connection;
 		p = connectPoints(
 			getCenter(points, p0, p1, value0),
 			getCenter(points, p2, p3, value1),
 			width, length,
+			uvPart,
 			data, p
 		);
 	}

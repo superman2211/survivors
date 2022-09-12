@@ -1,4 +1,5 @@
 import { Point, pointDistanceSquared, pointLengthSquared, pointNormalize, pointVector } from "../../geom/point";
+import { Resources } from "../../resources/ids";
 import { mathAtan2 } from "../../utils/math";
 import { FSMAction } from "../utils/fsm";
 import { getWeaponControl } from "../weapons/weapon";
@@ -41,9 +42,9 @@ export function createAlly(world: World) {
 		radius,
 		weight: 90,
 		health: 100,
-		color: 0xff999900,
 		walkSpeed: 200,
-		reaction: 0.2,
+		reaction: 0.2,	
+		animationWalk: Resources.walk_forward,
 		weapons: [
 			randomWeapon(radius),
 		]
@@ -80,6 +81,7 @@ export function createAlly(world: World) {
 		},
 		start(target: Unit) {
 			this.data = { target };
+			unit.playAnimation(settings.animationWalk, true);
 		}
 	} as FSMAction<TargetData>;
 

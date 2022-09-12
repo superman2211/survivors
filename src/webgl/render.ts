@@ -247,8 +247,8 @@ export function renderBegin() {
 	gl.uniformMatrix4fv(worldLocation, false, worldMatrix);
 
 	gl.uniform4fv(colorLocation, [0.3, 1, 0.2, 1]);
-	gl.uniform3fv(lightWorldPositionLocation, [0, 0, 200]);
-	gl.uniform3fv(lightWorldPositionLocation2, [1000, 0, 200]);
+	gl.uniform3fv(lightWorldPositionLocation, [0, 0, 300]);
+	gl.uniform3fv(lightWorldPositionLocation2, [1000, 0, 300]);
 	gl.uniform3fv(lightWorldPositionLocation3, [cameraX, cameraY, 90]);
 }
 
