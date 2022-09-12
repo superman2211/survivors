@@ -200,6 +200,5 @@ export function renderEnd() {
 	fps.forEach(n => frameRate += n);
 	frameRate /= fps.length;
 
-	info.style.color = 'gray';
 	info.innerText = 'FPS: ' + Math.round(frameRate) + ', DC: ' + drawCalls;
 }

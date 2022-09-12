@@ -5,18 +5,20 @@ import { generateGrass, generateGrassSidewalk } from "./textures/grass";
 import { generateAsphalt, generateRoad } from "./textures/road";
 
 const SIZE = 512;
-const COLS = 7;
+const COLS = 9;
 
 const geometry = createPlane(SIZE, SIZE);
 
 const tilesMap = [
-	0, 0, 7, 2, 6, 0, 0,
-	0, 0, 7, 2, 6, 0, 0,
-	5, 5, 5, 2, 5, 5, 5,
-	1, 1, 1, 3, 1, 1, 1,
-	4, 4, 4, 2, 4, 4, 4,
-	0, 0, 7, 2, 6, 0, 0,
-	0, 0, 7, 2, 6, 0, 0,
+	0, 0, 0, 7, 2, 6, 0, 0, 0,
+	0, 0, 0, 7, 2, 6, 0, 0, 0,
+	0, 0, 0, 7, 2, 6, 0, 0, 0,
+	5, 5, 5, 5, 2, 5, 5, 5, 5,
+	1, 1, 1, 1, 3, 1, 1, 1, 1,
+	4, 4, 4, 4, 2, 4, 4, 4, 4,
+	0, 0, 0, 7, 2, 6, 0, 0, 0,
+	0, 0, 0, 7, 2, 6, 0, 0, 0,
+	0, 0, 0, 7, 2, 6, 0, 0, 0,
 ]
 
 const grassImage = generateGrass(SIZE);
@@ -95,7 +97,7 @@ export function createGround(): Component[] {
 	const radius = mathHypot(SIZE) / 2;
 	const children: Component[] = [];
 
-	const start = -7 / 2 * SIZE;
+	const start = -COLS / 2 * SIZE;
 	let x = start;
 	let y = start;
 	let cols = 0;
