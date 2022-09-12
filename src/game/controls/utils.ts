@@ -1,11 +1,11 @@
-import { domDocument } from "../../utils/browser";
+import { createContext2d } from "../../utils/browser";
 import { math2PI } from "../../utils/math";
 
 export function createCircleImage(radius: number, color: string, width: number): HTMLCanvasElement {
-	const canvas = domDocument.createElement('canvas');
+	const context = createContext2d();
+	const { canvas } = context;
 	canvas.width = canvas.height = radius * 2;
 
-	const context = canvas.getContext('2d')!;
 	context.strokeStyle = color;
 	context.globalAlpha = 0.5;
 	context.lineWidth = width;

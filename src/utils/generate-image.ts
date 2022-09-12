@@ -1,5 +1,5 @@
 import { formatColor } from "../graphics/pattern";
-import { domDocument } from "./browser";
+import { createContext2d, domDocument } from "./browser";
 import { math2PI, mathRandom } from "./math";
 
 export const enum CommandType {
@@ -95,8 +95,8 @@ const methods: { [key: number]: CommandMethod } = {
 };
 
 export function generateImage(commands: Command[]) {
-	const canvas = domDocument.createElement('canvas');
-	const context = canvas.getContext('2d')!;
+	const context = createContext2d();
+	const { canvas } = context;
 	let last: Command;
 	commands.forEach(command => {
 		const method = methods[command.type]!;

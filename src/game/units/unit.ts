@@ -43,15 +43,15 @@ export interface Unit extends WorldObject {
 
 function createUnitImage(skin: number, shirt: number, pants: number, boots: number) {
 	const texture: Command[] = [
-		{ type: CommandType.FILL, color: skin },// 5
+		{ type: CommandType.FILL, color: skin },
 		{ type: CommandType.SIZE, width: 128, height: 128 },
-		{ type: CommandType.FILL, color: shirt },// 5
+		{ type: CommandType.FILL, color: shirt },
 		{ type: CommandType.RECTANGLE, x: 64, y: 0, width: 64, height: 64 },
-		{ type: CommandType.FILL, color: pants },// 5
+		{ type: CommandType.FILL, color: pants },
 		{ type: CommandType.RECTANGLE, x: 0, y: 64, width: 64, height: 64 },
-		{ type: CommandType.FILL, color: boots },// 5
+		{ type: CommandType.FILL, color: boots },
 		{ type: CommandType.RECTANGLE, x: 64, y: 64, width: 64, height: 64 },
-		{ type: CommandType.NOISE, colorOffset: 20 }, // 2
+		{ type: CommandType.NOISE, colorOffset: 20 },
 	];
 
 	return generateImage(texture);

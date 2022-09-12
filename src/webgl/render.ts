@@ -1,10 +1,7 @@
-import { generateGroundImage } from "../game/objects/ground";
-import { ANIMATION_POINTS } from "../resources/animation";
 import { dpr } from "../utils/browser";
-import { mathPI, mathSin, randomFloat } from "../utils/math";
-import { createCube, CUBE_POINTS } from "./cube";
-import { ELEMENT_SIZE, Geometry, transformGeometry } from "./geometry";
-import { createM4, createV3, identityM4, inverseM4, lookAt, multiplyM4, normalizeV3, perspectiveM4, transformM4, transformV3, translationM4, transposeM4, yRotationM4 } from "./m4";
+import { mathPI } from "../utils/math";
+import { ELEMENT_SIZE } from "./geometry";
+import { createM4, identityM4, inverseM4, multiplyM4, perspectiveM4, translationM4, transposeM4 } from "./m4";
 import { fragmentShaderSource } from "./shaders/fragment";
 import { vertexShaderSource } from "./shaders/vertex";
 
@@ -36,13 +33,10 @@ const lightWorldPositionLocation = gl.getUniformLocation(program, "u_lightWorldP
 const lightWorldPositionLocation2 = gl.getUniformLocation(program, "u_lightWorldPosition2");
 const lightWorldPositionLocation3 = gl.getUniformLocation(program, "u_lightWorldPosition3");
 const worldLocation = gl.getUniformLocation(program, "u_world");
+const objectMatrixLocation = gl.getUniformLocation(program, "u_object");
 
-// const image = generateGroundImage();
-
-
-const textures = new Map<HTMLCanvasElement,WebGLTexture>();
-
-// const cube = createCube(20, 20, 20);
+const textures = new Map<HTMLCanvasElement, WebGLTexture>();
+const buffers = new Map<Float32Array, WebGLBuffer>();
 
 const elementsBuffer = gl.createBuffer();
 const elementsData = new Float32Array(1024 * 1024 * 10);
@@ -73,13 +67,10 @@ export function updateSize() {
 }
 
 let currentImage: HTMLCanvasElement | undefined;
-
-// const normalsMatrix = createM4();
+let currentGeometry: Float32Array | undefined;
 
 export function renderObject(geometry: Float32Array, image: HTMLCanvasElement, matrix: Float32Array) {
 	if (currentImage !== image) {
-		renderBatch();
-
 		currentImage = image;
 		if (textures.has(image)) {
 			gl.bindTexture(gl.TEXTURE_2D, textures.get(image)!);
@@ -95,112 +86,40 @@ export function renderObject(geometry: Float32Array, image: HTMLCanvasElement, m
 		}
 	}
 
-	elementsCount = transformGeometry(geometry, matrix, elementsData, elementsCount);
+	if (currentGeometry !== geometry) {
+		currentGeometry = geometry;
+		if (buffers.has(geometry)) {
+			gl.bindBuffer(gl.ARRAY_BUFFER, buffers.get(geometry)!);
+		} else {
+			const buffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+			gl.bufferData(gl.ARRAY_BUFFER, geometry, gl.STATIC_DRAW);
+			buffers.set(geometry, buffer!);
+		}
 
-	//const { vertecies, normals, uvs } = geometry;
-	// const vector = createV3();
+		const stride = ELEMENT_SIZE * 4;
+		gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, stride, 0);
+		gl.enableVertexAttribArray(positionLocation);
+		gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, stride, 3 * 4);
+		gl.enableVertexAttribArray(normalLocation);
+		gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, stride, 3 * 4 + 3 * 4);
+		gl.enableVertexAttribArray(texCoordLocation);
+	}
+	
+	gl.uniformMatrix4fv(objectMatrixLocation, false, matrix);
 
-	// normalsMatrix.set(matrix);
-	// normalsMatrix[12] = 0;
-	// normalsMatrix[13] = 0;
-	// normalsMatrix[14] = 0;
-	// normalsMatrix[15] = 1;
+	gl.drawArrays(gl.TRIANGLES, 0, geometry.length / ELEMENT_SIZE);
 
-	// const elements = vertecies.length / 3;
-
-	// for (let i = 0; i < elements; i++) {
-	// 	const j = i * 3;
-	// 	const k = i * 2;
-
-	// 	vector[0] = vertecies[j];
-	// 	vector[1] = vertecies[j + 1];
-	// 	vector[2] = vertecies[j + 2];
-	// 	transformV3(matrix, vector, vector);
-	// 	elementsData.push(...vector);
-
-	// 	vector[0] = normals[j];
-	// 	vector[1] = normals[j + 1];
-	// 	vector[2] = normals[j + 2];
-	// 	transformV3(normalsMatrix, vector, vector);
-	// 	// normalizeV3(vector, vector);
-	// 	elementsData.push(...vector);
-
-	// 	elementsData.push(uvs[k], uvs[k + 1]);
-	// }
+	drawCalls++;
 }
-
-// interface Object3d {
-// 	geometry: Geometry,
-// 	texture: HTMLCanvasElement | HTMLImageElement
-// 	matrix?: Float32Array,
-
-// 	x?: number;
-// 	y?: number;
-// 	z?: number;
-
-// 	sx?: number;
-// 	sy?: number;
-// 	sz?: number;
-
-// 	rx?: number;
-// 	ry?: number;
-// 	rz?: number;
-// }
-
-// interface Cube3d extends Object3d {
-// 	rsx: number;
-// 	rsy: number;
-// 	rsz: number;
-// }
-
-// const objects: Cube3d[] = [];
-
-// for (let i = 0; i < 10; i++) {
-// 	const x = -70 + (i % 5) * 150;
-// 	const y = -70 + ((i / 5) | 0) * 150;
-// 	objects.push({
-// 		geometry: cube,
-// 		texture: image,
-// 		x,//: randomFloat(-100, 100),
-// 		y,//: randomFloat(-100, 100),
-// 		z: 50,
-// 		sx: 1.5,
-// 		sy: 1.5,
-// 		rx: 0,//randomFloat(-1, 1),
-// 		ry: 0,//randomFloat(-1, 1),
-// 		rz: 0,//randomFloat(-1, 1),
-// 		rsx: 0,//randomFloat(-0.02, 0.02),
-// 		rsy: 0,//randomFloat(-0.02, 0.02),
-// 		rsz: 0,//randomFloat(-0.02, 0.02),
-// 	})
-// }
-
-// objects.push({
-// 	geometry: cube,
-// 	texture: image,
-// 	x: 0,
-// 	y: 0,
-// 	rx: 0,
-// 	ry: 0,
-// 	rz: 0,
-// 	rsx: 0,
-// 	rsy: 0,
-// 	rsz: 0,
-// 	sx: 6,
-// 	sy: 6,
-// 	sz: 0.01,
-// })
-
-const objectMatrix = createM4();
-
-let light1 = 0;
-let light2 = 0;
 
 let cameraX = 0;
 let cameraY = 0;
 let cameraZ = 0;
 
 let drawCalls = 0;
+const fps = [0];
+let lastTime = performance.now();
 
 export function setCamera(x: number, y: number, z: number) {
 	cameraX = x;
@@ -254,9 +173,7 @@ export function renderBegin() {
 
 function renderBatch() {
 	if (elementsCount) {
-		// console.log(elementsCount, ANIMATION_POINTS * CUBE_POINTS * ELEMENT_SIZE);
 		drawCalls++;
-		// elementsCount = CUBE_POINTS * ELEMENT_SIZE * 6;
 		const data = elementsData.buffer.slice(0, elementsCount * 4);
 		gl.bindBuffer(gl.ARRAY_BUFFER, elementsBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW);
@@ -272,38 +189,17 @@ const info = i;
 
 export function renderEnd() {
 	renderBatch();
-	info.innerText = 'drawCalls: ' + drawCalls;
-	// console.log(drawCalls);
+
+	const deltaTime = performance.now() - lastTime;
+	lastTime = performance.now();
+	fps.push(1000 / deltaTime);
+	if (fps.length > 30) {
+		fps.shift();
+	}
+	let frameRate = 0;
+	fps.forEach(n => frameRate += n);
+	frameRate /= fps.length;
+
+	info.style.color = 'gray';
+	info.innerText = 'FPS: ' + Math.round(frameRate) + ', DC: ' + drawCalls;
 }
-
-// export function renderTest() {
-// 	updateSize();
-// 	renderBegin();
-// 	renderEnd();
-	
-// 	light1 += 0.01;
-// 	light2 += 0.02;
-
-// 	objects.forEach(o => {
-// 		o.rx! += o.rsx;
-// 		o.ry! += o.rsy;
-// 		o.rz! += o.rsz;
-
-// 		transformM4(
-// 			objectMatrix,
-// 			o.x ?? 0,
-// 			o.y ?? 0,
-// 			o.z ?? 0,
-// 			o.rx ?? 0,
-// 			o.ry ?? 0,
-// 			o.rz ?? 0,
-// 			o.sx ?? 1,
-// 			o.sy ?? 1,
-// 			o.sz ?? 1,
-// 		);
-
-// 		renderObject(o.geometry, objectMatrix);
-// 	});
-
-// 	requestAnimationFrame(renderTest);
-// }
