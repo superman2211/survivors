@@ -41,7 +41,7 @@ export function createWorld(): World {
 		units,
 
 		children: [
-			createGround(),
+			{ children: createGround(), touchable: false },
 			{ children: objects, touchable: false },
 			{ children: units, touchable: false },
 			{ children: bullets, touchable: false },

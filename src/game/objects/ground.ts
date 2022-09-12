@@ -10,7 +10,7 @@ const COLS = 7;
 const geometry = createPlane(SIZE, SIZE);
 
 const tilesMap = [
-	0, 0, 7, 2, 0, 0, 0,
+	0, 0, 7, 2, 6, 0, 0,
 	0, 0, 7, 2, 6, 0, 0,
 	5, 5, 5, 2, 5, 5, 5,
 	1, 1, 1, 3, 1, 1, 1,
@@ -91,7 +91,7 @@ const tilesObjects = [
 	createGrassV(),
 ]
 
-export function createGround(): Component {
+export function createGround(): Component[] {
 	const radius = mathHypot(SIZE) / 2;
 	const children: Component[] = [];
 
@@ -117,5 +117,5 @@ export function createGround(): Component {
 		}
 	}
 
-	return { children };
+	return children;
 }

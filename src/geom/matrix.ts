@@ -322,12 +322,12 @@ export function translationM4(tx: number, ty: number, tz: number, dst: Float32Ar
 	dst[5] = 1;
 	dst[6] = 0;
 	dst[7] = 0;
-	
+
 	dst[8] = 0;
 	dst[9] = 0;
 	dst[10] = 1;
 	dst[11] = 0;
-	
+
 	dst[12] = tx;
 	dst[13] = ty;
 	dst[14] = tz;
@@ -367,55 +367,30 @@ export function transformM4(
 	sy: number = 1,
 	sz: number = 1
 ) {
-	// var cosX = Math.cos(rx);
-	// var cosY = Math.cos(ry);
-	// var cosZ = Math.cos(rz);
-
-	// var sinX = Math.sin(rx);
-	// var sinY = Math.sin(ry);
-	// var sinZ = Math.sin(rz);
-
-	// var cosZsinY = cosZ * sinY;
-	// var sinZsinY = sinZ * sinY;
-
-	// m[0] = cosZ * cosY * sx;
-	// m[1] = sinZ * cosY * sx;
-	// m[2] = sinY * sx;
-	// m[3] = 0;
-
-	// m[4] = cosZsinY * sinX - sinZ * cosX * sy;
-	// m[5] = sinZsinY * sinX + cosZ * cosX * sy;
-	// m[6] = cosY * sinX * sy;
-	// m[7] = 0;
-
-	// m[8] = cosZsinY * cosX + sinZ * sinX * sz;
-	// m[9] = sinZsinY * cosX - cosZ * sinX * sz;
-	// m[10] = cosY * cosX * sz;
-	// m[11] = 0;
-
-	// m[12] = tx;
-	// m[13] = ty;
-	// m[14] = tz;
-	// m[15] = 1;
-
 	scalingM4(sx, sy, sz, m);
 
 	const temp = createM4();
+
+	if (rx) {
+		xRotationM4(rx, temp);
+		multiplyM4(temp, m, m);
+	}
+
+	if (ry) {
+		yRotationM4(ry, temp);
+		multiplyM4(temp, m, m);
+	}
+
+	if (rz) {
+		zRotationM4(rz, temp);
+		multiplyM4(temp, m, m);
+	}
 	
-	xRotationM4(rx, temp);
-	multiplyM4(temp, m, m);
-
-	yRotationM4(ry, temp);
-	multiplyM4(temp, m, m);
-
-	zRotationM4(rz, temp);
-	multiplyM4(temp, m, m);
-
 	translationM4(tx, ty, tz, temp);
 	multiplyM4(temp, m, m);
 }
 
-export function composeM4(translation:number[], quaternion:number[], scale:number[], dst:Float32Array) {
+export function composeM4(translation: number[], quaternion: number[], scale: number[], dst: Float32Array) {
 	const x = quaternion[0];
 	const y = quaternion[1];
 	const z = quaternion[2];

@@ -10,6 +10,7 @@ export const mathSqrt = Math.sqrt;
 export const mathHypot = Math.hypot;
 export const mathPI = Math.PI;
 export const math2PI = mathPI * 2;
+export const mathPI2 = mathPI / 2;
 
 export function chance(): boolean {
 	return mathRandom() > 0.5;
