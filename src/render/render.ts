@@ -4,6 +4,7 @@ import { ELEMENT_SIZE } from "./geometry";
 import { createM4, identityM4, inverseM4, multiplyM4, perspectiveM4, translationM4, transposeM4 } from "../geom/matrix";
 import { fragmentShaderSource } from "./shaders/fragment";
 import { vertexShaderSource } from "./shaders/vertex";
+import { MAX_LIGHTS } from "./shaders/parameters";
 
 export const canvas = c as HTMLCanvasElement;
 const gl = canvas.getContext('webgl')!;
@@ -31,11 +32,13 @@ const texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
 const worldViewProjectionLocation = gl.getUniformLocation(program, "u_worldViewProjection");
 const worldInverseTransposeLocation = gl.getUniformLocation(program, "u_worldInverseTranspose");
 const colorLocation = gl.getUniformLocation(program, "u_color");
-const lightWorldPositionLocation = gl.getUniformLocation(program, "u_lightWorldPosition");
-const lightWorldPositionLocation2 = gl.getUniformLocation(program, "u_lightWorldPosition2");
-const lightWorldPositionLocation3 = gl.getUniformLocation(program, "u_lightWorldPosition3");
 const worldLocation = gl.getUniformLocation(program, "u_world");
 const objectMatrixLocation = gl.getUniformLocation(program, "u_object");
+
+const lightWorldPositionLocation: any[] = [];
+for (let i = 0; i < MAX_LIGHTS; i++) {
+	lightWorldPositionLocation.push(gl.getUniformLocation(program, "u_lightWorldPosition" + i));
+}
 
 const textures = new Map<HTMLCanvasElement, WebGLTexture>();
 const buffers = new Map<Float32Array, WebGLBuffer>();
@@ -107,7 +110,7 @@ export function renderObject(geometry: Float32Array, image: HTMLCanvasElement, m
 		gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, stride, 3 * 4 + 3 * 4);
 		gl.enableVertexAttribArray(texCoordLocation);
 	}
-	
+
 	gl.uniformMatrix4fv(objectMatrixLocation, false, matrix);
 
 	gl.drawArrays(gl.TRIANGLES, 0, geometry.length / ELEMENT_SIZE);
@@ -168,9 +171,14 @@ export function renderBegin() {
 	gl.uniformMatrix4fv(worldLocation, false, worldMatrix);
 
 	gl.uniform4fv(colorLocation, [0.3, 1, 0.2, 1]);
-	gl.uniform3fv(lightWorldPositionLocation, lights[0]);
-	gl.uniform3fv(lightWorldPositionLocation2, lights[1]);
-	gl.uniform3fv(lightWorldPositionLocation3, [cameraX, cameraY, 90]);
+
+	lights[0][0] = cameraX;
+	lights[0][1] = cameraY;
+	lights[0][2] = 90;
+
+	for (let i = 0; i < MAX_LIGHTS; i++) {
+		gl.uniform3fv(lightWorldPositionLocation[i], lights[i]);
+	}
 }
 
 function renderBatch() {
@@ -187,6 +195,8 @@ function renderBatch() {
 export function addLight(light: number[]) {
 	lights.push(light);
 }
+
+addLight([0, 0, 0])
 
 declare global {
 	const i: HTMLDivElement;
