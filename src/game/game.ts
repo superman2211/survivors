@@ -15,6 +15,7 @@ import { createCube } from '../models/cube';
 import { Command, CommandType, generateImage } from '../utils/image';
 import { generateHouses } from './objects/houses';
 import { generateBorders } from './objects/borders';
+import { generateLights } from './objects/lights';
 
 const SIZE = 2500;
 
@@ -79,6 +80,7 @@ export function game(ui: UI): Game {
 
 	generateHouses(world);
 	generateBorders(world);
+	generateLights(world);
 
 	const component: Game = {
 		children: [

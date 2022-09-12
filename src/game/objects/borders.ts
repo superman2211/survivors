@@ -1,7 +1,7 @@
 import { createCube } from "../../models/cube";
 import { createBox } from "../../physics/body";
 import { generateMaterial } from "../../utils/material";
-import { mathPI, randomFloat } from "../../utils/math";
+import { randomFloat } from "../../utils/math";
 import { World, WorldObject } from "../world";
 
 export function generateBorders(world: World) {

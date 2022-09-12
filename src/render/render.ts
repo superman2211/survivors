@@ -8,6 +8,8 @@ import { vertexShaderSource } from "./shaders/vertex";
 export const canvas = c as HTMLCanvasElement;
 const gl = canvas.getContext('webgl')!;
 
+const lights: number[][] = [];
+
 const vs = gl.createShader(gl.VERTEX_SHADER)!;
 gl.shaderSource(vs, vertexShaderSource);
 gl.compileShader(vs);
@@ -166,8 +168,8 @@ export function renderBegin() {
 	gl.uniformMatrix4fv(worldLocation, false, worldMatrix);
 
 	gl.uniform4fv(colorLocation, [0.3, 1, 0.2, 1]);
-	gl.uniform3fv(lightWorldPositionLocation, [0, 0, 300]);
-	gl.uniform3fv(lightWorldPositionLocation2, [1000, 0, 300]);
+	gl.uniform3fv(lightWorldPositionLocation, lights[0]);
+	gl.uniform3fv(lightWorldPositionLocation2, lights[1]);
 	gl.uniform3fv(lightWorldPositionLocation3, [cameraX, cameraY, 90]);
 }
 
@@ -180,6 +182,10 @@ function renderBatch() {
 		gl.drawArrays(gl.TRIANGLES, 0, elementsCount / ELEMENT_SIZE);
 		elementsCount = 0;
 	}
+}
+
+export function addLight(light: number[]) {
+	lights.push(light);
 }
 
 declare global {
