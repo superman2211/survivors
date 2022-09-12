@@ -1,42 +1,121 @@
 import { Component } from "../../graphics/component";
-import { Command, CommandType, generateImage } from "../../utils/generate-image";
-import { mathHypot } from "../../utils/math";
-import { createCube } from "../../render/cube";
+import { mathHypot, mathPI } from "../../utils/math";
+import { createPlane } from "../../models/plane";
+import { generateGrass, generateGrassSidewalk } from "./textures/grass";
+import { generateAsphalt, generateRoad } from "./textures/road";
 
-const texture: Command[] = [
-	{ type: CommandType.FILL, color: 0xff666666 },// 5
-	{ type: CommandType.SIZE, width: 512, height: 512 }, // 5
-	{ type: CommandType.FILL, color: 0xff778877 }, // 5
-	{ type: CommandType.RECTANGLE, x: 20, y: 20, width: 50, height: 50 }, // 5
-	{ type: CommandType.REPEAT, stepX: 70, stepY: 70, count: 48, cols: 7, }, // 5 
-	{ type: CommandType.FILL, color: 0xff666666 }, // 5
-	{ type: CommandType.RECTANGLE, x: 140, y: 140, width: 220, height: 220 }, // 5
-	{ type: CommandType.FILL, color: 0xff778877 }, // 5
-	{ type: CommandType.ELLIPSE, x: 160, y: 160, width: 190, height: 190 }, // 5
-	{ type: CommandType.NOISE, colorOffset: 20 }, // 2
-];
+const SIZE = 512;
+const COLS = 7;
 
-export function createGround(): Component {
-	const size = 512;
-	const image = generateImage(texture);
-	const geometry = createCube(size / 2, size / 2, 0.1);
-	const item: Component = { image, geometry, x: -size / 2, y: -size / 2 };
-	const radius = mathHypot(size) / 2;
-	const children: Component[] = [];
-	for (let x = 0; x < 10; x++) {
-		for (let y = 0; y < 10; y++) {
-			children.push({
-				x: (x - 5) * (size - 1),
-				y: (y - 5) * (size - 1),
-				z: 0,
-				radius,
-				children: [item]
-			});
-		}
+const geometry = createPlane(SIZE, SIZE);
+
+const tilesMap = [
+	0, 0, 7, 2, 0, 0, 0,
+	0, 0, 7, 2, 6, 0, 0,
+	5, 5, 5, 2, 5, 5, 5,
+	1, 1, 1, 3, 1, 1, 1,
+	4, 4, 4, 2, 4, 4, 4,
+	0, 0, 7, 2, 6, 0, 0,
+	0, 0, 7, 2, 6, 0, 0,
+]
+
+const grassImage = generateGrass(SIZE);
+const grassSidewalkImage = generateGrassSidewalk(SIZE);
+const roadImage = generateRoad(SIZE);
+const asphaltImage = generateAsphalt(SIZE);
+
+export function createGrass(): Component {
+	return {
+		geometry,
+		image: grassImage,
 	}
-	return { children };
 }
 
-export function generateGroundImage(): HTMLCanvasElement {
-	return generateImage(texture);
+export function createGrassH(): Component {
+	return {
+		geometry,
+		image: grassSidewalkImage,
+	}
+}
+
+export function createGrassHI(): Component {
+	return {
+		...createGrassH(),
+		rotationZ: mathPI
+	}
+}
+
+export function createGrassV(): Component {
+	return {
+		...createGrassH(),
+		rotationZ: mathPI / 2
+	}
+}
+
+export function createGrassVI(): Component {
+	return {
+		...createGrassH(),
+		rotationZ: -mathPI / 2
+	}
+}
+
+export function createRoadH(): Component {
+	return {
+		geometry,
+		image: roadImage
+	}
+}
+
+export function createRoadV(): Component {
+	return {
+		...createRoadH(),
+		rotationZ: mathPI / 2
+	}
+}
+
+export function createRoadX(): Component {
+	return {
+		geometry,
+		image: asphaltImage
+	}
+}
+
+const tilesObjects = [
+	createGrass(),
+	createRoadH(),
+	createRoadV(),
+	createRoadX(),
+	createGrassH(),
+	createGrassHI(),
+	createGrassVI(),
+	createGrassV(),
+]
+
+export function createGround(): Component {
+	const radius = mathHypot(SIZE) / 2;
+	const children: Component[] = [];
+
+	const start = -7 / 2 * SIZE;
+	let x = start;
+	let y = start;
+	let cols = 0;
+
+	for (const t of tilesMap) {
+		const tile = {
+			...tilesObjects[t],
+			radius,
+			x, y,
+		} as Component;
+		children.push(tile);
+
+		x += SIZE;
+		cols++;
+		if (cols >= COLS) {
+			cols = 0;
+			x = start;
+			y += SIZE;
+		}
+	}
+
+	return { children };
 }

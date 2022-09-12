@@ -1,6 +1,6 @@
 import { formatColor } from "../graphics/pattern";
 import { createContext2d, domDocument } from "./browser";
-import { math2PI, mathRandom } from "./math";
+import { math2PI, mathRandom, randomFloat } from "./math";
 
 export const enum CommandType {
 	SIZE = 0,
@@ -10,6 +10,7 @@ export const enum CommandType {
 	LINE = 4,
 	REPEAT = 5,
 	NOISE = 6,
+	PARTICLES = 7,
 }
 
 export interface Command {
@@ -23,6 +24,8 @@ export interface Command {
 	stepY?: number;
 	count?: number;
 	cols?: number;
+	size?: number;
+	sizeMax?: number;
 	colorOffset?: number;
 }
 
@@ -91,6 +94,26 @@ const methods: { [key: number]: CommandMethod } = {
 			i += 4;
 		}
 		context.putImageData(imageData, 0, 0);
+	},
+
+	[CommandType.PARTICLES]: (command, canvas, context) => {
+		const x = command.x ?? 0;
+		const y = command.y ?? 0;
+		const width = command.width!;
+		const height = command.height!;
+		const size = command.size!;
+		const sizeMax = command.sizeMax!;
+		let count = command.count!;
+		while(count--) {
+			const sizeX = randomFloat(size, sizeMax);
+			const sizeY = randomFloat(size, sizeMax);
+			const offsetX = randomFloat(x, x + width);
+			const offsetY = randomFloat(y, y + height);
+			context.beginPath();
+			context.ellipse(offsetX, offsetY, sizeX, sizeY, 0, 0, math2PI);
+			context.closePath();
+			context.fill();
+		}
 	},
 };
 

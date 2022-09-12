@@ -11,8 +11,8 @@ import { UI } from './ui';
 import { getPlayerControl } from './utils/player-control';
 import { UnitType, isFriend } from './units/types';
 import { setCamera } from '../render/render';
-import { createCube } from '../render/cube';
-import { Command, CommandType, generateImage } from '../utils/generate-image';
+import { createCube } from '../models/cube';
+import { Command, CommandType, generateImage } from '../utils/image';
 
 const SIZE = 2500;
 
@@ -80,7 +80,7 @@ export function game(ui: UI): Game {
 	const boxSizeZ = 300;
 	const boxBorder = 700;
 	const boxRotation = 0;
-	const boxGeometry = createCube(boxSizeX / 2, boxSizeY / 2, boxSizeZ);
+	const boxGeometry = createCube(boxSizeX, boxSizeY, boxSizeZ);
 
 	const texture: Command[] = [
 		{ type: CommandType.FILL, color: 0xff964b00 },

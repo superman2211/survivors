@@ -5,8 +5,8 @@ import { Unit } from "../units/unit";
 import { Weapon } from "./weapon";
 import { World, WorldObject } from "../world";
 import { isFriend } from "../units/types";
-import { createCube } from "../../render/cube";
-import { Command, CommandType, generateImage } from "../../utils/generate-image";
+import { createCube } from "../../models/cube";
+import { Command, CommandType, generateImage } from "../../utils/image";
 
 export interface Bullet extends WorldObject {
 }

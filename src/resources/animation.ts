@@ -1,6 +1,6 @@
 import { smoothNormals, transformGeometry, transformUV, updateNormals } from "../render/geometry";
 import { createM4, lookAt, multiplyM4, scalingM4, transformM4 } from "../geom/matrix";
-import { createSphere } from "../render/sphere";
+import { createSphere } from "../models/sphere";
 import { Resources } from "./ids";
 import { resources } from "./resources-loader";
 import { createV3, subtractV3 } from "../geom/vector";

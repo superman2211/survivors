@@ -8,7 +8,6 @@ identityM4(globalM4);
 declare global {
 	const c: HTMLCanvasElement;
 }
-
 export const canvas = c as HTMLCanvasElement;
 
 export function graphicsRender(component: Component) {

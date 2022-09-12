@@ -3,7 +3,7 @@ import { Body } from "../../physics/body";
 import { Weapon } from "../weapons/weapon";
 import { UnitType } from "./types";
 import { WorldObject } from "../world";
-import { Command, CommandType, generateImage } from "../../utils/generate-image";
+import { Command, CommandType, generateImage } from "../../utils/image";
 import { animationDuration, animationSpeed, getAnimation } from "../../resources/animation";
 import { Resources } from "../../resources/ids";
 
