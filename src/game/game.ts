@@ -14,6 +14,7 @@ import { setCamera } from '../render/render';
 import { createCube } from '../models/cube';
 import { Command, CommandType, generateImage } from '../utils/image';
 import { generateHouses } from './objects/houses';
+import { generateBorders } from './objects/borders';
 
 const SIZE = 2500;
 
@@ -77,42 +78,7 @@ export function game(ui: UI): Game {
 	}
 
 	generateHouses(world);
-
-	// const boxSizeX = 700;
-	// const boxSizeY = 500;
-	// const boxSizeZ = 300;
-	// const boxBorder = 700;
-	// const boxRotation = 0;
-	// const boxGeometry = createCube(boxSizeX, boxSizeY, boxSizeZ);
-
-	// const texture: Command[] = [
-	// 	{ type: CommandType.FILL, color: 0xff964b00 },
-	// 	{ type: CommandType.SIZE, width: 512, height: 512 }, 
-	// 	{ type: CommandType.FILL, color: 0xff999999 }, 
-	// 	{ type: CommandType.RECTANGLE, x: 20, y: 20, width: 50, height: 50 }, 
-	// 	{ type: CommandType.REPEAT, stepX: 70, stepY: 70, count: 48, cols: 7, }, 
-	// 	{ type: CommandType.NOISE, colorOffset: 20 },
-	// ];
-
-	// const boxImage = generateImage(texture);
-
-	// for (let x = 0; x < 3; x++) {
-	// 	for (let y = 0; y < 3; y++) {
-	// 		const box: WorldObject = {
-	// 			x: -2000 + x * (boxSizeX + boxBorder),
-	// 			y: -2000 + y * (boxSizeY + boxBorder),
-	// 			z: boxSizeZ,
-	// 			rotationZ: boxRotation,
-	// 			geometry: boxGeometry,
-	// 			image: boxImage,
-	// 			body: {
-	// 				...createBox(-boxSizeX / 2, -boxSizeY / 2, boxSizeX, boxSizeY, boxRotation),
-	// 				static: true,
-	// 			},
-	// 		}
-	// 		world.addObject(box);
-	// 	}
-	// }
+	generateBorders(world);
 
 	const component: Game = {
 		children: [
