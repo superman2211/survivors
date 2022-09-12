@@ -1,23 +1,11 @@
-import { ColorTransform, colorTransformConcat, colorTransformCreate } from '../geom/color';
-import { Matrix, matrixConcat, matrixCreate, matrixGetScale, matrixTransformInversePoint } from '../geom/matrix';
-import { renderImage, Image } from './image';
-import { renderShape, Shape } from './shape';
-import { renderText, Text } from './text';
-import { getColorTransform, Transform } from './transform';
+import { Transform } from './transform';
 import { Keyboard, Pointer, Update } from './extensions';
-import { Point, pointCreate } from '../geom/point';
+import { Point } from '../geom/point';
 import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './events';
-import { createM4, multiplyM4, transformM4 } from '../webgl/m4';
-import { renderObject } from '../webgl/render';
-// import { createCube } from '../webgl/cube';
-import { Geometry } from '../webgl/geometry';
-
-// const cube = createCube(1, 1, 1);
+import { createM4, multiplyM4, transformM4 } from '../geom/matrix';
+import { renderObject } from '../render/render';
 
 export interface Component extends Transform, Update, Keyboard, Pointer {
-	// shape?: Shape;
-	// pallete?: number[];
-	// text?: Text;
 	geometry?: Float32Array;
 	children?: Component[];
 	image?: HTMLCanvasElement;
@@ -26,9 +14,7 @@ export interface Component extends Transform, Update, Keyboard, Pointer {
 	onScreen?: boolean;
 }
 
-// const local = pointCreate();
-
-export function componentRender(component: Component, parentMatrix: Float32Array, parentColorTranform: ColorTransform) {
+export function componentRender(component: Component, parentMatrix: Float32Array) {
 	component.onScreen = false;
 
 	const visible = component.visible ?? true;
@@ -45,53 +31,19 @@ export function componentRender(component: Component, parentMatrix: Float32Array
 		component.rotationX ?? 0,
 		component.rotationY ?? 0,
 		component.rotationZ ?? 0,
-		component.scaleX ?? component.scale ?? 1,
-		component.scaleY ?? component.scale ?? 1,
-		component.scaleZ ?? component.scale ?? 1,
+		component.scaleX ?? 1,
+		component.scaleY ?? 1,
+		component.scaleZ ?? 1,
 	);
 	multiplyM4(parentMatrix, matrix, matrix);
 
-	// if (component.radius) {
-	// 	const radius = matrixGetScale(matrix) * component.radius;
-	// 	if (
-	// 		matrix.x + radius < 0
-	// 		|| matrix.y + radius < 0
-	// 		|| matrix.x - radius > context.canvas.width - 0
-	// 		|| matrix.y - radius > context.canvas.height - 0
-	// 	) {
-	// 		return;
-	// 	}
-	// }
-
-	const colorTransform = colorTransformCreate();
-	getColorTransform(component, colorTransform);
-	colorTransformConcat(parentColorTranform, colorTransform, colorTransform);
-
-	if (colorTransform.am <= 0) {
-		return;
-	}
-
 	component.onScreen = true;
-
-	// context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.x, matrix.y);
 
 	const {
 		children,
 		geometry,
 		image,
 	} = component;
-
-	// if (shape && pallete) {
-	// 	renderShape(shape, pallete, colorTransform, context);
-	// }
-
-	// if (text) {
-	// 	renderText(text, colorTransform, context);
-	// }
-
-	// if (image) {
-	// 	renderImage(image, colorTransform, context);
-	// }
 
 	if (geometry) {
 		if (!image) {
@@ -101,7 +53,7 @@ export function componentRender(component: Component, parentMatrix: Float32Array
 	}
 
 	if (children) {
-		children.forEach((child) => componentRender(child, matrix, colorTransform));
+		children.forEach((child) => componentRender(child, matrix));
 	}
 }
 

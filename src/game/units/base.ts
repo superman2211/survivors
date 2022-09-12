@@ -61,8 +61,8 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 		},
 		start() {
 			this.data = {
-				time: randomFloat(2, 4),
-				speed: randomFloat(-0.5, -1),
+				time: randomFloat(1, 2),
+				speed: -1,
 			};
 			unit.body.enabled = false;
 			unit.playAnimation(chance() ? Resources.dead_hero : Resources.dead_zombie, false);

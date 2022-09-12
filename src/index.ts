@@ -2,13 +2,10 @@ import { Application, application } from './game/application';
 import { Point } from './geom/point';
 import { componentKeyProcess, componentTouchProcess, componentUpdate } from './graphics/component';
 import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './graphics/events';
-import { canvas, globalMatrix, graphicsRender } from './graphics/graphics';
+import { canvas, graphicsRender } from './graphics/graphics';
 import { domDocument, dpr, hasTouch } from './utils/browser';
-import { loadResources, resources } from './resources/resources-loader';
-import { readAnimation } from './resources/animation';
-import { Resources } from './resources/ids';
+import { loadResources } from './resources/resources-loader';
 import { direction } from './game/units/unit';
-// import { renderTest } from "./webgl/render";
 
 let app: Application;
 
@@ -80,5 +77,3 @@ async function main() {
 }
 
 main();
-
-// renderTest();

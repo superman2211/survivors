@@ -1,7 +1,7 @@
 import { dpr } from "../utils/browser";
 import { mathPI } from "../utils/math";
 import { ELEMENT_SIZE } from "./geometry";
-import { createM4, identityM4, inverseM4, multiplyM4, perspectiveM4, translationM4, transposeM4 } from "./m4";
+import { createM4, identityM4, inverseM4, multiplyM4, perspectiveM4, translationM4, transposeM4 } from "../geom/matrix";
 import { fragmentShaderSource } from "./shaders/fragment";
 import { vertexShaderSource } from "./shaders/vertex";
 

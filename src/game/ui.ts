@@ -48,8 +48,8 @@ export function createUI(options: ApplicationOptions): UI {
 		],
 
 		onUpdate() {
-			const width = options.getWidth() / this.scale!;
-			const height = options.getHeight() / this.scale!;
+			const width = options.getWidth() / this.scaleX!;
+			const height = options.getHeight() / this.scaleY!;
 
 			moveJoystick.x = BORDER + moveJoystick.radius;
 			moveJoystick.y = height - BORDER - moveJoystick.radius;

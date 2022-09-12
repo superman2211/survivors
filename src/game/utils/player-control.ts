@@ -3,7 +3,7 @@ import { Component } from "../../graphics/component";
 import { playAudio } from "../../media/sfx";
 import { hasTouch } from "../../utils/browser";
 import { mathAtan2 } from "../../utils/math";
-import { canvas } from "../../webgl/render";
+import { canvas } from "../../render/render";
 import { UI } from "../ui";
 import { Unit } from "../units/unit";
 

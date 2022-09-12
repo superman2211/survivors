@@ -57,7 +57,6 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 		update() {
 		},
 		start() {
-			unit.alpha = 0.5;
 			unit.body.enabled = false;
 			unit.playAnimation(chance() ? Resources.dead_hero : Resources.dead_zombie, false);
 		}

@@ -1,14 +1,14 @@
-import { createCube, CUBE_POINTS } from "../webgl/cube";
-import { ELEMENT_SIZE, smoothNormals, transformGeometry, transformUV, updateNormals, writeGeometry } from "../webgl/geometry";
-import { composeM4, createM4, createV3, identityM4, lookAt, multiplyM4, normalizeV3, scalingM4, subtractV3, transformM4, translationM4, xRotationM4, yRotationM4, zRotationM4 } from "../webgl/m4";
-import { createSphere } from "../webgl/sphere";
+import { smoothNormals, transformGeometry, transformUV, updateNormals } from "../render/geometry";
+import { createM4, lookAt, multiplyM4, scalingM4, transformM4 } from "../geom/matrix";
+import { createSphere } from "../render/sphere";
 import { Resources } from "./ids";
 import { resources } from "./resources-loader";
+import { createV3, subtractV3 } from "../geom/vector";
 
 export const ANIMATION_POINTS = 20;
 
 export const animationSpeed: { [key: number]: number } = {
-	[Resources.attack_zombie_1]: 30,
+	[Resources.attack_zombie_1]: 40,
 	[Resources.attack_zombie_2]: 30,
 	[Resources.dead_hero]: 40,
 	[Resources.dead_zombie]: 40,

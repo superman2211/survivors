@@ -1,5 +1,5 @@
-import { Geometry, writeGeometry } from "./geometry";
-import { createV3, crossV3, normalizeV3 } from "./m4";
+import { writeGeometry } from "./geometry";
+import { createV3, crossV3, normalizeV3 } from "../geom/vector";
 
 export const CUBE_POINTS = 6 * 2 * 3;
 

@@ -1,14 +1,10 @@
-import { generateShape } from "../../utils/generate-shape";
-import { mathPI } from "../../utils/math";
 import { FSM } from "../utils/fsm";
-import { Body, IBody } from "../../physics/body";
+import { Body } from "../../physics/body";
 import { Weapon } from "../weapons/weapon";
 import { UnitType } from "./types";
 import { WorldObject } from "../world";
-import { createCube } from "../../webgl/cube";
 import { Command, CommandType, generateImage } from "../../utils/generate-image";
-import { animationDuration, animationSpeed, createFrame, getAnimation, readAnimation } from "../../resources/animation";
-import { resources } from "../../resources/resources-loader";
+import { animationDuration, animationSpeed, getAnimation } from "../../resources/animation";
 import { Resources } from "../../resources/ids";
 
 export const direction = {

@@ -1,4 +1,5 @@
-import { createM4, createV3, crossV3, inverseM4, normalizeV3, transformV3, transposeM4 } from "./m4";
+import { createM4, transformV3 } from "../geom/matrix";
+import { createV3, crossV3, normalizeV3 } from "../geom/vector";
 
 export interface Geometry {
 	vertecies: number[];

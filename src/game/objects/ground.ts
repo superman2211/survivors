@@ -1,7 +1,7 @@
 import { Component } from "../../graphics/component";
 import { Command, CommandType, generateImage } from "../../utils/generate-image";
 import { mathHypot } from "../../utils/math";
-import { createCube } from "../../webgl/cube";
+import { createCube } from "../../render/cube";
 
 const texture: Command[] = [
 	{ type: CommandType.FILL, color: 0xff666666 },// 5

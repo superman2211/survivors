@@ -7,20 +7,16 @@ import { createPlayer } from './units/player';
 import { createWorld, WorldObject } from './world';
 import { Unit } from './units/unit';
 import { createBox } from '../physics/body';
-import { generateShape } from '../utils/generate-shape';
 import { UI } from './ui';
 import { getPlayerControl } from './utils/player-control';
 import { UnitType, isFriend } from './units/types';
-import { ShapeCommand } from '../graphics/shape';
-import { setCamera } from '../webgl/render';
-import { createCube } from '../webgl/cube';
+import { setCamera } from '../render/render';
+import { createCube } from '../render/cube';
 import { Command, CommandType, generateImage } from '../utils/generate-image';
 
 const SIZE = 2500;
 
 export interface Game extends Component {
-	// camera: Point;
-	// size: number;
 	calculateVolume(point: Point): number;
 	updateCamera(time: number): void;
 }
@@ -79,17 +75,6 @@ export function game(ui: UI): Game {
 		world.addUnit(enemy);
 	}
 
-	// const shape: number[] = [];
-	// generateShape(shape, 0, 0, 0, 10, 10, 100, 100);
-	// const colon: WorldObject = {
-	// 	x: 512, y: 0,
-	// 	rotation: 0,
-	// 	pallete: [0xff660066],
-	// 	shape,
-	// 	body: { weight: 0, static: true, radius: 100, },
-	// }
-	// world.addObject(colon);
-
 	const boxSizeX = 700;
 	const boxSizeY = 500;
 	const boxSizeZ = 300;
@@ -98,16 +83,12 @@ export function game(ui: UI): Game {
 	const boxGeometry = createCube(boxSizeX / 2, boxSizeY / 2, boxSizeZ);
 
 	const texture: Command[] = [
-		{ type: CommandType.FILL, color: 0xff964b00 },// 5
-		{ type: CommandType.SIZE, width: 512, height: 512 }, // 5
-		{ type: CommandType.FILL, color: 0xff999999 }, // 5
-		{ type: CommandType.RECTANGLE, x: 20, y: 20, width: 50, height: 50 }, // 5
-		{ type: CommandType.REPEAT, stepX: 70, stepY: 70, count: 48, cols: 7, }, // 5 
-		// { type: CommandType.FILL, color: 0xff666666 }, // 5
-		// { type: CommandType.RECTANGLE, x: 140, y: 140, width: 220, height: 220 }, // 5
-		// { type: CommandType.FILL, color: 0xff778877 }, // 5
-		// { type: CommandType.ELLIPSE, x: 160, y: 160, width: 190, height: 190 }, // 5
-		{ type: CommandType.NOISE, colorOffset: 20 }, // 2
+		{ type: CommandType.FILL, color: 0xff964b00 },
+		{ type: CommandType.SIZE, width: 512, height: 512 }, 
+		{ type: CommandType.FILL, color: 0xff999999 }, 
+		{ type: CommandType.RECTANGLE, x: 20, y: 20, width: 50, height: 50 }, 
+		{ type: CommandType.REPEAT, stepX: 70, stepY: 70, count: 48, cols: 7, }, 
+		{ type: CommandType.NOISE, colorOffset: 20 },
 	];
 
 	const boxImage = generateImage(texture);

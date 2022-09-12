@@ -1,4 +1,3 @@
-import { matrixCreate } from "../geom/matrix";
 import { Point, pointLength } from "../geom/point";
 import { mathCos, mathHypot, mathMax, mathSin } from "../utils/math";
 

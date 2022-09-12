@@ -1,12 +1,11 @@
 import { Point, pointCreate, pointLength, pointNormalize } from "../../geom/point";
-import { ShapeCommand, Shape } from "../../graphics/shape";
 import { mathCos, mathSin } from "../../utils/math";
 import { IBody, Body } from "../../physics/body";
 import { Unit } from "../units/unit";
 import { Weapon } from "./weapon";
 import { World, WorldObject } from "../world";
 import { isFriend } from "../units/types";
-import { createCube } from "../../webgl/cube";
+import { createCube } from "../../render/cube";
 import { Command, CommandType, generateImage } from "../../utils/generate-image";
 
 export interface Bullet extends WorldObject {
@@ -37,18 +36,8 @@ export function createBullet(x: number, y: number, rotationZ: number, weapon: We
 		transparent: true,
 	}
 
-	const { length, width, color } = weapon;
+	const { length, width } = weapon;
 	const width2 = width / 2;
-	// const pallete = [color];
-	// const shape: Shape = [
-	// 	ShapeCommand.PATH, 3,
-	// 	-length, 0,
-	// 	0, -width2,
-	// 	0, width2,
-	// 	ShapeCommand.FILL, 0,
-	// ];
-
-	
 
 	const bullet: Bullet = {
 		x,
