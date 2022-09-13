@@ -9,8 +9,8 @@ function template() {
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
 		<title>Survivors</title>
 	</head>
-	<body style="margin:0;overflow:hidden;">
-		<canvas id="c" style="width:100%;height:100%;"></canvas>
+	<body style="margin:0;overflow:hidden;background-color:black;">
+		<canvas id="c" style="width:100%;height:100%;background-color:black;"></canvas>
 		<div id='i' style="position:absolute;left:0;top:0;color:white"></div>
 		<script src="s.js"></script>
 	</body>
