@@ -14,7 +14,7 @@ Build release build
 yarn build
 ```
 
-Build release build with `roadroller`
+Build final build with `roadroller`
 ```
 yarn build-roadroller
 ```
