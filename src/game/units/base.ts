@@ -1,8 +1,10 @@
 import { Resources } from "../../resources/ids";
 import { chance, math2PI, mathCos, mathRandom, mathSin, randomFloat } from "../../utils/math";
+import { addScore } from "../game";
 import { FSMAction } from "../utils/fsm";
 import { World } from "../world";
 import { UnitState } from "./states";
+import { UnitType } from "./types";
 import { createUnit, Unit, UnitSettings } from "./unit";
 
 type RotationData = { time: number, speed: number };
@@ -60,6 +62,10 @@ export function createBase(settings: UnitSettings, world: World): Unit {
 			}
 		},
 		start() {
+			if (settings.type === UnitType.ENEMY) {
+				addScore(1);
+			}
+			
 			this.data = {
 				time: randomFloat(1, 2),
 				speed: -1,

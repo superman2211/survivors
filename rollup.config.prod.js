@@ -39,8 +39,14 @@ const properties = [
 	'visible',
 	'brightness',
 	'tint',
+	'sizeMax',
+	'geometry',
+	'animationPaused',
+	'playAnimation',
+	'transformedMatrix',
 
 	// game
+	'animationWalk',
 	'addUnit',
 	'removeUnit',
 	'addBullet',

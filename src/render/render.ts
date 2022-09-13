@@ -175,10 +175,10 @@ export function addLight(light: number[]) {
 
 addLight([0, 0, 0])
 
-declare global {
-	const i: HTMLDivElement;
-}
-const info = i;
+// declare global {
+// 	const i: HTMLDivElement;
+// }
+// const info = i;
 
 export function renderEnd() {
 	const deltaTime = performance.now() - lastTime;
@@ -191,5 +191,5 @@ export function renderEnd() {
 	fps.forEach(n => frameRate += n);
 	frameRate /= fps.length;
 
-	info.innerText = 'FPS: ' + Math.round(frameRate) + ', DC: ' + drawCalls;
+	// info.innerText = 'FPS: ' + Math.round(frameRate) + ', DC: ' + drawCalls;
 }

@@ -1,6 +1,6 @@
 import { Point, pointCreate, pointDistance, pointDistanceSquared } from '../geom/point';
 import { Component } from '../graphics/component';
-import { mathMax, mathMin, randomFloat } from '../utils/math';
+import { chance, mathMax, mathMin, mathRound, randomFloat, randomInt } from '../utils/math';
 import { createEnemy } from './units/enemy';
 import { createAlly } from './units/ally';
 import { createPlayer } from './units/player';
@@ -50,6 +50,12 @@ function randomPosition(unit: Unit, units: Unit[], min: number, max: number) {
 	}
 }
 
+let score = 0;
+
+export function addScore(count: number) {
+	score += count;
+}
+
 export function game(ui: UI): Game {
 	const camera = pointCreate();
 
@@ -62,14 +68,9 @@ export function game(ui: UI): Game {
 	world.addUnit(player);
 
 	const allyDistance = 300;
-	for (let i = 0; i < 5; i++) {
-		const ally = createAlly(world);
-		ally.x = randomFloat(-allyDistance, allyDistance);
-		ally.y = randomFloat(-allyDistance, allyDistance);
-		world.addUnit(ally);
-	}
+	const allyCount = 5
 
-	const enemyCount = 10;
+	let enemyCount = 20;
 	const enemyDistance = 600;
 
 	for (let i = 0; i < enemyCount; i++) {
@@ -82,6 +83,21 @@ export function game(ui: UI): Game {
 	generateBorders(world);
 	generateLights(world);
 
+	function start() {
+		enemyCount = 20;
+
+		player.health = 100;
+
+		while (world.getUnitCount(UnitType.ALLY) < allyCount) {
+			const ally = createAlly(world);
+			ally.x = randomFloat(-allyDistance, allyDistance);
+			ally.y = randomFloat(-allyDistance, allyDistance);
+			world.addUnit(ally);
+		}
+	}
+
+	start();
+
 	const component: Game = {
 		children: [
 			world,
@@ -89,9 +105,18 @@ export function game(ui: UI): Game {
 		onUpdate() {
 			if (world.getUnitCount(UnitType.ENEMY) < enemyCount) {
 				const enemy = createEnemy(world, true);
-				randomPosition(enemy, world.units, -enemyDistance, enemyDistance);
+				const points = [{ x: 1000, y: 0 }, { x: 0, y: 1000 }];
+				const position = points[randomInt(0, points.length - 1)]; 
+				enemy.x = position.x;
+				enemy.y = position.y;
+				// randomPosition(enemy, world.units, -enemyDistance, enemyDistance);
 				world.addUnit(enemy);
 			}
+
+			ui.healthLabel.text!.value = player.health > 0 ? `health: ${mathRound(player.health)}` : 'WASTED';
+			ui.scoreLabel.text!.value = `score: ${score}`;
+
+			enemyCount = 20 + score / 3;
 		},
 		updateCamera() {
 			setCamera(player.x!, player.y!, 1000);

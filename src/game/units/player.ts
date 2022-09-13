@@ -15,7 +15,7 @@ export function createPlayer(world: World, control: IPlayerControl): Unit {
 		type: UnitType.PLAYER,
 		radius,
 		weight: 90,
-		health: 100000,
+		health: 100,
 		walkSpeed: 200,
 		reaction: 0.2,
 		animationWalk: Resources.walk_forward,
