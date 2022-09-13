@@ -54,7 +54,7 @@ export class DesktopPlayerControl extends BasePlayerControl {
 
 		world.onTouchDown = (p: Point) => {
 			this.attack = true;
-			playAudio(this.player!.settings.weapons![this.weapon].sound);
+			// playAudio(this.player!.settings.weapons![this.weapon].sound);
 		};
 
 		world.onTouchUp = (p: Point) => {
@@ -137,7 +137,7 @@ export class MobilePlayerControl extends BasePlayerControl {
 			if (this.attack) {
 				this.rotation = -mathAtan2(value.y, value.x);
 
-				playAudio(this.player!.settings.weapons![this.weapon].sound);
+				// playAudio(this.player!.settings.weapons![this.weapon].sound);
 			}
 		};
 	}

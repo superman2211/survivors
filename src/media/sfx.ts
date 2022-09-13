@@ -9,6 +9,13 @@ export function playAudio(id: number) {
 	}
 	var source = audioContext.createBufferSource();
 	source.buffer = buffers[id];
-	source.connect(audioContext.destination);
+
+	var gainNode = audioContext.createGain()
+	gainNode.gain.value = 0.1
+
+	source.connect(gainNode)
+
+	gainNode.connect(audioContext.destination)
+
 	source.start();
 }

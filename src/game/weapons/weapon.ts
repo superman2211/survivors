@@ -3,6 +3,8 @@ import { mathCos, mathSin } from "../../utils/math";
 import { createBullet } from "./bullet";
 import { Unit } from "../units/unit";
 import { World } from "../world";
+import { UnitType } from "../units/types";
+import { playAudio } from "../../media/sfx";
 
 export interface Weapon {
 	speed: number,
@@ -28,6 +30,11 @@ export function getWeaponControl(unit: Unit, world: World) {
 			const weapon = weapons[unit.weapon];
 			weaponTime -= time;
 			if (weaponTime <= 0) {
+
+				if (unit.settings.type == UnitType.PLAYER) {
+					playAudio(weapon.sound);
+				}
+
 				weaponTime = 1 / weapon.frequency;
 
 				const { rotationZ } = unit;
