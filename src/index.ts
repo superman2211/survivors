@@ -73,6 +73,7 @@ function start() {
 
 async function main() {
 	await loadResources();
+	// await timeout(1);
 	start();
 }
 

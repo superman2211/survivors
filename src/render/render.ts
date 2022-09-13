@@ -43,10 +43,6 @@ for (let i = 0; i < MAX_LIGHTS; i++) {
 const textures = new Map<HTMLCanvasElement, WebGLTexture>();
 const buffers = new Map<Float32Array, WebGLBuffer>();
 
-const elementsBuffer = gl.createBuffer();
-const elementsData = new Float32Array(1024 * 1024 * 10);
-let elementsCount = 0;
-
 const fieldOfViewRadians = mathPI / 3;
 
 const projectionMatrix = createM4();
@@ -136,19 +132,11 @@ export function renderBegin() {
 	drawCalls = 0;
 
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+	gl.clearColor(0, 0, 0, 0);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	gl.enable(gl.CULL_FACE);
 	gl.enable(gl.DEPTH_TEST);
 	gl.useProgram(program);
-
-	gl.bindBuffer(gl.ARRAY_BUFFER, elementsBuffer);
-	const stride = (3 + 3 + 2) * 4;
-	gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, stride, 0);
-	gl.enableVertexAttribArray(positionLocation);
-	gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, stride, 3 * 4);
-	gl.enableVertexAttribArray(normalLocation);
-	gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, stride, 3 * 4 + 3 * 4);
-	gl.enableVertexAttribArray(texCoordLocation);
 
 	const aspect = canvas.width / canvas.height;
 	const zNear = 1;
@@ -181,17 +169,6 @@ export function renderBegin() {
 	}
 }
 
-function renderBatch() {
-	if (elementsCount) {
-		drawCalls++;
-		const data = elementsData.buffer.slice(0, elementsCount * 4);
-		gl.bindBuffer(gl.ARRAY_BUFFER, elementsBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW);
-		gl.drawArrays(gl.TRIANGLES, 0, elementsCount / ELEMENT_SIZE);
-		elementsCount = 0;
-	}
-}
-
 export function addLight(light: number[]) {
 	lights.push(light);
 }
@@ -204,8 +181,6 @@ declare global {
 const info = i;
 
 export function renderEnd() {
-	renderBatch();
-
 	const deltaTime = performance.now() - lastTime;
 	lastTime = performance.now();
 	fps.push(1000 / deltaTime);
