@@ -88,6 +88,7 @@ export function game(ui: UI): Game {
 		enemyCount = 20;
 
 		player.health = 100;
+		player.body.enabled = true;
 		player.fsm.setState(UnitState.WALK);
 
 		while (world.getUnitCount(UnitType.ALLY) < allyCount) {
@@ -109,10 +110,6 @@ export function game(ui: UI): Game {
 		onUpdate(time: number) {
 			if (world.getUnitCount(UnitType.ENEMY) < enemyCount) {
 				const enemy = createEnemy(world, true);
-				// const points = [{ x: 1000, y: 0 }, { x: 0, y: 1000 }];
-				// const position = points[randomInt(0, points.length - 1)];
-				// enemy.x = position.x;
-				// enemy.y = position.y;
 				randomPosition(enemy, world.units, -enemyDistance * 2, enemyDistance * 2);
 				world.addUnit(enemy);
 			}
