@@ -1,4 +1,6 @@
 import { mathHypot } from "../utils/math";
+import { createM4, inverseM4, transformV3 } from "./matrix";
+import { createV3 } from "./vector";
 
 export interface Point {
 	x: number,
@@ -44,4 +46,16 @@ export function pointNormalize(point: Point, thickness: number) {
 export function pointCopy(source: Point, target: Point) {
 	target.x = source.x;
 	target.y = source.y;
+}
+
+const inversedMatrix = createM4();
+const global = createV3();
+const local = createV3();
+
+export function transformInverse(matrix: Float32Array, point: Point):Point {
+	inverseM4(matrix, inversedMatrix);
+	global[0] = point.x;
+	global[1] = point.y;
+	transformV3(inversedMatrix, global, local);
+	return { x: local[0], y: local[1] };
 }

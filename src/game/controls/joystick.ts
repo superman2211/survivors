@@ -1,4 +1,4 @@
-import { Point, pointCreate, pointLength, pointNormalize } from "../../geom/point";
+import { Point, pointCreate, pointLength, pointNormalize, transformInverse } from "../../geom/point";
 import { Component } from "../../graphics/component";
 import { createCircleImage } from "./utils";
 
@@ -43,11 +43,14 @@ export function createJoystick(): Joystick {
 			front.y = -RADIUS_FRONT + this.value.y * RADIUS_BACK;
 		},
 
-		onTouchDown(p, id) {
-			if (pressedId === -1 && pointLength(p) < RADIUS_BACK) {
-				pressedId = id;
+		onTouchDown(g, id) {
+			if (this.transformedMatrix) {
+				const p = transformInverse(this.transformedMatrix, g);
+				if (pressedId === -1 && pointLength(p) < RADIUS_BACK) {
+					pressedId = id;
 
-				this.updateValue(p);
+					this.updateValue(p);
+				}
 			}
 		},
 
@@ -57,16 +60,19 @@ export function createJoystick(): Joystick {
 
 				this.value.x = 0;
 				this.value.y = 0;
-				
+
 				if (this.onChange) {
 					this.onChange();
 				}
 			}
 		},
 
-		onTouchMove(p, id) {
+		onTouchMove(g, id) {
 			if (pressedId === id) {
-				this.updateValue(p);
+				if (this.transformedMatrix) {
+					const p = transformInverse(this.transformedMatrix, g);
+					this.updateValue(p);
+				}
 			}
 		},
 

@@ -1,3 +1,6 @@
+import { createM4, inverseM4, multiplyM4, transformV3 } from "../../geom/matrix";
+import { transformInverse } from "../../geom/point";
+import { createV3 } from "../../geom/vector";
 import { Component } from "../../graphics/component";
 import { createCircleImage } from "./utils";
 
@@ -15,7 +18,7 @@ export function createRoundButton(text: string): Button {
 	const back: Component = { image: BUTTON_IMAGE };
 
 	const fontSize = 30;
-	
+
 	const label: Component = {
 		text: {
 			value: text,
@@ -30,15 +33,17 @@ export function createRoundButton(text: string): Button {
 	label.y = BUTTON_RADIUS - fontSize / 2;
 
 	const size = BUTTON_RADIUS * 2;
-	
+
 	return {
 		children: [back, label],
 
-		onTouchDown(p) {
-			console.log(p);
-			if (0 < p.x && p.x < size && 0 < p.y && p.y < size) {
-				if (this.onClick) {
-					this.onClick();
+		onTouchDown(g) {
+			if (this.transformedMatrix) {
+				const p = transformInverse(this.transformedMatrix, g);
+				if (0 < p.x && p.x < size && 0 < p.y && p.y < size) {
+					if (this.onClick) {
+						this.onClick();
+					}
 				}
 			}
 		},

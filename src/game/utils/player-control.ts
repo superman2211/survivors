@@ -126,7 +126,8 @@ export class MobilePlayerControl extends BasePlayerControl {
 		super(ui);
 
 		ui.moveJoystick.onChange = () => {
-			pointCopy(ui.moveJoystick.value, this.direction);
+			this.direction.x = ui.moveJoystick.value.x;
+			this.direction.y = -ui.moveJoystick.value.y;
 			pointNormalize(this.direction, 1);
 		};
 
@@ -134,7 +135,7 @@ export class MobilePlayerControl extends BasePlayerControl {
 			const { value } = ui.attackJoystick;
 			this.attack = ui.attackJoystick.isActive();
 			if (this.attack) {
-				this.rotation = mathAtan2(value.y, value.x);
+				this.rotation = -mathAtan2(value.y, value.x);
 
 				playAudio(this.player!.settings.weapons![this.weapon].sound);
 			}
