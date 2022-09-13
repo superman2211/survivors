@@ -15,8 +15,10 @@ export interface UI extends Component {
 	gunButton: Button,
 	rifleButton: Button,
 	shotgunButton: Button,
+
 	healthLabel: Component,
 	scoreLabel: Component,
+	finishLabel: Component,
 
 	setActiveWeapon(current: Button | number): void;
 }
@@ -52,6 +54,17 @@ export function createUI(options: ApplicationOptions): UI {
 		},
 	}
 
+	const finishLabel: Component = {
+		// visible: false,
+		text: {
+			value: '',
+			font: 'arial',
+			size: 70,
+			align: 0.5,
+			color: 0xffffffff,
+		},
+	}
+
 	const weaponsButtons = [gunButton, rifleButton, shotgunButton];
 
 	return {
@@ -64,6 +77,7 @@ export function createUI(options: ApplicationOptions): UI {
 
 		healthLabel,
 		scoreLabel,
+		finishLabel,
 
 		children: [
 			moveJoystick,
@@ -75,6 +89,7 @@ export function createUI(options: ApplicationOptions): UI {
 
 			healthLabel,
 			scoreLabel,
+			finishLabel,
 		],
 
 		onUpdate() {
@@ -83,8 +98,12 @@ export function createUI(options: ApplicationOptions): UI {
 
 			healthLabel.x = BORDER / 2;
 			healthLabel.y = BORDER / 2;
+			
 			scoreLabel.x = width - BORDER / 2;
 			scoreLabel.y = BORDER / 2;
+
+			finishLabel.x = width / 2;
+			finishLabel.y = height * 0.7;
 
 			moveJoystick.x = BORDER + moveJoystick.radius;
 			moveJoystick.y = height - BORDER - moveJoystick.radius;

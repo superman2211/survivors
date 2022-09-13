@@ -76,7 +76,8 @@ export function getWeaponControl(unit: Unit, world: World) {
 				}
 			}
 		} else {
-			weaponTime = 0;
+			//weaponTime = 0;
+			weaponTime -= time;
 		}
 	}
 }

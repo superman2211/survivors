@@ -16,6 +16,7 @@ import { Command, CommandType, generateImage } from '../utils/image';
 import { generateHouses } from './objects/houses';
 import { generateBorders } from './objects/borders';
 import { generateLights } from './objects/lights';
+import { UnitState } from './units/states';
 
 const SIZE = 2500;
 
@@ -87,6 +88,7 @@ export function game(ui: UI): Game {
 		enemyCount = 20;
 
 		player.health = 100;
+		player.fsm.setState(UnitState.WALK);
 
 		while (world.getUnitCount(UnitType.ALLY) < allyCount) {
 			const ally = createAlly(world);
@@ -98,25 +100,40 @@ export function game(ui: UI): Game {
 
 	start();
 
+	let finishTimeout = 0;
+
 	const component: Game = {
 		children: [
 			world,
 		],
-		onUpdate() {
+		onUpdate(time: number) {
 			if (world.getUnitCount(UnitType.ENEMY) < enemyCount) {
 				const enemy = createEnemy(world, true);
-				const points = [{ x: 1000, y: 0 }, { x: 0, y: 1000 }];
-				const position = points[randomInt(0, points.length - 1)]; 
-				enemy.x = position.x;
-				enemy.y = position.y;
-				// randomPosition(enemy, world.units, -enemyDistance, enemyDistance);
+				// const points = [{ x: 1000, y: 0 }, { x: 0, y: 1000 }];
+				// const position = points[randomInt(0, points.length - 1)];
+				// enemy.x = position.x;
+				// enemy.y = position.y;
+				randomPosition(enemy, world.units, -enemyDistance * 2, enemyDistance * 2);
 				world.addUnit(enemy);
 			}
 
 			ui.healthLabel.text!.value = player.health > 0 ? `health: ${mathRound(player.health)}` : 'WASTED';
 			ui.scoreLabel.text!.value = `score: ${score}`;
 
+			const finishVisible = ui.finishLabel.visible;
+			ui.finishLabel.visible = player.health <= 0;
+			if (ui.finishLabel.visible) {
+				if (!finishVisible) {
+					finishTimeout = 2;
+				}
+				ui.finishLabel.text!.value = 'WASTED!' + (finishTimeout <= 0 ? ' tap to start!' : '');
+			}
+
 			enemyCount = 20 + score / 3;
+
+			if (finishTimeout > 0) {
+				finishTimeout -= time;
+			}
 		},
 		updateCamera() {
 			setCamera(player.x!, player.y!, 1000);
@@ -125,6 +142,11 @@ export function game(ui: UI): Game {
 			const maxDistance = SIZE / 2;
 			const distance = pointDistance(camera, point);
 			return 1 - mathMin(1, mathMax(0, distance / maxDistance));
+		},
+		onTouchDown() {
+			if (ui.finishLabel.visible && finishTimeout <= 0) {
+				start();
+			}
 		}
 	};
 
