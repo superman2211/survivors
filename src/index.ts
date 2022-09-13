@@ -2,10 +2,11 @@ import { Application, application } from './game/application';
 import { Point } from './geom/point';
 import { componentKeyProcess, componentTouchProcess, componentUpdate } from './graphics/component';
 import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './graphics/events';
-import { canvas, graphicsRender } from './graphics/graphics';
+import { graphicsRender } from './graphics/graphics';
 import { domDocument, dpr, hasTouch } from './utils/browser';
 import { loadResources } from './resources/resources-loader';
 import { direction } from './game/units/unit';
+import { canvas } from './game/ui';
 
 let app: Application;
 

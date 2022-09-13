@@ -5,6 +5,14 @@ import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './events';
 import { createM4, multiplyM4, transformM4 } from '../geom/matrix';
 import { renderObject } from '../render/render';
 
+export interface Text {
+	value: string,
+	font: string,
+	size: number,
+	align: number,
+	color: number,
+}
+
 export interface Component extends Transform, Update, Keyboard, Pointer {
 	geometry?: Float32Array;
 	children?: Component[];
@@ -12,6 +20,8 @@ export interface Component extends Transform, Update, Keyboard, Pointer {
 	visible?: boolean;
 	radius?: number;
 	onScreen?: boolean;
+	text?: Text;
+	transformedMatrix?: Float32Array,
 }
 
 export function componentRender(component: Component, parentMatrix: Float32Array) {

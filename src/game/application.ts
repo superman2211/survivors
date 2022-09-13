@@ -1,8 +1,12 @@
-import { Component } from '../graphics/component';
+import { Component, componentTouchProcess, componentUpdate } from '../graphics/component';
 import { game as createGame } from './game';
 import { mathMin } from '../utils/math';
-import { createUI } from './ui';
+import { clearUI, createUI, renderUI, UI } from './ui';
 import { getPlayerControl } from './utils/player-control';
+import { createM4, identityM4 } from '../geom/matrix';
+import { dpr } from '../utils/browser';
+import { Point } from '../geom/point';
+import { TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from '../graphics/events';
 
 const SIZE: number = 1024;
 
@@ -15,24 +19,42 @@ export interface ApplicationOptions {
 	getHeight(): number,
 }
 
+const globalMatrix = createM4();
+identityM4(globalMatrix);
+
 export function application(options: ApplicationOptions): Application {
 	const ui = createUI(options);
 	const game = createGame(ui); 
 	return {
-		children: [game, ui],
+		children: [game],
 		updateView(time: number) {
-			// const w = options.getWidth();
-			// const h = options.getHeight();
+			const w = options.getWidth();
+			const h = options.getHeight();
 
-			// const scale = mathMin(w / SIZE, h / SIZE);
+			const scale = mathMin(w / SIZE, h / SIZE);
 
-			// game.scale = scale;
-			// game.x = w / 2;
-			// game.y = h / 2;
-
-			// ui.scale = scale;
+			globalMatrix[0] = globalMatrix[5] = dpr;
+			ui.scaleX = ui.scaleY = scale;
 
 			game.updateCamera(time);
 		},
+
+		onUpdate(time) {
+			componentUpdate(ui, time);
+			clearUI();
+			renderUI(ui, globalMatrix);
+		},
+
+		onTouchDown(p:Point, id: number) {
+			componentTouchProcess(ui, p, TOUCH_DOWN, id);
+		},
+
+		onTouchUp(p: Point, id: number) {
+			componentTouchProcess(ui, p, TOUCH_UP, id);
+		},
+
+		onTouchMove(p: Point, id: number) {
+			componentTouchProcess(ui, p, TOUCH_MOVE, id);
+		}
 	};
 }

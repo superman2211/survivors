@@ -1,5 +1,7 @@
+import { createM4, multiplyM4, transformM4 } from "../geom/matrix";
 import { Component } from "../graphics/component";
-import { hasTouch } from "../utils/browser";
+import { formatColor } from "../graphics/pattern";
+import { dpr, hasTouch } from "../utils/browser";
 import { ApplicationOptions } from "./application";
 import { Button, createRoundButton } from "./controls/button";
 import { createJoystick, Joystick } from "./controls/joystick";
@@ -86,5 +88,87 @@ export function createUI(options: ApplicationOptions): UI {
 				b.setActive(b === current);
 			});
 		}
+	}
+}
+
+declare global {
+	const ui: HTMLCanvasElement;
+}
+
+export const canvas: HTMLCanvasElement = ui;
+const context = canvas.getContext('2d')!;
+
+export function clearUI() {
+	const w = (innerWidth * dpr) | 0;
+	const h = (innerHeight * dpr) | 0;
+
+	if (w !== canvas.width) {
+		canvas.width = w;
+	}
+
+	if (h !== canvas.height) {
+		canvas.height = h;
+	}
+
+	context.setTransform(1, 0, 0, 1, 0, 0);
+	context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+export function renderUI(component: Component, parentMatrix: Float32Array) {
+	const visible = component.visible ?? true;
+	if (!visible) {
+		return;
+	}
+
+	const matrix = createM4();
+	transformM4(
+		matrix,
+		component.x ?? 0,
+		component.y ?? 0,
+		component.z ?? 0,
+		component.rotationX ?? 0,
+		component.rotationY ?? 0,
+		component.rotationZ ?? 0,
+		component.scaleX ?? 1,
+		component.scaleY ?? 1,
+		component.scaleZ ?? 1,
+	);
+	multiplyM4(parentMatrix, matrix, matrix);
+
+	component.transformedMatrix = matrix;
+
+	context.setTransform(
+		matrix[0],
+		matrix[1],
+
+		matrix[4],
+		matrix[5],
+
+		matrix[12],
+		matrix[13],
+	);
+
+	const { children, image, text } = component;
+
+	if (image) {
+		context.drawImage(image, 0, 0);
+	}
+
+	if (text && text.value) {
+		context.fillStyle = formatColor(text.color ?? 0xff000000);
+		context.font = `${text.size ?? 10}px ${text.font ?? 'arial'}`;
+		context.textBaseline = 'top';
+
+		let x = 0;
+
+		if (text.align) {
+			x = -context.measureText(text.value).width * text.align;
+		}
+
+		context.fillText(text.value, x, 0);
+	}
+
+	if (children) {
+		children.forEach((child) => renderUI(child, matrix));
 	}
 }
