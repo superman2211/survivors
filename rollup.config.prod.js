@@ -44,6 +44,8 @@ const properties = [
 	'animationPaused',
 	'playAnimation',
 	'transformedMatrix',
+	'vertecies',
+	'normals',
 
 	// game
 	'animationWalk',
