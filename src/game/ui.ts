@@ -103,7 +103,7 @@ export function createUI(options: ApplicationOptions): UI {
 			scoreLabel.y = BORDER / 2;
 
 			finishLabel.x = width / 2;
-			finishLabel.y = height * 0.7;
+			finishLabel.y = height * 0.6;
 
 			moveJoystick.x = BORDER + moveJoystick.radius;
 			moveJoystick.y = height - BORDER - moveJoystick.radius;
