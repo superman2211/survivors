@@ -116,6 +116,7 @@ export default {
 			'const ': 'let ',
 			'const{': 'let{',
 
+			// vertex shader
 			'a_position': 'a',
 			'a_normal': 'b',
 			'a_texCoord': 'c',
@@ -127,6 +128,7 @@ export default {
 			't_normal': 'i',
 			'surfaceWorldPosition': 'j',
 
+			// fragment shader
 			'v_surfaceToLight': 'k',
 			'surfaceToLightDirection': 'l',
 			'v_normal': 'm',
@@ -134,6 +136,26 @@ export default {
 			'u_color': 'o',
 			'u_image': 'p',
 			'lightValue': 'r',
+
+			// webgl constants
+			'gl.VERTEX_SHADER': 35633,
+			'gl.FRAGMENT_SHADER': 35632,
+			'gl.TEXTURE_2D': 3553,
+			'gl.TEXTURE_WRAP_S': 10242,
+			'gl.TEXTURE_WRAP_T': 10243,
+			'gl.CLAMP_TO_EDGE': 33071,
+			'gl.NEAREST': 9728,
+			'gl.UNSIGNED_BYTE': 5121,
+			'gl.RGBA': 6408,
+			'gl.TEXTURE_MIN_FILTER': 10241,
+			'gl.TEXTURE_MAG_FILTER': 10240,
+			'gl.ARRAY_BUFFER': 34962,
+			'gl.STATIC_DRAW': 35044,
+			'gl.COLOR_BUFFER_BIT': 16384,
+			'gl.DEPTH_BUFFER_BIT': 256,
+			'gl.CULL_FACE': 2884,
+			'gl.DEPTH_TEST': 2929,
+			'gl.TRIANGLES': 4,
 		}),
 	],
 };
