@@ -8,6 +8,5 @@ export const enum Resources {
 	dead_hero = 6,
 	dead_zombie = 7,
 	walk_forward = 8,
-	walk_right = 9,
-	walk_zombie = 10,
+	walk_zombie = 9,
 }

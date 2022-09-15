@@ -12,9 +12,7 @@ export function playAudio(id: number) {
 
 	var gainNode = audioContext.createGain()
 	gainNode.gain.value = 0.1
-
 	source.connect(gainNode)
-
 	gainNode.connect(audioContext.destination)
 
 	source.start();

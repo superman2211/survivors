@@ -85,6 +85,7 @@ export function game(ui: UI): Game {
 	generateLights(world);
 
 	function start() {
+		score = 0;
 		enemyCount = 20;
 
 		player.health = 100;

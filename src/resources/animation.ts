@@ -13,7 +13,7 @@ export const animationSpeed: { [key: number]: number } = {
 	[Resources.dead_hero]: 40,
 	[Resources.dead_zombie]: 40,
 	[Resources.walk_forward]: 30,
-	[Resources.walk_right]: 30,
+	// [Resources.walk_right]: 30,
 	[Resources.walk_zombie]: 30,
 } 
 
@@ -23,7 +23,7 @@ export const animationDuration: { [key: number]: number } = {
 	[Resources.dead_hero]: 0.8,
 	[Resources.dead_zombie]: 0.8,
 	[Resources.walk_forward]: 1,
-	[Resources.walk_right]: 1,
+	// [Resources.walk_right]: 1,
 	[Resources.walk_zombie]: 1,
 } 
 
