@@ -6,6 +6,7 @@ import { WorldObject } from "../world";
 import { Command, CommandType, generateImage } from "../../utils/image";
 import { animationDuration, animationSpeed, getAnimation } from "../../resources/animation";
 import { Resources } from "../../resources/ids";
+import { randomInt } from "../../utils/math";
 
 export const direction = {
 	x: 0,
@@ -53,10 +54,19 @@ function createUnitImage(skin: number, shirt: number, pants: number, boots: numb
 	return generateImage(texture);
 }
 
-const images: { [key: number]: HTMLCanvasElement } = {
-	[UnitType.PLAYER]: createUnitImage(0xffd9cb59, 0xff1b9100, 0xff423c09, 0xff1f1a01),
-	[UnitType.ALLY]: createUnitImage(0xff594b04, 0xff40083b, 0xff0f5e63, 0xffbabfbf),
-	[UnitType.ENEMY]: createUnitImage(0xffc46f4b, 0xff05a3a1, 0xff0581a3, 0xff2b2f30),
+const IMAGES: { [key: number]: HTMLCanvasElement[] } = {
+	[UnitType.PLAYER]: [createUnitImage(0xFFE8BEAC, 0xff1b9100, 0xff423c09, 0xff1f1a01)],
+	[UnitType.ALLY]: [
+		createUnitImage(0xFFE8BEAC, 0xff40083b, 0xff0f5e63, 0xffbabfbf),
+		createUnitImage(0xFFC68642, 0xff0f5e63, 0xff40083b, 0xffbabfbf),
+		createUnitImage(0xff492816, 0xffbabfbf, 0xff40083b, 0xff0f5e63)
+	],
+	[UnitType.ENEMY]: [
+		createUnitImage(0xffc46f4b, 0xff05a3a1, 0xff0581a3, 0xff2b2f30),
+		createUnitImage(0xFFE8BEAC, 0xff0581a3, 0xff2b2f30, 0xff05a3a1),
+		createUnitImage(0xFFC68642, 0xff40083b, 0xff0581a3, 0xff2b2f30),
+		createUnitImage(0xff492816, 0xffbabfbf, 0xff2b2f30, 0xff05a3a1),
+	],
 }
 
 export function createUnit(settings: UnitSettings): Unit {
@@ -69,7 +79,8 @@ export function createUnit(settings: UnitSettings): Unit {
 	let animationType = Resources.walk_zombie;
 	let animationLoop = true;
 
-	const image = images[settings.type];
+	const images = IMAGES[settings.type];
+	const image = images[randomInt(0, images.length - 1)];
 
 	return {
 		image,
