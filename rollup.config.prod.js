@@ -114,7 +114,26 @@ export default {
 		filesize(),
 		replace({
 			'const ': 'let ',
-			'const{': 'let{'
+			'const{': 'let{',
+
+			'a_position': 'a',
+			'a_normal': 'b',
+			'a_texCoord': 'c',
+			'u_world': 'd',
+			'u_object': 'e',
+			'u_worldViewProjection': 'f',
+			'u_worldInverseTranspose': 'g',
+			't_position': 'h',
+			't_normal': 'i',
+			'surfaceWorldPosition': 'j',
+
+			'v_surfaceToLight': 'k',
+			'surfaceToLightDirection': 'l',
+			'v_normal': 'm',
+			'v_texCoord': 'n',
+			'u_color': 'o',
+			'u_image': 'p',
+			'lightValue': 'r',
 		}),
 	],
 };
