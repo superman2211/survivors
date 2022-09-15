@@ -15,7 +15,7 @@
 		"serve": "http-server ./dist/build",
 		"lint": "eslint --fix",
 		"build-resources": "node scripts/build-resources.js",
-		"apply-roadroller": "roadroller dist/build/s.js -o dist/build/s.js",
+		"apply-roadroller": "roadroller -O2 dist/build/s.js -o dist/build/s.js",
 		"create-advzip": "advzip --shrink-insane --iter=1000 --add dist/survivors.zip dist/build/index.html dist/build/s.js dist/build/r"
 	},
 	"dependencies": {
