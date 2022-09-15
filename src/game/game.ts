@@ -1,18 +1,15 @@
 import { Point, pointCreate, pointDistance, pointDistanceSquared } from '../geom/point';
 import { Component } from '../graphics/component';
-import { chance, mathMax, mathMin, mathRound, randomFloat, randomInt } from '../utils/math';
+import { mathMax, mathMin, mathRound, randomFloat } from '../utils/math';
 import { createEnemy } from './units/enemy';
 import { createAlly } from './units/ally';
 import { createPlayer } from './units/player';
-import { createWorld, WorldObject } from './world';
+import { createWorld } from './world';
 import { Unit } from './units/unit';
-import { createBox } from '../physics/body';
 import { UI } from './ui';
 import { getPlayerControl } from './utils/player-control';
 import { UnitType, isFriend } from './units/types';
 import { setCamera } from '../render/render';
-import { createCube } from '../models/cube';
-import { Command, CommandType, generateImage } from '../utils/image';
 import { generateHouses } from './objects/houses';
 import { generateBorders } from './objects/borders';
 import { generateLights } from './objects/lights';
@@ -122,7 +119,7 @@ export function game(ui: UI): Game {
 			ui.finishLabel.visible = player.health <= 0;
 			if (ui.finishLabel.visible) {
 				if (!finishVisible) {
-					finishTimeout = 2;
+					finishTimeout = 3;
 				}
 				ui.finishLabel.text!.value = 'WASTED!' + (finishTimeout <= 0 ? ' tap to start!' : '');
 			}

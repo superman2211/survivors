@@ -2,11 +2,10 @@ import { Component, componentTouchProcess, componentUpdate } from '../graphics/c
 import { game as createGame } from './game';
 import { mathMin } from '../utils/math';
 import { clearUI, createUI, renderUI, UI } from './ui';
-import { getPlayerControl } from './utils/player-control';
 import { createM4, identityM4 } from '../geom/matrix';
 import { dpr } from '../utils/browser';
 import { Point } from '../geom/point';
-import { TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from '../graphics/events';
+import { Events } from '../graphics/events';
 
 const SIZE: number = 1024;
 
@@ -24,7 +23,7 @@ identityM4(globalMatrix);
 
 export function application(options: ApplicationOptions): Application {
 	const ui = createUI(options);
-	const game = createGame(ui); 
+	const game = createGame(ui);
 	return {
 		children: [game],
 		updateView(time: number) {
@@ -45,16 +44,16 @@ export function application(options: ApplicationOptions): Application {
 			renderUI(ui, globalMatrix);
 		},
 
-		onTouchDown(p:Point, id: number) {
-			componentTouchProcess(ui, p, TOUCH_DOWN, id);
+		onTouchDown(p: Point, id: number) {
+			componentTouchProcess(ui, p, Events.TOUCH_DOWN, id);
 		},
 
 		onTouchUp(p: Point, id: number) {
-			componentTouchProcess(ui, p, TOUCH_UP, id);
+			componentTouchProcess(ui, p, Events.TOUCH_UP, id);
 		},
 
 		onTouchMove(p: Point, id: number) {
-			componentTouchProcess(ui, p, TOUCH_MOVE, id);
+			componentTouchProcess(ui, p, Events.TOUCH_MOVE, id);
 		}
 	};
 }

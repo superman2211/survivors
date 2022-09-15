@@ -1,12 +1,13 @@
 import { Application, application } from './game/application';
 import { Point } from './geom/point';
 import { componentKeyProcess, componentTouchProcess, componentUpdate } from './graphics/component';
-import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './graphics/events';
+import { Events } from './graphics/events';
 import { graphicsRender } from './graphics/graphics';
-import { domDocument, dpr, hasTouch } from './utils/browser';
+import { domDocument, dpr, hasTouch, info } from './utils/browser';
 import { loadResources } from './resources/resources-loader';
 import { direction } from './game/units/unit';
 import { canvas } from './game/ui';
+import { timeout } from './utils/browser';
 
 let app: Application;
 
@@ -38,8 +39,8 @@ function start() {
 		e.preventDefault();
 	}
 
-	domDocument.onkeydown = (e) => keyHandler(e, KEY_DOWN);
-	domDocument.onkeyup = (e) => keyHandler(e, KEY_UP);
+	domDocument.onkeydown = (e) => keyHandler(e, Events.KEY_DOWN);
+	domDocument.onkeyup = (e) => keyHandler(e, Events.KEY_UP);
 
 	if (hasTouch) {
 		function touchHandler(e: TouchEvent, type: number) {
@@ -52,10 +53,10 @@ function start() {
 			e.preventDefault();
 		}
 
-		canvas.ontouchstart = (e) => touchHandler(e, TOUCH_DOWN);
-		canvas.ontouchend = (e) => touchHandler(e, TOUCH_UP);
-		canvas.ontouchcancel = (e) => touchHandler(e, TOUCH_UP);
-		canvas.ontouchmove = (e) => touchHandler(e, TOUCH_MOVE);
+		canvas.ontouchstart = (e) => touchHandler(e, Events.TOUCH_DOWN);
+		canvas.ontouchend = (e) => touchHandler(e, Events.TOUCH_UP);
+		canvas.ontouchcancel = (e) => touchHandler(e, Events.TOUCH_UP);
+		canvas.ontouchmove = (e) => touchHandler(e, Events.TOUCH_MOVE);
 	} else {
 		function mouseHandler(e: MouseEvent, type: number) {
 			const global: Point = { x: e.clientX * dpr, y: e.clientY * dpr };
@@ -65,17 +66,19 @@ function start() {
 			e.preventDefault();
 		};
 
-		canvas.onmousedown = (e) => mouseHandler(e, TOUCH_DOWN);
-		canvas.onmousemove = (e) => mouseHandler(e, TOUCH_MOVE);
-		canvas.onmouseup = (e) => mouseHandler(e, TOUCH_UP);
-		canvas.onmouseleave = (e) => mouseHandler(e, TOUCH_UP);
+		canvas.onmousedown = (e) => mouseHandler(e, Events.TOUCH_DOWN);
+		canvas.onmousemove = (e) => mouseHandler(e, Events.TOUCH_MOVE);
+		canvas.onmouseup = (e) => mouseHandler(e, Events.TOUCH_UP);
+		canvas.onmouseleave = (e) => mouseHandler(e, Events.TOUCH_UP);
 	}
 }
 
 async function main() {
+	info.innerText = 'Loading...';
 	await loadResources();
-	// await timeout(1);
+	await timeout(10);
 	start();
+	info.innerText = '';
 }
 
 main();

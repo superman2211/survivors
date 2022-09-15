@@ -1,5 +1,4 @@
 import { Point, pointCreate, pointLength, pointLengthSquared, pointNormalize } from "../geom/point";
-import { mathSqrt } from "../utils/math";
 import { IBody } from "./body";
 
 interface CollisionResult {

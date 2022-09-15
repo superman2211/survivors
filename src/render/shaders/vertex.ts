@@ -20,11 +20,11 @@ uniform mat4 u_worldInverseTranspose;
 varying vec3 v_normal;
 varying vec2 v_texCoord;
 void main() {
-	vec4 t_position = u_object * a_position;
-	vec3 t_normal = mat3(u_object) * a_normal;
-	gl_Position = u_worldViewProjection * t_position;
-	v_normal = mat3(u_worldInverseTranspose) * t_normal;
-	v_texCoord = a_texCoord;
-	vec3 surfaceWorldPosition = (u_world * t_position).xyz;
-	${code}
+vec4 t_position = u_object * a_position;
+vec3 t_normal = mat3(u_object) * a_normal;
+gl_Position = u_worldViewProjection * t_position;
+v_normal = mat3(u_worldInverseTranspose) * t_normal;
+v_texCoord = a_texCoord;
+vec3 surfaceWorldPosition = (u_world * t_position).xyz;
+${code}
 }`;

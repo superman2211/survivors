@@ -1,4 +1,3 @@
-import { CommandType, generateImage } from "../../../utils/image"
 import { generateMaterial } from "../../../utils/material";
 
 export function generateAsphalt(size: number) {

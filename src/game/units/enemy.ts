@@ -9,6 +9,7 @@ import { hand } from "../weapons/weapons";
 import { UnitType } from "./types";
 import { UnitState } from "./states";
 import { Resources } from "../../resources/ids";
+import { playAudio } from "../../media/sfx";
 
 type TargetData = { target: Unit };
 
@@ -70,6 +71,9 @@ export function createEnemy(world: World, newEnemy: boolean = false) {
 		start(target: Unit) {
 			this.data = { target };
 			unit.playAnimation(chance() ? Resources.attack_zombie_1 : Resources.attack_zombie_2, true)
+			if (target.settings.type == UnitType.PLAYER) {
+				playAudio(Resources.sound_hit);
+			}
 		}
 	} as FSMAction<TargetData>;
 

@@ -108,8 +108,6 @@ export function updateNormals(data: Float32Array | number[]) {
 }
 
 export function smoothNormals(data: Float32Array | number[]) {
-	// const u = createV3();
-	// const v = createV3();
 	const n = createV3();
 
 	const map = new Map<number, number[]>();
@@ -131,9 +129,10 @@ export function smoothNormals(data: Float32Array | number[]) {
 			n[1] += data[v + 3 + 1];
 			n[2] += data[v + 3 + 2];
 		}
-		n[0] /= verts.length;
-		n[1] /= verts.length;
-		n[2] /= verts.length;
+		const vertsLength = verts.length;
+		n[0] /= vertsLength;
+		n[1] /= vertsLength;
+		n[2] /= vertsLength;
 		for (const v of verts) {
 			data[v + 3 + 0] = n[0];
 			data[v + 3 + 1] = n[1];

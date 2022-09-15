@@ -1,6 +1,4 @@
-import { createM4, inverseM4, multiplyM4, transformV3 } from "../../geom/matrix";
 import { transformInverse } from "../../geom/point";
-import { createV3 } from "../../geom/vector";
 import { Component } from "../../graphics/component";
 import { createCircleImage } from "./utils";
 

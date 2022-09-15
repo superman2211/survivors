@@ -1,5 +1,4 @@
 import { createM4, transformM4 } from "../../geom/matrix";
-import { createV3 } from "../../geom/vector";
 import { createCube } from "../../models/cube";
 import { createSphere } from "../../models/sphere";
 import { transformGeometry } from "../../render/geometry";

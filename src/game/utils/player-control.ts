@@ -1,6 +1,5 @@
 import { Point, pointCopy, pointCreate, pointNormalize } from "../../geom/point";
 import { Component } from "../../graphics/component";
-import { playAudio } from "../../media/sfx";
 import { hasTouch } from "../../utils/browser";
 import { mathAtan2 } from "../../utils/math";
 import { canvas } from "../../render/render";

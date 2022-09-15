@@ -1,13 +1,14 @@
 import { Transform } from './transform';
 import { Keyboard, Pointer, Update } from './extensions';
 import { Point } from '../geom/point';
-import { KEY_DOWN, KEY_UP, TOUCH_DOWN, TOUCH_MOVE, TOUCH_UP } from './events';
+import { Events } from './events';
 import { createM4, multiplyM4, transformM4 } from '../geom/matrix';
 import { renderObject } from '../render/render';
 
 export interface Text {
 	value: string,
 	font: string,
+	bold?: boolean,
 	size: number,
 	align: number,
 	color: number,
@@ -87,12 +88,12 @@ export function componentUpdate(component: Component, time: number) {
 
 export function componentKeyProcess(component: Component, e: KeyboardEvent, type: number) {
 	switch (type) {
-		case KEY_DOWN:
+		case Events.KEY_DOWN:
 			if (component.onKeyDown) {
 				component.onKeyDown(e);
 			}
 			break;
-		case KEY_UP:
+		case Events.KEY_UP:
 			if (component.onKeyUp) {
 				component.onKeyUp(e);
 			}
@@ -114,19 +115,19 @@ export function componentTouchProcess(component: Component, global: Point, type:
 	}
 
 	switch (type) {
-		case TOUCH_DOWN:
+		case Events.TOUCH_DOWN:
 			if (component.onTouchDown) {
 				component.onTouchDown(global, id);
 			}
 			break;
 
-		case TOUCH_UP:
+		case Events.TOUCH_UP:
 			if (component.onTouchUp) {
 				component.onTouchUp(global, id);
 			}
 			break;
 
-		case TOUCH_MOVE:
+		case Events.TOUCH_MOVE:
 			if (component.onTouchMove) {
 				component.onTouchMove(global, id);
 			}

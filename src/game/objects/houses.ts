@@ -1,7 +1,7 @@
 import { Component } from "../../graphics/component";
 import { createPlane } from "../../models/plane";
 import { createBox } from "../../physics/body";
-import { math2PI, mathPI2 } from "../../utils/math";
+import { mathPI2 } from "../../utils/math";
 import { World } from "../world";
 import { generateRoofImage, generateWallImage } from "./textures/wall";
 

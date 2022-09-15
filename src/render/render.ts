@@ -1,10 +1,11 @@
-import { dpr } from "../utils/browser";
+import { dpr, info } from "../utils/browser";
 import { mathPI } from "../utils/math";
 import { ELEMENT_SIZE } from "./geometry";
 import { createM4, identityM4, inverseM4, multiplyM4, perspectiveM4, translationM4, transposeM4 } from "../geom/matrix";
 import { fragmentShaderSource } from "./shaders/fragment";
 import { vertexShaderSource } from "./shaders/vertex";
 import { MAX_LIGHTS } from "./shaders/parameters";
+import { DEBUG } from "../debug";
 
 export const canvas = c as HTMLCanvasElement;
 const gl = canvas.getContext('webgl')!;
@@ -111,7 +112,9 @@ export function renderObject(geometry: Float32Array, image: HTMLCanvasElement, m
 
 	gl.drawArrays(gl.TRIANGLES, 0, geometry.length / ELEMENT_SIZE);
 
-	drawCalls++;
+	if (DEBUG) {
+		drawCalls++;
+	}
 }
 
 let cameraX = 0;
@@ -129,7 +132,9 @@ export function setCamera(x: number, y: number, z: number) {
 }
 
 export function renderBegin() {
-	drawCalls = 0;
+	if (DEBUG) {
+		drawCalls = 0;
+	}
 
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 	gl.clearColor(0, 0, 0, 0);
@@ -175,21 +180,18 @@ export function addLight(light: number[]) {
 
 addLight([0, 0, 0])
 
-// declare global {
-// 	const i: HTMLDivElement;
-// }
-// const info = i;
-
 export function renderEnd() {
-	const deltaTime = performance.now() - lastTime;
-	lastTime = performance.now();
-	fps.push(1000 / deltaTime);
-	if (fps.length > 30) {
-		fps.shift();
-	}
-	let frameRate = 0;
-	fps.forEach(n => frameRate += n);
-	frameRate /= fps.length;
+	if (DEBUG) {
+		const deltaTime = performance.now() - lastTime;
+		lastTime = performance.now();
+		fps.push(1000 / deltaTime);
+		if (fps.length > 30) {
+			fps.shift();
+		}
+		let frameRate = 0;
+		fps.forEach(n => frameRate += n);
+		frameRate /= fps.length;
 
-	// info.innerText = 'FPS: ' + Math.round(frameRate) + ', DC: ' + drawCalls;
+		info.innerText = 'FPS: ' + Math.round(frameRate) + ', DC: ' + drawCalls;
+	}
 }

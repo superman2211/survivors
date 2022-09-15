@@ -59,9 +59,10 @@ export function createUI(options: ApplicationOptions): UI {
 		text: {
 			value: '',
 			font: 'arial',
+			bold: true,
 			size: 70,
 			align: 0.5,
-			color: 0xffffffff,
+			color: 0xffff0000,
 		},
 	}
 
@@ -96,11 +97,11 @@ export function createUI(options: ApplicationOptions): UI {
 			const width = options.getWidth() / this.scaleX!;
 			const height = options.getHeight() / this.scaleY!;
 
-			healthLabel.x = BORDER / 2;
-			healthLabel.y = BORDER / 2;
+			healthLabel.x = BORDER;
+			healthLabel.y = BORDER;
 			
-			scoreLabel.x = width - BORDER / 2;
-			scoreLabel.y = BORDER / 2;
+			scoreLabel.x = width - BORDER;
+			scoreLabel.y = BORDER;
 
 			finishLabel.x = width / 2;
 			finishLabel.y = height * 0.6;
@@ -208,7 +209,7 @@ export function renderUI(component: Component, parentMatrix: Float32Array) {
 
 	if (text && text.value) {
 		context.fillStyle = formatColor(text.color ?? 0xff000000);
-		context.font = `${text.size ?? 10}px ${text.font ?? 'arial'}`;
+		context.font = `${text.bold ? 'bold': ''} ${text.size ?? 10}px ${text.font ?? 'arial'}`;
 		context.textBaseline = 'top';
 
 		let x = 0;
@@ -217,7 +218,12 @@ export function renderUI(component: Component, parentMatrix: Float32Array) {
 			x = -context.measureText(text.value).width * text.align;
 		}
 
+		context.shadowBlur = 10;
+		context.shadowColor = 'black';
+
 		context.fillText(text.value, x, 0);
+
+		context.shadowBlur = 0;
 	}
 
 	if (children) {

@@ -6,8 +6,14 @@ export function createContext2d() {
 	return domDocument.createElement('canvas').getContext('2d')!;
 }
 
-async function timeout(time: number) {
+export async function timeout(time: number) {
 	return new Promise((resolve) => {
 		setTimeout(resolve, time);
 	})
 }
+
+declare global {
+	const i: HTMLDivElement;
+}
+
+export const info = i;

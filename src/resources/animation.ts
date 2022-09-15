@@ -68,14 +68,6 @@ const uvParts: { [key: number]: number[] } = {
 	[UnitPart.BOOTS]: [0.5, 0.5, 0.5, 0.5],
 }
 
-// const ttt = [0.5, 0.5, 0.5, 0.5];
-// const uvParts: { [key: number]: number[] } = {
-// 	[UnitPart.SKIN]: ttt,
-// 	[UnitPart.SHIRT]: ttt,
-// 	[UnitPart.PANTS]: ttt,
-// 	[UnitPart.BOOTS]: ttt,
-// }
-
 export function readAnimation(buffer: ArrayBuffer): Float32Array[] {
 	const limitView = new Float32Array(buffer, 0, 6);
 	const pointsView = new Uint8Array(buffer, 6 * 4);
@@ -149,19 +141,6 @@ export function createFrame(points: Float32Array): Float32Array {
 	const data: number[] = [];
 	let p = 0;
 	let i = 0;
-
-	// const global = createM4();
-	// transformM4(global, 0, 0, 0, Math.PI);
-
-	// while (i < points.length) {
-	// 	const x = points[i++];
-	// 	const y = points[i++];
-	// 	const z = points[i++];
-	// 	const cube = createSphere(0.01);
-	// 	// const cube = createCube(0.02, 0.02, 0.02);
-	// 	transformM4(matrix, x, y, z);
-	// 	p = transformGeometry(cube, matrix],
-	// }
 
 	const widthHand = 0.07;
 	const widthFoot = 0.1;

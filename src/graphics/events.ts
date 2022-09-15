@@ -1,6 +1,8 @@
-export const KEY_UP = 0;
-export const KEY_DOWN = 1;
+export const enum Events {
+	KEY_UP = 0,
+	KEY_DOWN = 1,
 
-export const TOUCH_DOWN = 0;
-export const TOUCH_UP = 1;
-export const TOUCH_MOVE = 2;
+	TOUCH_DOWN = 0,
+	TOUCH_UP = 1,
+	TOUCH_MOVE = 2,
+}
