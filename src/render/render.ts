@@ -1,7 +1,7 @@
 import { dpr, info } from "../utils/browser";
 import { mathPI } from "../utils/math";
 import { ELEMENT_SIZE } from "./geometry";
-import { createM4, identityM4, inverseM4, multiplyM4, perspectiveM4, translationM4, transposeM4 } from "../geom/matrix";
+import { createM4, identityM4, inverseM4, multiplyM4, perspectiveM4, translationM4, transposeM4, xRotationM4 } from "../geom/matrix";
 import { fragmentShaderSource } from "./shaders/fragment";
 import { vertexShaderSource } from "./shaders/vertex";
 import { MAX_LIGHTS } from "./shaders/parameters";
@@ -170,6 +170,10 @@ export function renderBegin() {
 	perspectiveM4(fieldOfViewRadians, aspect, zNear, zFar, projectionMatrix);
 
 	translationM4(cameraX, cameraY, cameraZ, cameraMatrix);
+
+	const temp = createM4();
+	xRotationM4(1, temp);
+	multiplyM4(temp, cameraMatrix, cameraMatrix)
 
 	inverseM4(cameraMatrix, viewMatrix);
 	multiplyM4(projectionMatrix, viewMatrix, viewProjectionMatrix);

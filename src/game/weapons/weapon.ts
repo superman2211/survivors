@@ -18,6 +18,7 @@ export interface Weapon {
 	impulse?: number,
 	angle?: number,
 	sound: number,
+	geometry?: Float32Array,
 }
 
 export function getWeaponControl(unit: Unit, world: World) {
@@ -56,6 +57,7 @@ export function getWeaponControl(unit: Unit, world: World) {
 							type,
 							world,
 						);
+						bullet.z = 1000;
 						world.addBullet(bullet);
 						angle += angleStep;
 					}

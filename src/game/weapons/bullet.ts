@@ -54,6 +54,8 @@ export function createBullet(x: number, y: number, rotationZ: number, weapon: We
 			this.x += speed.x * time;
 			this.y += speed.y * time;
 
+			console.log(this.z);
+
 			distance += step * time;
 			if (distance > weapon.distance) {
 				world.removeBullet(bullet);

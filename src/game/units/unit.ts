@@ -7,6 +7,8 @@ import { Command, CommandType, generateImage } from "../../utils/image";
 import { animationDuration, animationSpeed, getAnimation } from "../../resources/animation";
 import { Resources } from "../../resources/ids";
 import { randomInt } from "../../utils/math";
+import { Component } from "../../graphics/component";
+import { wheaponImage } from "../weapons/weapons";
 
 export const direction = {
 	x: 0,
@@ -82,6 +84,12 @@ export function createUnit(settings: UnitSettings): Unit {
 	const images = IMAGES[settings.type];
 	const image = images[randomInt(0, images.length - 1)];
 
+	let children: Component[] | undefined = undefined;
+
+	if (settings.type != UnitType.ENEMY) {
+		children = [{ image: wheaponImage }];
+	}
+
 	return {
 		image,
 		rotationZ: 0,
@@ -99,6 +107,7 @@ export function createUnit(settings: UnitSettings): Unit {
 		settings,
 		weapon,
 		animationPaused: false,
+		children,
 
 		playAnimation(type: Resources, loop: boolean) {
 			animationType = type;
@@ -119,13 +128,20 @@ export function createUnit(settings: UnitSettings): Unit {
 			if (!this.animationPaused) {
 				animationFrame += time * animationSpeed[animationType];
 				const duration = animationDuration[animationType] * animation.length;
-				while (animationFrame >= duration ) {
+				while (animationFrame >= duration) {
 					if (animationLoop) {
 						animationFrame -= duration;
 					} else {
 						animationFrame = duration - 1;
 						this.animationPaused = true;
 					}
+				}
+			}
+			
+			if (settings.type != UnitType.ENEMY && settings.weapons) {
+				const weapon = settings.weapons[this.weapon];
+				if (weapon && weapon.geometry) {
+					this.children![0].geometry = weapon.geometry;
 				}
 			}
 		}
