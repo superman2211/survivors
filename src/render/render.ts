@@ -10,6 +10,27 @@ import { DEBUG } from "../debug";
 export const canvas = c as HTMLCanvasElement;
 const gl = canvas.getContext('webgl')!;
 
+if (DEBUG) {
+	console.log('gl.VERTEX_SHADER', gl.VERTEX_SHADER);
+	console.log('gl.FRAGMENT_SHADER', gl.FRAGMENT_SHADER);
+	console.log('gl.TEXTURE_2D', gl.TEXTURE_2D);
+	console.log('gl.TEXTURE_WRAP_S', gl.TEXTURE_WRAP_S);
+	console.log('gl.TEXTURE_WRAP_T', gl.TEXTURE_WRAP_T);
+	console.log('gl.CLAMP_TO_EDGE', gl.CLAMP_TO_EDGE);
+	console.log('gl.NEAREST', gl.NEAREST);
+	console.log('gl.UNSIGNED_BYTE', gl.UNSIGNED_BYTE);
+	console.log('gl.RGBA', gl.RGBA);
+	console.log('gl.TEXTURE_MIN_FILTER', gl.TEXTURE_MIN_FILTER);
+	console.log('gl.TEXTURE_MAG_FILTER', gl.TEXTURE_MAG_FILTER);
+	console.log('gl.ARRAY_BUFFER', gl.ARRAY_BUFFER);
+	console.log('gl.STATIC_DRAW', gl.STATIC_DRAW);
+	console.log('gl.COLOR_BUFFER_BIT', gl.COLOR_BUFFER_BIT);
+	console.log('gl.DEPTH_BUFFER_BIT', gl.DEPTH_BUFFER_BIT);
+	console.log('gl.CULL_FACE', gl.CULL_FACE);
+	console.log('gl.DEPTH_TEST', gl.DEPTH_TEST);
+	console.log('gl.TRIANGLES', gl.TRIANGLES);
+}
+
 const lights: number[][] = [];
 
 const vs = gl.createShader(gl.VERTEX_SHADER)!;
