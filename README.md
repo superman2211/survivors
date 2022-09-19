@@ -1,7 +1,9 @@
 # Survivors
 Game for [js13kgames competition 2022](https://js13kgames.com/)
 
-[PLAY!](https://js13kgames.com/entries/survivors)
+[PLAY on js13kgames!](https://js13kgames.com/entries/survivors)
+
+[PLAY LAST VERSION on GitHub!](https://superman2211.github.io/survivors/dist/build)
 
 ## Development
 Install
