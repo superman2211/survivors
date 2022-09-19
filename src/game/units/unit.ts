@@ -3,10 +3,9 @@ import { Body } from "../../physics/body";
 import { Weapon } from "../weapons/weapon";
 import { UnitType } from "./types";
 import { WorldObject } from "../world";
-import { Command, CommandType, generateImage } from "../../utils/image";
 import { animationDuration, animationSpeed, getAnimation } from "../../resources/animation";
 import { Resources } from "../../resources/ids";
-import { randomInt } from "../../utils/math";
+import { getUnitImage } from "./image";
 
 export const direction = {
 	x: 0,
@@ -38,37 +37,6 @@ export interface Unit extends WorldObject {
 	playAnimation(type: Resources, loop: boolean): void;
 }
 
-function createUnitImage(skin: number, shirt: number, pants: number, boots: number) {
-	const texture: Command[] = [
-		{ type: CommandType.FILL, color: skin },
-		{ type: CommandType.SIZE, width: 128, height: 128 },
-		{ type: CommandType.FILL, color: shirt },
-		{ type: CommandType.RECTANGLE, x: 64, y: 0, width: 64, height: 64 },
-		{ type: CommandType.FILL, color: pants },
-		{ type: CommandType.RECTANGLE, x: 0, y: 64, width: 64, height: 64 },
-		{ type: CommandType.FILL, color: boots },
-		{ type: CommandType.RECTANGLE, x: 64, y: 64, width: 64, height: 64 },
-		{ type: CommandType.NOISE, colorOffset: 20 },
-	];
-
-	return generateImage(texture);
-}
-
-const IMAGES: { [key: number]: HTMLCanvasElement[] } = {
-	[UnitType.PLAYER]: [createUnitImage(0xFFE8BEAC, 0xff1b9100, 0xff423c09, 0xff1f1a01)],
-	[UnitType.ALLY]: [
-		createUnitImage(0xFFE8BEAC, 0xff40083b, 0xff0f5e63, 0xffbabfbf),
-		createUnitImage(0xFFC68642, 0xff0f5e63, 0xff40083b, 0xffbabfbf),
-		createUnitImage(0xff492816, 0xffbabfbf, 0xff40083b, 0xff0f5e63)
-	],
-	[UnitType.ENEMY]: [
-		createUnitImage(0xffc46f4b, 0xff05a3a1, 0xff0581a3, 0xff2b2f30),
-		createUnitImage(0xFFE8BEAC, 0xff0581a3, 0xff2b2f30, 0xff05a3a1),
-		createUnitImage(0xFFC68642, 0xff40083b, 0xff0581a3, 0xff2b2f30),
-		createUnitImage(0xff492816, 0xffbabfbf, 0xff2b2f30, 0xff05a3a1),
-	],
-}
-
 export function createUnit(settings: UnitSettings): Unit {
 	const { radius, weight, health } = settings;
 	const fsm = new FSM(settings.reaction);
@@ -79,8 +47,7 @@ export function createUnit(settings: UnitSettings): Unit {
 	let animationType = Resources.walk_zombie;
 	let animationLoop = true;
 
-	const images = IMAGES[settings.type];
-	const image = images[randomInt(0, images.length - 1)];
+	const image = getUnitImage(settings.type);
 
 	return {
 		image,
