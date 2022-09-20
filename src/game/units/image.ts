@@ -1,5 +1,5 @@
 import { Command, CommandType, generateImage } from "../../utils/image";
-import { randomInt, randomSelect } from "../../utils/math";
+import { randomSelect } from "../../utils/math";
 import { UnitType } from "./types";
 
 function createUnitImage(skin: number, shirt: number, pants: number, boots: number) {
