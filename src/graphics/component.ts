@@ -16,6 +16,7 @@ export interface Text {
 
 export interface Component extends Transform, Update, Keyboard, Pointer {
 	geometry?: Float32Array;
+	color?: number[];
 	children?: Component[];
 	image?: HTMLCanvasElement;
 	visible?: boolean;
@@ -54,13 +55,14 @@ export function componentRender(component: Component, parentMatrix: Float32Array
 		children,
 		geometry,
 		image,
+		color,
 	} = component;
 
 	if (geometry) {
 		if (!image) {
 			throw 'image is null'
 		}
-		renderObject(geometry, image, matrix);
+		renderObject(geometry, image, matrix, color);
 	}
 
 	if (children) {

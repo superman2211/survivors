@@ -4,7 +4,7 @@ import { IBody, Body } from "../../physics/body";
 import { Unit } from "../units/unit";
 import { Weapon } from "./weapon";
 import { World, WorldObject } from "../world";
-import { isFriend } from "../units/types";
+import { isFriend, UnitType } from "../units/types";
 import { createCube } from "../../models/cube";
 import { Command, CommandType, generateImage } from "../../utils/image";
 
@@ -21,14 +21,14 @@ const texture: Command[] = [
 
 const image = generateImage(texture);
 
-export function createBullet(x: number, y: number, rotationZ: number, weapon: Weapon, type: number, world: World): Bullet {
-	const speed: Point = {
-		x: weapon.speed * mathCos(rotationZ),
-		y: weapon.speed * mathSin(rotationZ),
+export function createBullet(x: number, y: number, rotationZ: number, weapon: Weapon, speed: number, type: UnitType, world: World): Bullet {
+	const speedVector: Point = {
+		x: speed * mathCos(rotationZ),
+		y: speed * mathSin(rotationZ),
 	}
 
 	let distance = 0;
-	const step = pointLength(speed);
+	const step = pointLength(speedVector);
 
 	const body: Body = {
 		weight: 0,
@@ -49,10 +49,11 @@ export function createBullet(x: number, y: number, rotationZ: number, weapon: We
 		body,
 		geometry,
 		image,
+		color: [10, 10, 10, 1],
 
 		onUpdate(time) {
-			this.x += speed.x * time;
-			this.y += speed.y * time;
+			this.x += speedVector.x * time;
+			this.y += speedVector.y * time;
 
 			distance += step * time;
 			if (distance > weapon.distance) {
@@ -68,7 +69,7 @@ export function createBullet(x: number, y: number, rotationZ: number, weapon: We
 					world.removeBullet(bullet);
 
 					if (weapon.impulse) {
-						const value = pointCreate(speed.x, speed.y);
+						const value = pointCreate(speedVector.x, speedVector.y);
 						pointNormalize(value, weapon.impulse);
 						world.addImpulse({ target, value });
 					}

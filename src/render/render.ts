@@ -1,11 +1,13 @@
 import { dpr, info } from "../utils/browser";
 import { mathPI } from "../utils/math";
 import { ELEMENT_SIZE } from "./geometry";
-import { createM4, identityM4, inverseM4, multiplyM4, perspectiveM4, translationM4, transposeM4 } from "../geom/matrix";
+import { createM4, identityM4, inverseM4, multiplyM4, perspectiveM4, translationM4, transposeM4, xRotationM4 } from "../geom/matrix";
 import { fragmentShaderSource } from "./shaders/fragment";
 import { vertexShaderSource } from "./shaders/vertex";
 import { MAX_LIGHTS } from "./shaders/parameters";
 import { DEBUG } from "../debug";
+
+const EMPTY_COLOR = [1, 1, 1, 1];
 
 export const canvas = c as HTMLCanvasElement;
 const gl = canvas.getContext('webgl')!;
@@ -92,7 +94,7 @@ export function updateSize() {
 let currentImage: HTMLCanvasElement | undefined;
 let currentGeometry: Float32Array | undefined;
 
-export function renderObject(geometry: Float32Array, image: HTMLCanvasElement, matrix: Float32Array) {
+export function renderObject(geometry: Float32Array, image: HTMLCanvasElement, matrix: Float32Array, color?: number[]) {
 	if (currentImage !== image) {
 		currentImage = image;
 		if (textures.has(image)) {
@@ -128,6 +130,8 @@ export function renderObject(geometry: Float32Array, image: HTMLCanvasElement, m
 		gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, stride, 3 * 4 + 3 * 4);
 		gl.enableVertexAttribArray(texCoordLocation);
 	}
+
+	gl.uniform4fv(colorLocation, color ?? EMPTY_COLOR);
 
 	gl.uniformMatrix4fv(objectMatrixLocation, false, matrix);
 
@@ -171,6 +175,10 @@ export function renderBegin() {
 
 	translationM4(cameraX, cameraY, cameraZ, cameraMatrix);
 
+	// const temp = createM4();
+	// xRotationM4(1, temp);
+	// multiplyM4(temp, cameraMatrix, cameraMatrix)
+
 	inverseM4(cameraMatrix, viewMatrix);
 	multiplyM4(projectionMatrix, viewMatrix, viewProjectionMatrix);
 
@@ -184,7 +192,7 @@ export function renderBegin() {
 	gl.uniformMatrix4fv(worldInverseTransposeLocation, false, worldInverseTransposeMatrix);
 	gl.uniformMatrix4fv(worldLocation, false, worldMatrix);
 
-	gl.uniform4fv(colorLocation, [0.3, 1, 0.2, 1]);
+	gl.uniform4fv(colorLocation, EMPTY_COLOR);
 
 	lights[0][0] = cameraX;
 	lights[0][1] = cameraY;

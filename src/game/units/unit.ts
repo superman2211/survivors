@@ -6,6 +6,8 @@ import { WorldObject } from "../world";
 import { animationDuration, animationSpeed, getAnimation } from "../../resources/animation";
 import { Resources } from "../../resources/ids";
 import { getUnitImage } from "./image";
+import { Component } from "../../graphics/component";
+import { wheaponImage } from "../weapons/weapons";
 
 export const direction = {
 	x: 0,
@@ -49,6 +51,14 @@ export function createUnit(settings: UnitSettings): Unit {
 
 	const image = getUnitImage(settings.type);
 
+	let children: Component[] | undefined = undefined;
+
+	let weaponComponent: Component | null = null;
+	if (settings.type != UnitType.ENEMY) {
+		weaponComponent = { image: wheaponImage };
+		children = [weaponComponent];
+	}
+
 	return {
 		image,
 		rotationZ: 0,
@@ -66,6 +76,7 @@ export function createUnit(settings: UnitSettings): Unit {
 		settings,
 		weapon,
 		animationPaused: false,
+		children,
 
 		playAnimation(type: Resources, loop: boolean) {
 			animationType = type;
@@ -86,13 +97,20 @@ export function createUnit(settings: UnitSettings): Unit {
 			if (!this.animationPaused) {
 				animationFrame += time * animationSpeed[animationType];
 				const duration = animationDuration[animationType] * animation.length;
-				while (animationFrame >= duration ) {
+				while (animationFrame >= duration) {
 					if (animationLoop) {
 						animationFrame -= duration;
 					} else {
 						animationFrame = duration - 1;
 						this.animationPaused = true;
 					}
+				}
+			}
+			
+			if (weaponComponent) {
+				const weapon = settings.weapons![this.weapon];
+				if (weapon && weapon.geometry) {
+					weaponComponent.geometry = weapon.geometry;
 				}
 			}
 		}
