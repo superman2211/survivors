@@ -133,7 +133,7 @@ export default {
 			'surfaceToLightDirection': 'l',
 			'v_normal': 'm',
 			'v_texCoord': 'n',
-			'u_color': 'o',
+			// 'u_color': 'o',
 			'u_image': 'p',
 			'lightValue': 'r',
 
