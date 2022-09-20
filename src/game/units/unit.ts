@@ -86,8 +86,10 @@ export function createUnit(settings: UnitSettings): Unit {
 
 	let children: Component[] | undefined = undefined;
 
+	let weaponComponent: Component | null = null;
 	if (settings.type != UnitType.ENEMY) {
-		children = [{ image: wheaponImage }];
+		weaponComponent = { image: wheaponImage };
+		children = [weaponComponent];
 	}
 
 	return {
@@ -138,10 +140,10 @@ export function createUnit(settings: UnitSettings): Unit {
 				}
 			}
 			
-			if (settings.type != UnitType.ENEMY && settings.weapons) {
-				const weapon = settings.weapons[this.weapon];
+			if (weaponComponent) {
+				const weapon = settings.weapons![this.weapon];
 				if (weapon && weapon.geometry) {
-					this.children![0].geometry = weapon.geometry;
+					weaponComponent.geometry = weapon.geometry;
 				}
 			}
 		}

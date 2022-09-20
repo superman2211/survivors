@@ -8,8 +8,7 @@ import { playAudio } from "../../media/sfx";
 
 export interface Weapon {
 	speed: number,
-	damage: number,
-	color: number,
+	damage: number, 
 	length: number,
 	width: number,
 	points: Point[],
@@ -55,6 +54,7 @@ export function getWeaponControl(unit: Unit, world: World) {
 							resultY,
 							angle,
 							weapon,
+							weapon.speed * randomFloat(0.7, 1.3),
 							type,
 							world,
 						);
@@ -79,6 +79,7 @@ export function getWeaponControl(unit: Unit, world: World) {
 						resultY,
 						rotationZ,
 						weapon,
+						weapon.speed,
 						type,
 						world,
 					);
