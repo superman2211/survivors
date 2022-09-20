@@ -24,5 +24,6 @@ gl_FragColor = texture2D(u_image, v_texCoord);
 vec3 normal = normalize(v_normal);
 float lightValue = 0.0;
 ${code}
+gl_FragColor.rgb *= u_color.rgb;
 gl_FragColor.rgb *= lightValue;
 }`;

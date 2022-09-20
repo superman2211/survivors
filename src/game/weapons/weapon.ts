@@ -1,5 +1,5 @@
 import { Point } from "../../geom/point";
-import { mathCos, mathSin } from "../../utils/math";
+import { mathCos, mathSin, randomFloat } from "../../utils/math";
 import { createBullet } from "./bullet";
 import { Unit } from "../units/unit";
 import { World } from "../world";
@@ -47,8 +47,9 @@ export function getWeaponControl(unit: Unit, world: World) {
 						const cos = mathCos(angle);
 						const sin = mathSin(angle);
 						const { x, y } = point;
-						const resultX = unit.x + x * cos - y * sin;
-						const resultY = unit.y + x * sin + y * cos;
+						const targetX = x + randomFloat(0, 10);
+						const resultX = unit.x + targetX * cos - y * sin;
+						const resultY = unit.y + targetX * sin + y * cos;
 						const bullet = createBullet(
 							resultX,
 							resultY,
@@ -57,7 +58,7 @@ export function getWeaponControl(unit: Unit, world: World) {
 							type,
 							world,
 						);
-						bullet.z = 1000;
+						bullet.z = 90;
 						world.addBullet(bullet);
 						angle += angleStep;
 					}
@@ -81,11 +82,11 @@ export function getWeaponControl(unit: Unit, world: World) {
 						type,
 						world,
 					);
+					bullet.z = 90;
 					world.addBullet(bullet);
 				}
 			}
 		} else {
-			//weaponTime = 0;
 			weaponTime -= time;
 		}
 	}
